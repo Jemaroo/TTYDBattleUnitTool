@@ -1,0 +1,1047 @@
+{
+    "File":
+    [
+        {
+            "Name": "main.dol",
+            "Units": ["Mario", "Flurrie", "Yoshi", "Ms. Mowz", "Bobbery", "Vivian", "Koops", "Goombella", "unit_bomzou", "unit_koura", "unit_object_tree", "unit_object_switch", "unit_system"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 13,
+                    "Multiple":[],
+                    "Offsets": [3603196, 3629556, 3643292, 3664064, 3688460, 3704988, 3718964, 3738604, 3768456, 3771424, 3776256, 3776824, 3845748]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 14,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Koops",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [3952608, 3953992, 3954112, 3954288, 3954376, 3954512, 3954664, 3954680, 3954832, 3955864, 3956120, 3956544, 3956656, 3961608]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 13,
+                    "Multiple":[],
+                    "Offsets": [3952616, 3954000, 3954120, 3954296, 3954384, 3954520, 3954672, 3954840, 3955872, 3956128, 3956552, 3956664, 3961616]
+                }
+            ]      
+        },
+        {
+            "Name": "Start.dol",
+            "Units": ["Mario", "Flurrie", "Yoshi", "Ms. Mowz", "Bobbery", "Vivian", "Koops", "Goombella", "unit_bomzou", "unit_koura", "unit_object_tree", "unit_object_switch", "unit_system"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 13,
+                    "Multiple":[],
+                    "Offsets": [3603196, 3629556, 3643292, 3664064, 3688460, 3704988, 3718964, 3738604, 3768456, 3771424, 3776256, 3776824, 3845748]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 14,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Koops",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [3952608, 3953992, 3954112, 3954288, 3954376, 3954512, 3954664, 3954680, 3954832, 3955864, 3956120, 3956544, 3956656, 3961608]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 13,
+                    "Multiple":[],
+                    "Offsets": [3952616, 3954000, 3954120, 3954296, 3954384, 3954520, 3954672, 3954840, 3955872, 3956128, 3956552, 3956664, 3961616]
+                }
+            ]      
+        },
+        {
+            "Name": "aji.rel",
+            "Units": ["Magnus Von Grapple 2.0", "X-Punch", "X-Naut", "Mini-Z-Yux", "Z-Yux", "Elite X-Naut", "X-Naut PHD", "X-Yux", "Mini-X-Yux", "Yux", "Mini-Yux"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 11,
+                    "Multiple":[],
+                    "Offsets": [260072, 273244, 290320, 295936, 297280, 309856, 315472, 325448, 338024, 339368, 351944]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 11,
+                    "Multiple":[],
+                    "Offsets": [260268, 273440, 290516, 296132, 297476, 310052, 315668, 325644, 338220, 339564, 352140]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 11,
+                    "Multiple":[],
+                    "Offsets": [260276, 273448, 290524, 296140, 297484, 310060, 315676, 325652, 338228, 339572, 352148]
+                }
+            ]      
+        },
+        {
+            "Name": "bom.rel",
+            "Units": ["Goomba", "Ice Puff", "Frost Piranha"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 3,
+                    "Multiple":[],
+                    "Offsets": [78632, 81600, 87168]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 3,
+                    "Multiple":[],
+                    "Offsets": [79004, 81796, 87364]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 3,
+                    "Multiple":[],
+                    "Offsets": [79012, 81804, 87372]
+                }
+            ]      
+        },
+        {
+            "Name": "dou.rel",
+            "Units": ["Goomba", "Lava Bubble", "Bullet Bill", "Bill Blaster", "Bulky Bob-omb", "Ember", "Parabuzzy"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 7,
+                    "Multiple":[],
+                    "Offsets": [97528, 100496, 107304, 110000, 116248, 122176, 130344]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 9,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Parabuzzy",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [97900, 100692, 107500, 110196, 117212, 122372, 130732, 134144, 134160]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 9,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Parabuzzy",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [97908, 100700, 107508, 110204, 117220, 122380, 130740, 134152, 134168]
+                }
+            ]      
+        },
+        {
+            "Name": "eki.rel",
+            "Units": ["Goomba", "Pokey", "Poison Pokey", "Spiky Parabuzzy", "Ruff Puff"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 5,
+                    "Multiple":[],
+                    "Offsets": [69808, 72776, 90976, 109176, 120168]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 7,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Spiky Parabuzzy",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [70180, 72972, 91172, 109564, 113232, 113248, 120364]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 7,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Spiky Parabuzzy",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [70188, 72980, 91180, 109572, 113240, 113256, 120372]
+                }
+            ]      
+        },
+        {
+            "Name": "gon.rel",
+            "Units": ["Hooktail", "Dull Bones", "Goomba", "Red Bones", "Koopa Troopa", "Paragoomba", "Paratroopa", "Spiky Goomba"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 8,
+                    "Multiple":[],
+                    "Offsets": [97488, 115352, 122072, 125040, 131760, 136952, 142768, 151696]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 12,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Koopa Troopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [97684, 115548, 122444, 125236, 132260, 132276, 137148, 140168, 143156, 147004, 147020, 151892]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 10,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [97692, 115556, 122452, 125244, 132268, 137156, 140176, 143164, 147012, 151900]
+                }
+            ]      
+        },
+        {
+            "Name": "gor.rel",
+            "Units": ["Goomba", "Gus", "X-Naut", "Lord Crump", "unit_npc_christine", "unit_lecture_christine", "unit_lecture_frankli", "unit_lecture_frankli_sac"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 8,
+                    "Multiple":[],
+                    "Offsets": [397464, 400432, 405464, 411080, 421240, 421864, 425912, 435472]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 8,
+                    "Multiple":[],
+                    "Offsets": [397836, 400628, 405660, 411276, 421436, 422060, 426108, 435668]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 8,
+                    "Multiple":[],
+                    "Offsets": [397844, 400636, 405668, 411284, 421444, 422068, 426116, 435676]
+                }
+            ]      
+        },
+        {
+            "Name": "gra.rel",
+            "Units": ["Goomba", "Doopliss Mario", "Hyper Goomba", "Hyper Paragoomba", "Hyper Spiky Goomba", "Hyper Cleft", "Crayzee Dayzee", "Amazy Dayzee"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 8,
+                    "Multiple":[],
+                    "Offsets": [41192, 44160, 52032, 55800, 63168, 68176, 73168, 75880]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 10,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Hyper Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Hyper Cleft",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [41564, 44356, 52404, 55996, 59772, 63364, 68372, 68380, 73364, 76076]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 9,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Hyper Paragoomba",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [41572, 44364, 52412, 56004, 59780, 63372, 68388, 73372, 76084]
+                }
+            ]      
+        },
+        {
+            "Name": "hei.rel",
+            "Units": ["Fuzzy", "Fuzzy Horde", "Gold Fuzzy", "Goomba", "Koopa Troopa", "Paragoomba", "Paratroopa", "Spiky Goomba", "Moon Cleft", "Bald Cleft", "Bristle", "Cleft"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 12,
+                    "Multiple":[],
+                    "Offsets": [99824, 105512, 108088, 112960, 115928, 121120, 126936, 135864, 140120, 144352, 148440, 153104]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 20,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Koopa Troopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Moon Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Bald Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Bristle",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Cleft",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [100020, 105708, 108284, 113332, 116428, 116444, 121316, 124336, 127324, 131172, 131188, 136060, 140316, 140332, 144548, 144564, 148636, 148652, 153300, 153316]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 14,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [100028, 105716, 108292, 113340, 116436, 121324, 124344, 127332, 131180, 136068, 140324, 144556, 148644, 153308]
+                }
+            ]      
+        },
+        {
+            "Name": "jin.rel",
+            "Units": ["Goombella", "Flurrie", "Koops", "Yoshi", "Doopliss Mario", "Atomic Boo", "Doopliss", "Buzzy Beetle", "Spiky Buzzy", "Swooper", "Boo"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 11,
+                    "Multiple":[],
+                    "Offsets": [86528, 90912, 94104, 100480, 114576, 126760, 134632, 147968, 155856, 163920, 168248]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 15,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Koops",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Doopliss",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Buzzy Beetle",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiky Buzzy",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [86916, 91300, 94684, 94700, 100868, 114772, 126956, 134828, 139816, 149108, 149124, 156980, 156996, 164116, 168444]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 14,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Doopliss",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Buzzy Beetle",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiky Buzzy",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [86924, 91308, 94692, 100876, 114780, 126964, 134836, 139824, 149116, 149132, 156988, 157004, 164124, 168452]
+                }
+            ]      
+        },
+        {
+            "Name": "jon.rel",
+            "Units": ["Bonetail", "Fuzzy", "Spania", "Spinia", "Dull Bones", "Gloomba", "Paragloomba", "Cleft", "Pokey", "Dark Puff", "Spiky Gloomba", "Bandit", "Lakitu", "Bob-omb", "Boo", "Spiny", "Dark Koopa", "Hyper Cleft", "Parabuzzy", "Shady Koopa", "Flower Fuzzy", "Dark Paratroopa", "Bulky Bob-omb", "Lava Bubble", "Poison Pokey", "Spiky Parabuzzy", "Dark Bristle", "Chain-Chomp", "Amazy Dayzee", "Dark Koopatrol", "Dark Wizzerd", "Moon Cleft", "Dark Boo", "Phantom Ember", "Piranha Plant", "Elite Wizzerd", "Wizzerd", "Dry Bones", "Frost Piranha", "Dark Lakitu", "Spunia", "Bob-ulk", "Poison Puff", "Dark Craw", "Red Chomp", "Ice Puff", "Swoopula", "Swampire", "Badge Bandit", "Pider", "Sky Blue Spiny", "Arantula"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 54,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Dark Wizzerd",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Elite Wizzerd",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [124016, 135344, 141032, 144040, 147040, 153760, 156728, 162544, 166776, 184976, 191056, 195312, 202528, 210016, 215360, 221632, 228208, 233400, 238392, 248944, 256536, 263992, 272920, 278848, 285656, 303856, 314848, 319512, 326384, 329280, 338832, 339028, 356184, 360416, 366688, 373496, 378040, 378236, 395392, 409488, 418816, 423360, 431592, 434600, 440528, 445744, 450512, 457384, 462952, 468216, 473480, 480696, 489208, 496536]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 71,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Paragloomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Dark Koopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Hyper Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Parabuzzy",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Shady Koopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Dark Paratroopa",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Spiky Parabuzzy",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Dark Bristle",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Dark Koopatrol",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Moon Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Sky Blue Spiny",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [124212, 135540, 141228, 144236, 147236, 154132, 156924, 159944, 162740, 162756, 166972, 185172, 191252, 195700, 202724, 210212, 215556, 221828, 221868, 221908, 228708, 228724, 233596, 233604, 238780, 242192, 242208, 249444, 249460, 256732, 264380, 268228, 268244, 273884, 279044, 285852, 304244, 307912, 307928, 315044, 315060, 319708, 326580, 329476, 329516, 329556, 339224, 356380, 356396, 360612, 366884, 373692, 378432, 395588, 409684, 419012, 423556, 431788, 435564, 440724, 445940, 450708, 457580, 463148, 468412, 473868, 480892, 489404, 489444, 489484, 496732]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 64,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Paragloomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Parabuzzy",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Dark Paratroopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiky Parabuzzy",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Dark Koopatrol",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Sky Blue Spiny",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [124220, 135548, 141236, 144244, 147244, 154140, 156932, 159952, 162748, 166980, 185180, 191260, 195708, 202732, 210220, 215564, 221836, 221876, 221916, 228716, 233612, 238788, 242200, 242216, 249452, 256740, 264388, 268236, 273892, 279052, 285860, 304252, 307920, 307936, 315052, 319716, 326588, 329484, 329524, 329564, 339232, 356388, 360620, 366892, 373700, 378440, 395596, 409692, 419020, 423564, 431796, 435572, 440732, 445948, 450716, 457588, 463156, 468420, 473876, 480900, 489412, 489452, 489492, 496740]
+                }
+            ]      
+        },
+        {
+            "Name": "las.rel",
+            "Units": ["Bowser", "Kammy Koopa", "Doopliss", "Shadow Peach", "Shadow Queen", "Shadow Hand 1", "Shadow Hand 2", "Small Shadow Hands", "Dark Bones", "Dry Bones", "Grodus", "Grodus X", "Gloomtail", "Bombshell Bill", "Bombshell Bill Blaster", "Dark Wizzerd", "Chain-Chomp", "Swoopula", "Phantom Ember", "Bulky Bob-omb", "Dull Bones", "Red Bones", "Marilyn", "Beldam"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 25,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Dark Wizzerd",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [260536, 272272, 280672, 321824, 325056, 326148, 326540, 326932, 360680, 370008, 382112, 401296, 404016, 415256, 417952, 424200, 424396, 441552, 448424, 454528, 461336, 467264, 473984, 480704, 485736]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 35,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Doopliss",
+                            "Amount": 10
+                        },
+                        {
+                            "Name": "Grodus",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [260732, 272468, 280868, 288600, 296736, 300796, 300812, 306364, 308924, 312608, 314604, 316872, 322020, 325252, 325292, 326344, 326736, 327128, 360876, 370204, 382308, 382356, 401492, 404212, 415452, 418148, 424592, 441748, 448620, 454724, 462300, 467460, 474180, 480900, 485932]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 34,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Doopliss",
+                            "Amount": 9
+                        },
+                        {
+                            "Name": "Grodus",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [260740, 272476, 280876, 288608, 296744, 300804, 306372, 308932, 312616, 314612, 316880, 322028, 325260, 325300, 326352, 326744, 327136, 360884, 370212, 382316, 382324, 401500, 404220, 415460, 418156, 424600, 441756, 448628, 454732, 462308, 467468, 474188, 480908, 485940]
+                }
+            ]      
+        },
+        {
+            "Name": "moo.rel",
+            "Units": ["Goomba", "Moon Cleft", "Mini-Z-Yux", "Z-Yux", "Hyper Cleft"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 5,
+                    "Multiple":[],
+                    "Offsets": [34648, 39528, 43760, 45104, 57680]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 7,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Moon Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Hyper Cleft",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [35020, 39724, 39740, 43956, 45300, 57876, 57884]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 5,
+                    "Multiple":[],
+                    "Offsets": [35028, 39732, 43964, 45308, 57892]
+                }
+            ]      
+        },
+        {
+            "Name": "mri.rel",
+            "Units": ["Goomba", "Magnus Von Grapple", "X-Fist", "X-Naut", "Yux", "Pider", "Mini-Yux", "Poison Puff", "Piranha Plant", "Lord Crump", "Dark Puff", "Pale Piranha"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 12,
+                    "Multiple":[],
+                    "Offsets": [323600, 326568, 334624, 338136, 343752, 356328, 364840, 366184, 371400, 388464, 391232, 397312]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 12,
+                    "Multiple":[],
+                    "Offsets": [323972, 326764, 334820, 338332, 343948, 356524, 365036, 366380, 371596, 388660, 391428, 397508]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 12,
+                    "Multiple":[],
+                    "Offsets": [323980, 326772, 334828, 338340, 343956, 356532, 365044, 366388, 371604, 388668, 391436, 397516]
+                }
+            ]      
+        },
+        {
+            "Name": "muj.rel",
+            "Units": ["Cortez", "Bone Pile", "Cortez Sword", "Cortez Hook", "Cortez Rapier", "Cortez Saber", "Goomba", "Lord Crump", "X-Naut Platoon Formation 1", "X-Naut Platoon Formation 2", "X-Naut Platoon Formation 3", "X-Naut PHD", "Flower Fuzzy", "Green Fuzzy", "Putrid Piranha", "Ember", "Piranha Plant"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 17,
+                    "Multiple":[],
+                    "Offsets": [223400, 248432, 249080, 257048, 259608, 263096, 266088, 269056, 278008, 281840, 286488, 290352, 299488, 306944, 314040, 320400, 327480]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 29,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Cortez",
+                            "Amount": 12
+                        },
+                        {
+                            "Name": "Lord Crump",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [223620, 223636, 223652, 223668, 223684, 223700, 223716, 223732, 223748, 223764, 223780, 223796, 248628, 249276, 257244, 259804, 263292, 266460, 269252, 269260, 278204, 282036, 286684, 290548, 299684, 307140, 314236, 320596, 327676]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 28,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Cortez",
+                            "Amount": 12
+                        }
+                    ],
+                    "Offsets": [223628, 223644, 223660, 223676, 223692, 223708, 223724, 223740, 223756, 223772, 223788, 223804, 248636, 249284, 257252, 259812, 263300, 266468, 269268, 278212, 282044, 286692, 290556, 299692, 307148, 314244, 320604, 327684]
+                }
+            ]      
+        },
+        {
+            "Name": "nok.rel",
+            "Units": ["unit_act_atmic_teresa", "unit_act_clauda", "unit_act_kinopiko", "unit_act_kinopio", "unit_act_mario", "unit_act_teresa"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 6,
+                    "Multiple":[],
+                    "Offsets": [39552, 40096, 40584, 41128, 41672, 49144]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 6,
+                    "Multiple":[],
+                    "Offsets": [39748, 40292, 40780, 41324, 41868, 49340]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 6,
+                    "Multiple":[],
+                    "Offsets": [39756, 40300, 40788, 41332, 41876, 49348]
+                }
+            ]      
+        },
+        {
+            "Name": "pik.rel",
+            "Units": ["Dark Boo"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 1,
+                    "Multiple":[],
+                    "Offsets": [74376]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 1,
+                    "Multiple":[],
+                    "Offsets": [74572]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 1,
+                    "Multiple":[],
+                    "Offsets": [74580]
+                }
+            ]      
+        },
+        {
+            "Name": "rsh.rel",
+            "Units": ["Smorg", "Smorg Tentacle 1", "Smorg Tentacle 2", "Smorg Tentacle 3", "Smorg Claw"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 5,
+                    "Multiple":[],
+                    "Offsets": [190920, 200304, 203760, 207208, 210624]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 7,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Smorg",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [191116, 191124, 191132, 200500, 203956, 207404, 210820]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 5,
+                    "Multiple":[],
+                    "Offsets": [191140, 200508, 203964, 207412, 210828]
+                }
+            ]      
+        },
+        {
+            "Name": "tik.rel",
+            "Units": ["Blooper", "Blooper Right Tentacle", "Blooper Left Tentacle", "Goomba", "Spania", "Spinia", "Paragoomba", "Spiky Goomba", "Hammer Bro", "Magikoopa", "Paratroopa", "Koopatrol", "Koopa Troopa", "unit_lecture_frankli_kuriboo", "Spunia"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 16,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Magikoopa",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [148192, 167792, 171984, 174040, 187904, 190912, 193912, 199728, 203984, 210768, 210964, 225400, 234328, 243880, 252304, 253776]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 23,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Blooper",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Koopatrol",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Koopa Troopa",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [148388, 148428, 148468, 167988, 172180, 174412, 188100, 191108, 194108, 197128, 199924, 204180, 211160, 225788, 229636, 229652, 234524, 234564, 234604, 244380, 244396, 252500, 253972]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 21,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Blooper",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Paragoomba",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Paratroopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Koopatrol",
+                            "Amount": 3
+                        }
+                    ],
+                    "Offsets": [148396, 148436, 148476, 167996, 172188, 174420, 188108, 191116, 194116, 197136, 199932, 204188, 211168, 225796, 229644, 234532, 234572, 234612, 244388, 252508, 253980]
+                }
+            ]      
+        },
+        {
+            "Name": "tou2.rel",
+            "Units": ["Macho Grubba", "Rawk Hawk", "Swooper", "Bob-omb", "Boomerang Bro", "Bandit", "Fuzzy", "Dark Craw", "Fire Bro", "Flower Fuzzy", "Green Fuzzy", "Hammer Bro", "Spunia", "Spinia", "Dull Bones", "Iron Cleft 1", "Iron Cleft 2", "Lakitu", "Goomba", "Pider", "Pokey", "Bristle", "Spiny", "Shady Koopa", "Shady Paratroopa", "Spania", "Hyper Bald Cleft", "Green Magikoopa", "Red Magikoopa", "White Magikoopa", "Dark Koopatrol", "Red Chomp", "Dark Lakitu", "Sky Blue Spiny", "unit_wanawana", "Bowser", "Big Bandit", "KP Koopa", "KP Paratroopa", "Red Spiky Buzzy", "Dark Puff", "Pale Piranha"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 45,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Green Magikoopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Red Magikoopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "White Magikoopa",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [132344, 148832, 166736, 171064, 176408, 184032, 191248, 196936, 201704, 209984, 217440, 224536, 231320, 234328, 237328, 244048, 248168, 252288, 259776, 263240, 271752, 289952, 294616, 301192, 308784, 320112, 323120, 327960, 328156, 342592, 342788, 357224, 357420, 371856, 381408, 388280, 396512, 403840, 404536, 413032, 420248, 425440, 434352, 442416, 448496]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 59,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Iron Cleft 1",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Iron Cleft 2",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Bristle",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Shady Koopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Shady Paratroopa",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Hyper Bald Cleft",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Dark Koopatrol",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Sky Blue Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "KP Koopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "KP Paratroopa",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Red Spiky Buzzy",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [132540, 149028, 166932, 171260, 176604, 184420, 191444, 197132, 201900, 210180, 217636, 224732, 231516, 234524, 237524, 244244, 244260, 248364, 248380, 252484, 260148, 263436, 271948, 290148, 290164, 294812, 294852, 294892, 301692, 301708, 309172, 313020, 313036, 320308, 323316, 323324, 328352, 342984, 357616, 372052, 372092, 372132, 381604, 388476, 396708, 396748, 396788, 404036, 404732, 413420, 420748, 420764, 425828, 429660, 429676, 435476, 435492, 442612, 448692]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 51,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Shady Paratroopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Dark Koopatrol",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "Sky Blue Spiny",
+                            "Amount": 3
+                        },
+                        {
+                            "Name": "KP Paratroopa",
+                            "Amount": 2
+                        },
+                        {
+                            "Name": "Red Spiky Buzzy",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [132548, 149036, 166940, 171268, 176612, 184428, 191452, 197140, 201908, 210188, 217644, 224740, 231524, 234532, 237532, 244252, 248372, 252492, 260156, 263444, 271956, 290156, 294820, 294860, 294900, 301700, 309180, 313028, 320316, 323332, 328360, 342992, 357624, 372060, 372100, 372140, 381612, 388484, 396716, 396756, 396796, 404044, 404740, 413428, 420756, 425836, 429668, 435484, 435500, 442620, 448700]
+                }
+            ]      
+        },
+        {
+            "Name": "win.rel",
+            "Units": ["Goomba", "X-Naut", "Poison Puff", "Piranha Plant", "Vivian", "Beldam", "Marilyn", "Cleft", "Pale Piranha", "Dark Puff"],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 10,
+                    "Multiple":[],
+                    "Offsets": [73032, 76000, 81616, 86832, 93104, 98384, 107416, 112848, 117080, 121624]
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 11,
+                    "Multiple":
+                    [
+                        {
+                            "Name": "Cleft",
+                            "Amount": 2
+                        }
+                    ],
+                    "Offsets": [73404, 76196, 81812, 87028, 93300, 98580, 107612, 113044, 113060, 117276, 121820]
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 10,
+                    "Multiple":[],
+                    "Offsets": [73412, 76204, 81820, 87036, 93308, 98588, 107620, 113052, 117284, 121828]
+                }
+            ]      
+        },
+        {
+            "Name": "mod.rel",
+            "Units": [],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                }
+            ]      
+        },
+        {
+            "Name": "hm_enemies.rel",
+            "Units": [],
+            "Struct": 
+            [
+                {
+                    "Name": "BattleUnitKind",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                },
+                {
+                    "Name": "BattleUnitDefense",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                },
+                {
+                    "Name": "BattleUnitDefenseAttr",
+                    "Count": 0,
+                    "Multiple":[],
+                    "Offsets": []
+                }
+            ]      
+        }
+    ]
+}
