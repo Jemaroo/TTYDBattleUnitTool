@@ -1303,37 +1303,6 @@
                     "Offsets": []
                 }
             ]      
-        },
-        {
-            "Name": "hm_enemies.rel",
-            "Units": [],
-            "Struct": 
-            [
-                {
-                    "Name": "BattleUnitKind",
-                    "Count": 0,
-                    "Multiple":[],
-                    "Offsets": []
-                },
-                {
-                    "Name": "BattleUnitDefense",
-                    "Count": 0,
-                    "Multiple":[],
-                    "Offsets": []
-                },
-                {
-                    "Name": "BattleUnitDefenseAttr",
-                    "Count": 0,
-                    "Multiple":[],
-                    "Offsets": []
-                },
-                {
-                    "Name": "StatusVulnerability",
-                    "Count": 0,
-                    "Multiple":[],
-                    "Offsets": []
-                }
-            ]      
         }
     ]
 }
