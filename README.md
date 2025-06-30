@@ -1,17 +1,25 @@
 # TTYDBattleUnitTool
 A tool to modify ttyd's unit stats
 
+<br/>
+
+## Updates
+
 UPDATED v1.1.0 (6/30/25): Added support for StatusVulnerability structs, added a scroll bar to the struct fields editor, and removed unnecessary files to reduce file size.
 
 UPDATED v1.0.0 (6/27/25): Initial Release Version
 
-\n
+<br/>
 
-Huge thanks to Jdaster64 for [documentation](https://github.com/jdaster64/ttyd-utils) on TTYD's unit structures
+## Additional Mentions
 
-=========LATEST USAGE==========
+Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/ttyd-utils/blob/master/docs/ttyd_structures_pseudocode.txt) on TTYD's unit structures
 
-Requirements: A recent installation of Java
+<br/>
+
+## Latest Usage
+
+**Requirements: A recent installation of Java**
 
 1: Download the latest release, it should contain a zip file.
 
@@ -24,3 +32,9 @@ Requirements: A recent installation of Java
   - About: Information about the tool such as its version
 
 4: After exporting a file with the changes made, replace the dol/rel you modified with the new file in your game's filesystem.
+
+<br/>
+
+## Planned Future Features/Additions
+  -Support for BattleWeapon
+  -Root system implementation instead of selecting a single file
