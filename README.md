@@ -36,5 +36,5 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 <br/>
 
 ## Planned Future Features/Additions
-  -Support for BattleWeapon
-  -Root system implementation instead of selecting a single file
+  - Support for BattleWeapon
+  - Root system implementation instead of selecting a single file
