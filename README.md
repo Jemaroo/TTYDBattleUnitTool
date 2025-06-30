@@ -1,7 +1,11 @@
 # TTYDBattleUnitTool
 A tool to modify ttyd's unit stats
 
+UPDATED v1.1.0 (6/30/25): Added support for StatusVulnerability structs, added a scroll bar to the struct fields editor, and removed unnecessary files to reduce file size.
+
 UPDATED v1.0.0 (6/27/25): Initial Release Version
+
+\n
 
 Huge thanks to Jdaster64 for [documentation](https://github.com/jdaster64/ttyd-utils) on TTYD's unit structures
 
