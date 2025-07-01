@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v1.1.1 (6/30/25): Changed BattleUnitDefenseAttr to display selectable options instead of a text field, added a new popup window to display if file export is successful, and fixed a bug where data fields would stay up when swapping between units.
+
 UPDATED v1.1.0 (6/30/25): Added support for StatusVulnerability structs, added a scroll bar to the struct fields editor, and removed unnecessary files to reduce file size.
 
 UPDATED v1.0.0 (6/27/25): Initial Release Version
