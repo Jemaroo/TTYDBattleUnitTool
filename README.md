@@ -5,7 +5,9 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
-UPDATED v 1.2.0 (7/6/25): Added support for BattleWeapon, changed the open method to be a root folder system instead of a single file, added a file selector after opening a root folder, and changing the opened file now closes unit edit field until a struct is selected
+UPDATED v1.2.1 (7/8/25): Fixed a bug where some structs wouldn't save properly when hitting the save changes button.
+
+UPDATED v1.2.0 (7/6/25): Added support for BattleWeapon, changed the open method to be a root folder system instead of a single file, added a file selector after opening a root folder, and changing the opened file now closes unit edit field until a struct is selected.
 
 UPDATED v1.1.1 (6/30/25): Changed BattleUnitDefenseAttr to display selectable options instead of a text field, added a new popup window to display if file export is successful, and fixed a bug where data fields would stay up when swapping between units.
 
