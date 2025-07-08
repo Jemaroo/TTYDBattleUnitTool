@@ -44,3 +44,5 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 ## Planned Future Features/Additions
   - Support for BattleUnitKindPart
   - Making the Save Changes Button more accessible
+  - Condensing the Struct Menus for easier reading
+  - Adding icons to find fields easier
