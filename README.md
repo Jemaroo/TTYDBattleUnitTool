@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v2.0.0 (7/10/25): Implemented Support for BattleUnitKindPart, added a ton of icons to various areas for ease of searching, moved the Save Changes Button to the left for easier access, combined similar struct types to save space on GUI, renamed struct lists to be easier to understand, all 0's are now red in text fields to help distinguish from filled-in values, set the default export name to the currently opened file, set the default export file extensions to match the file opened, made some minor UI sizing tweaks, fixed a bug where some unused or rarely used flags in BattleWeapon wouldn't save properly, and fixed a few bugs with unitData.json
+
 UPDATED v1.2.1 (7/8/25): Fixed a bug where some structs wouldn't save properly when hitting the save changes button.
 
 UPDATED v1.2.0 (7/6/25): Added support for BattleWeapon, changed the open method to be a root folder system instead of a single file, added a file selector after opening a root folder, and changing the opened file now closes unit edit field until a struct is selected.
@@ -42,7 +44,4 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 <br/>
 
 ## Planned Future Features/Additions
-  - Support for BattleUnitKindPart
-  - Making the Save Changes Button more accessible
-  - Condensing the Struct Menus for easier reading
-  - Adding icons to find fields easier
+This project has been so fun to work on, and it's in a state I'm pretty happy to leave it in. I might come back and work on it some time in the future, but for now it shouldn't really need much more.
