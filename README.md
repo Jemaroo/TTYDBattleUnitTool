@@ -34,8 +34,8 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 2: Unzip the file, and in the root of the folder should be TTYDBattleUnitTool.exe. Run this executable.
 
 3: With the program now open, you have access to the toolbar.
-  - Open: Allows you to open main.dol/start.dol/or a valid .rel file with enemy data
-  - Export: After making changes to enemy stats, will allow you to save a new file with the changes made
+  - Open: Allows you to open a root folder, and select a valid file with unit data
+  - Export: After making changes to unit stats, will allow you to save a new file with the changes made
   - Close: Closes the current file you're viewing (Not the application)
   - About: Information about the tool such as its version
 
