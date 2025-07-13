@@ -5,7 +5,7 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
-UPDATED V2.0.1 (7/12/25): Fixed a bug where Single Target Flags in BattleWeapon weren't loading correctly.
+UPDATED v2.0.1 (7/12/25): Fixed a bug where Single Target Flags in BattleWeapon weren't loading correctly.
 
 UPDATED v2.0.0 (7/10/25): Implemented Support for BattleUnitKindPart, added a ton of icons to various areas for ease of searching, moved the Save Changes Button to the left for easier access, combined similar struct types to save space on GUI, renamed struct lists to be easier to understand, all 0's are now red in text fields to help distinguish from filled-in values, set the default export name to the currently opened file, set the default export file extensions to match the file opened, made some minor UI sizing tweaks, fixed a bug where some unused or rarely used flags in BattleWeapon wouldn't save properly, and fixed a few bugs with unitData.json
 
