@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v2.1.0 (8/2/25): Added a popup on startup if a new update is available, modified some buttons on the GUI, added Action Command Difficulty to BattleWeaponm, exporting a file will now save a backup of the old file in the backups folder before saving a new file, and presets are here! Save files and structs as .bup files and load them in for quicker edits.
+
 UPDATED v2.0.2 (7/15/25): Added a few more weapons that were previously missing.
 
 UPDATED v2.0.1 (7/12/25): Fixed a bug where Single Target Flags in BattleWeapon weren't loading correctly.
@@ -48,4 +50,7 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 <br/>
 
 ## Planned Future Features/Additions
-This project has been so fun to work on, and it's in a state I'm pretty happy to leave it in. I might come back and work on it some time in the future, but for now it shouldn't really need much more.
+  - Implement Mario/Partner health upgrades?
+  - Implement Peril/Danger HP thresholds?
+  - Add enemy icons for ease of searching?
+  - Implement enemy formations?
