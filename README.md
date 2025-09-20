@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v2.2.0 (9/19/25): Added a few new fields in BattleUnitKind, added Enemy Icons to the Unit Selector, modified the File selector to show Location Names when selecting a file, fixed a bug where the Action Command Difficulty Level Selector would grow larger than intended, and fixed a bug where Target Weighting flags in BattleWeapon weren't preloading correctly.
+
 UPDATED v2.1.0 (8/2/25): Added a popup on startup if a new update is available, modified some buttons on the GUI, added Action Command Difficulty to BattleWeaponm, exporting a file will now save a backup of the old file in the backups folder before saving a new file, and presets are here! Save files and structs as .bup files and load them in for quicker edits.
 
 UPDATED v2.0.2 (7/15/25): Added a few more weapons that were previously missing.
