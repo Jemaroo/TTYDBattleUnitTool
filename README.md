@@ -54,5 +54,6 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 ## Planned Future Features/Additions
   - Implement Mario/Partner health upgrades?
   - Implement Peril/Danger HP thresholds?
-  - Add enemy icons for ease of searching?
   - Implement enemy formations?
+  - Implement Tattle Log Compatibility
+  - Implement Random Option?
