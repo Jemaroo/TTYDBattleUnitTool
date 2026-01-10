@@ -1,225 +1,226 @@
-| Function								| Meaning
-+---------------------------------------+-----------------------------------
-| [BUK_HP_StructX]
-| [BUK_dangerHP_StructX]
-| [BUK_perilHP_StructX]
-| [BUK_level_StructX]
-| [BUK_bonusXP_StructX]
-| [BUK_bonusCoin_StructX]
-| [BUK_bonusCoinRate_StructX]
-| [BUK_baseCoin_StructX]
-| [BUK_runRate_StructX]
-| [BUK_pbCap_StructX]
-| [BUK_swallowChance_StructX]
-| [BUK_swallowAttribute_StructX]
-| [BUK_ultraHammerKnockChance_StructX]
-| [BUK_itemStealParameter_StructX]
-| 
-| [BUKP_MostPreferredSelectTarget_StructX]
-| [BUKP_PreferredSelectTarget_StructX]
-| [BUKP_SelectTarget_StructX]
-| [BUKP_WeakToAttackFxR_StructX]
-| [BUKP_WeakToIcePower_StructX]
-| [BUKP_IsWinged_StructX]
-| [BUKP_IsShelled_StructX]
-| [BUKP_IsBombFlippable_StructX]
-| [BUKP_NeverTargetable_StructX]
-| [BUKP_Untattleable_StructX]
-| [BUKP_JumplikeCannotTarget_StructX]
-| [BUKP_HammerlikeCannotTarget_StructX]
-| [BUKP_ShellTosslikeCannotTarget_StructX]
-| [BUKP_IsImmuneToDamageOrStatus_StructX]
-| [BUKP_IsImmuneToOHKO_StructX]
-| [BUKP_IsImmuneToStatus_StructX]
-| 
-| [HU_startHP_Struct1]
-| [HU_startFP_Struct1]
-| [HU_startBP_Struct1]
-| [HU_upgradeHP_Struct1]
-| [HU_upgradeFP_Struct1]
-| [HU_upgradeBP_Struct1]
-| [HU_PartnerLevel1HP_Struct1]
-| [HU_PartnerLevel2HP_Struct1]
-| [HU_PartnerLevel3HP_Struct1]
-| 
-| [BUD_normal_StructX]
-| [BUD_fire_StructX]
-| [BUD_ice_StructX]
-| [BUD_explosion_StructX]
-| [BUD_electric_StructX]
-| 
-| [BUDA_normal_StructX]
-| [BUDA_fire_StructX]
-| [BUDA_ice_StructX]
-| [BUDA_explosion_StructX]
-| [BUDA_electric_StructX]
-| 
-| [SV_sleep_StructX]
-| [SV_stop_StructX]
-| [SV_dizzy_StructX]
-| [SV_poison_StructX]
-| [SV_confuse_StructX]
-| [SV_electric_StructX]
-| [SV_burn_StructX]
-| [SV_freeze_StructX]
-| [SV_huge_StructX]
-| [SV_tiny_StructX]
-| [SV_attack_up_StructX]
-| [SV_attack_down_StructX]
-| [SV_defense_up_StructX]
-| [SV_defense_down_StructX]
-| [SV_allergic_StructX]
-| [SV_fright_StructX]
-| [SV_gale_force_StructX]
-| [SV_fast_StructX]
-| [SV_slow_StructX]
-| [SV_dodgy_StructX]
-| [SV_invisible_StructX]
-| [SV_ohko_StructX]
-| 
-| [BW_attackName_StructX]
-| [BW_accuracy_StructX]
-| [BW_fp_cost_StructX]
-| [BW_sp_cost_StructX]
-| [BW_superguard_state_StructX]
-| [BW_sylish_multiplier_StructX]
-| [BW_bingo_slot_inc_chance_StructX]
-| [BW_base_damage1_StructX]
-| [BW_base_damage2_StructX]
-| [BW_base_damage3_StructX]
-| [BW_base_damage4_StructX]
-| [BW_base_damage5_StructX]
-| [BW_base_damage6_StructX]
-| [BW_base_damage7_StructX]
-| [BW_base_damage8_StructX]
-| [BW_base_fpdamage1_StructX]
-| [BW_base_fpdamage2_StructX]
-| [BW_base_fpdamage3_StructX]
-| [BW_base_fpdamage4_StructX]
-| [BW_base_fpdamage5_StructX]
-| [BW_base_fpdamage6_StructX]
-| [BW_base_fpdamage7_StructX]
-| [BW_base_fpdamage8_StructX]
-| [BW_CannotTargetMarioOrShellShield_StructX]
-| [BW_CannotTargetPartner_StructX]
-| [BW_CannotTargetEnemy_StructX]
-| [BW_CannotTargetOppositeAlliance_StructX]
-| [BW_CannotTargetOwnAlliance_StructX]
-| [BW_CannotTargetSelf_StructX]
-| [BW_CannotTargetSameSpecies_StructX]
-| [BW_OnlyTargetSelf_StructX]
-| [BW_OnlyTargetMario_StructX]
-| [BW_SingleTarget_StructX]
-| [BW_MultipleTarget_StructX]
-| [BW_Tattlelike_StructX]
-| [BW_CannotTargetCeiling_StructX]
-| [BW_CannotTargetFloating_StructX]
-| [BW_CannotTargetGrounded_StructX]
-| [BW_Jumplike_StructX]
-| [BW_Hammerlike_StructX]
-| [BW_ShellTosslike_StructX]
-| [BW_RecoilDamage_StructX]
-| [BW_CanOnlyTargetFrontmost_StructX]
-| [BW_TargetSameAllianceDirection_StructX]
-| [BW_TargetOppositeAllianceDirection_StructX]
-| [BW_element_StructX]
-| [BW_damage_pattern_StructX]
-| [BW_ac_level_StructX]
-| [BW_BadgeCanAffectPower_StructX]
-| [BW_StatusCanAffectPower_StructX]
-| [BW_IsChargeable_StructX]
-| [BW_CannotMiss_StructX]
-| [BW_DiminishingReturnsByHit_StructX]
-| [BW_DiminishingReturnsByTarget_StructX]
-| [BW_PiercesDefense_StructX]
-| [BW_IgnoreTargetStatusVulnerability_StructX]
-| [BW_IgnitesIfBurned_StructX]
-| [BW_FlipsShellEnemies_StructX]
-| [BW_FlipsBombFlippableEnemies_StructX]
-| [BW_GroundsWingedEnemies_StructX]
-| [BW_CanBeUsedAsConfusedAction_StructX]
-| [BW_Unguardable_StructX]
-| [BW_Electric_StructX]
-| [BW_TopSpiky_StructX]
-| [BW_PreemptiveFrontSpiky_StructX]
-| [BW_FrontSpiky_StructX]
-| [BW_Fiery_StructX]
-| [BW_Icy_StructX]
-| [BW_Poison_StructX]
-| [BW_Explosive_StructX]
-| [BW_VolatileExplosive_StructX]
-| [BW_Payback_StructX]
-| [BW_HoldFast_StructX]
-| [BW_PreferMario_StructX]
-| [BW_PreferPartner_StructX]
-| [BW_PreferFront_StructX]
-| [BW_PreferBack_StructX]
-| [BW_PreferSameAlliance_StructX]
-| [BW_PreferOppositeAlliance_StructX]
-| [BW_PreferLessHealthy_StructX]
-| [BW_GreatlyPreferLessHealthy_StructX]
-| [BW_PreferLowerHP_StructX]
-| [BW_PreferHigherHP_StructX]
-| [BW_PreferInPeril_StructX]
-| [BW_ChooseWeightedRandomly_StructX]
-| [BW_sleep_chance_StructX]
-| [BW_sleep_time_StructX]
-| [BW_stop_chance_StructX]
-| [BW_stop_time_StructX]
-| [BW_dizzy_chance_StructX]
-| [BW_dizzy_time_StructX]
-| [BW_poison_chance_StructX]
-| [BW_poison_time_StructX]
-| [BW_poison_strength_StructX]
-| [BW_confuse_chance_StructX]
-| [BW_confuse_time_StructX]
-| [BW_electric_chance_StructX]
-| [BW_electric_time_StructX]
-| [BW_dodgy_chance_StructX]
-| [BW_dodgy_time_StructX]
-| [BW_burn_chance_StructX]
-| [BW_burn_time_StructX]
-| [BW_freeze_chance_StructX]
-| [BW_freeze_time_StructX]
-| [BW_size_change_chance_StructX]
-| [BW_size_change_time_StructX]
-| [BW_size_change_strength_StructX]
-| [BW_atk_change_chance_StructX]
-| [BW_atk_change_time_StructX]
-| [BW_atk_change_strength_StructX]
-| [BW_def_change_chance_StructX]
-| [BW_def_change_time_StructX]
-| [BW_def_change_strength_StructX]
-| [BW_allergic_chance_StructX]
-| [BW_allergic_time_StructX]
-| [BW_ohko_chance_StructX]
-| [BW_charge_strength_StructX]
-| [BW_fast_chance_StructX]
-| [BW_fast_time_StructX]
-| [BW_slow_chance_StructX]
-| [BW_slow_time_StructX]
-| [BW_fright_chance_StructX]
-| [BW_gale_force_chance_StructX]
-| [BW_payback_time_StructX]
-| [BW_hold_fast_time_StructX]
-| [BW_invisible_chance_StructX]
-| [BW_invisible_time_StructX]
-| [BW_hp_regen_time_StructX]
-| [BW_hp_regen_strength_StructX]
-| [BW_fp_regen_time_StructX]
-| [BW_fp_regen_strength_StructX]
-| [BW_stage_background_fallweight1_StructX]
-| [BW_stage_background_fallweight2_StructX]
-| [BW_stage_background_fallweight3_StructX]
-| [BW_stage_background_fallweight4_StructX]
-| [BW_stage_nozzle_turn_chance_StructX]
-| [BW_stage_nozzle_fire_chance_StructX]
-| [BW_stage_ceiling_fall_chance_StructX]
-| [BW_stage_object_fall_chance_StructX]
-| 
-| [LOGIC_ElementalWeakness_StructX]
-| [LOGIC_ElementalImmunity_StructX]
-| [LOGIC_StatusStrength_StructX]
-| [LOGIC_StatusWeakness_StructX]
-| [LOGIC_SuperguardYN_StructX]
-| [LOGIC_StatusAffliction_StructX]
+| Function										| Returns				| Meaning
++-----------------------------------------------+-----------------------+---------------------------------------------------------------------
+| [BUK_HP_StructX]								| Number Value			| Kind Variable (X = 1-9)
+| [BUK_dangerHP_StructX]						| Number Value			| Kind Variable (X = 1-9)
+| [BUK_perilHP_StructX]							| Number Value			| Kind Variable (X = 1-9)
+| [BUK_level_StructX]							| Number Value			| Kind Variable (X = 1-9)
+| [BUK_bonusXP_StructX]							| Number Value			| Kind Variable (X = 1-9)
+| [BUK_bonusCoin_StructX]						| Number Value			| Kind Variable (X = 1-9)
+| [BUK_bonusCoinRate_StructX]					| Number Value			| Kind Variable (X = 1-9)
+| [BUK_baseCoin_StructX]						| Number Value			| Kind Variable (X = 1-9)
+| [BUK_runRate_StructX]							| Number Value			| Kind Variable (X = 1-9)
+| [BUK_pbCap_StructX]							| Number Value			| Kind Variable (X = 1-9)
+| [BUK_swallowChance_StructX]					| Number Value			| Kind Variable (X = 1-9)
+| [BUK_swallowAttribute_StructX]				| Conditional Phrase	| Kind Variable (X = 1-9)
+| [BUK_ultraHammerKnockChance_StructX]			| Number Value			| Kind Variable (X = 1-9)
+| [BUK_itemStealParameter_StructX]				| Number Value			| Kind Variable (X = 1-9)
+| 												|						|
+| [BUKP_MostPreferredSelectTarget_StructX]		| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_PreferredSelectTarget_StructX]			| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_SelectTarget_StructX]					| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_WeakToAttackFxR_StructX]				| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_WeakToIcePower_StructX]					| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsWinged_StructX]						| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsShelled_StructX]						| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsBombFlippable_StructX]				| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_NeverTargetable_StructX]				| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_Untattleable_StructX]					| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_JumplikeCannotTarget_StructX]			| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_HammerlikeCannotTarget_StructX]			| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_ShellTosslikeCannotTarget_StructX]		| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsImmuneToDamageOrStatus_StructX]		| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsImmuneToOHKO_StructX]					| Yes/No				| Part Variable (X = 1-9)
+| [BUKP_IsImmuneToStatus_StructX]				| Yes/No				| Part Variable (X = 1-9)
+| 												|						|
+| [HU_startHP_Struct1]							| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_startFP_Struct1]							| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_startBP_Struct1]							| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_upgradeHP_Struct1]						| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_upgradeFP_Struct1]						| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_upgradeBP_Struct1]						| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_PartnerLevel1HP_Struct1]					| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_PartnerLevel2HP_Struct1]					| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| [HU_PartnerLevel3HP_Struct1]					| Number Value			| Stat Upgrade Variable (Only Present on Mario/Partners)
+| 												|						|
+| [BUD_normal_StructX]							| Number Value			| Defense Variable (X = 1-10)
+| [BUD_fire_StructX]							| Number Value			| Defense Variable (X = 1-10)
+| [BUD_ice_StructX]								| Number Value			| Defense Variable (X = 1-10)
+| [BUD_explosion_StructX]						| Number Value			| Defense Variable (X = 1-10)
+| [BUD_electric_StructX]						| Number Value			| Defense Variable (X = 1-10)
+| 												|						|
+| [BUDA_normal_StructX]							| Conditional Phrase	| Defense Attribute Variable (X = 1-10)
+| [BUDA_fire_StructX]							| Conditional Phrase	| Defense Attribute Variable (X = 1-10)
+| [BUDA_ice_StructX]							| Conditional Phrase	| Defense Attribute Variable (X = 1-10)
+| [BUDA_explosion_StructX]						| Conditional Phrase	| Defense Attribute Variable (X = 1-10)
+| [BUDA_electric_StructX]						| Conditional Phrase	| Defense Attribute Variable (X = 1-10)
+| 												|						|
+| [SV_sleep_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_stop_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_dizzy_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_poison_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_confuse_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_electric_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_burn_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_freeze_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_huge_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_tiny_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_attack_up_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_attack_down_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_defense_up_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_defense_down_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_allergic_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_fright_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_gale_force_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_fast_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_slow_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_dodgy_StructX]							| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_invisible_StructX]						| Number Value			| Status Vulnerability Variable (X = 1-10)
+| [SV_ohko_StructX]								| Number Value			| Status Vulnerability Variable (X = 1-10)
+| 												|						|
+| [BW_attackName_StructX]						| Conditional Phrase	| Weapon Variable (X = 1-16)
+| [BW_accuracy_StructX]							| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fp_cost_StructX]							| Number Value			| Weapon Variable (X = 1-16)
+| [BW_sp_cost_StructX]							| Number Value			| Weapon Variable (X = 1-16)
+| [BW_superguard_state_StructX]					| Conditional Phrase	| Weapon Variable (X = 1-16)
+| [BW_sylish_multiplier_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_bingo_slot_inc_chance_StructX]			| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage1_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage2_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage3_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage4_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage5_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage6_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage7_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_damage8_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage1_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage2_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage3_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage4_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage5_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage6_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage7_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_base_fpdamage8_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_CannotTargetMarioOrShellShield_StructX]	| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetPartner_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetEnemy_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetOppositeAlliance_StructX]		| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetOwnAlliance_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetSelf_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetSameSpecies_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_OnlyTargetSelf_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_OnlyTargetMario_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_SingleTarget_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_MultipleTarget_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Tattlelike_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetCeiling_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetFloating_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotTargetGrounded_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Jumplike_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Hammerlike_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_ShellTosslike_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_RecoilDamage_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CanOnlyTargetFrontmost_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_TargetSameAllianceDirection_StructX]		| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_TargetOppositeAllianceDirection_StructX]	| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_element_StructX]							| Conditional Phrase	| Weapon Variable (X = 1-16)
+| [BW_damage_pattern_StructX]					| Conditional Phrase	| Weapon Variable (X = 1-16)
+| [BW_ac_level_StructX]							| Conditional Phrase	| Weapon Variable (X = 1-16)
+| [BW_BadgeCanAffectPower_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_StatusCanAffectPower_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_IsChargeable_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CannotMiss_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_DiminishingReturnsByHit_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_DiminishingReturnsByTarget_StructX]		| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PiercesDefense_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_IgnoreTargetStatusVulnerability_StructX]	| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_IgnitesIfBurned_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_FlipsShellEnemies_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_FlipsBombFlippableEnemies_StructX]		| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_GroundsWingedEnemies_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_CanBeUsedAsConfusedAction_StructX]		| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Unguardable_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Electric_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_TopSpiky_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreemptiveFrontSpiky_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_FrontSpiky_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Fiery_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Icy_StructX]								| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Poison_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Explosive_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_VolatileExplosive_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_Payback_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_HoldFast_StructX]							| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferMario_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferPartner_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferFront_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferBack_StructX]						| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferSameAlliance_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferOppositeAlliance_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferLessHealthy_StructX]				| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_GreatlyPreferLessHealthy_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferLowerHP_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferHigherHP_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_PreferInPeril_StructX]					| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_ChooseWeightedRandomly_StructX]			| Yes/No				| Weapon Variable (X = 1-16)
+| [BW_sleep_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_sleep_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stop_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stop_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_dizzy_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_dizzy_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_poison_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_poison_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_poison_strength_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_confuse_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_confuse_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_electric_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_electric_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_dodgy_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_dodgy_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_burn_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_burn_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_freeze_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_freeze_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_size_change_chance_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_size_change_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_size_change_strength_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_atk_change_chance_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_atk_change_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_atk_change_strength_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_def_change_chance_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_def_change_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_def_change_strength_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_allergic_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_allergic_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_ohko_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_charge_strength_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fast_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fast_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_slow_chance_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_slow_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fright_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_gale_force_chance_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_payback_time_StructX]						| Number Value			| Weapon Variable (X = 1-16)
+| [BW_hold_fast_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_invisible_chance_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_invisible_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_hp_regen_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_hp_regen_strength_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fp_regen_time_StructX]					| Number Value			| Weapon Variable (X = 1-16)
+| [BW_fp_regen_strength_StructX]				| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_background_fallweight1_StructX]		| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_background_fallweight2_StructX]		| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_background_fallweight3_StructX]		| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_background_fallweight4_StructX]		| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_nozzle_turn_chance_StructX]			| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_nozzle_fire_chance_StructX]			| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_ceiling_fall_chance_StructX]		| Number Value			| Weapon Variable (X = 1-16)
+| [BW_stage_object_fall_chance_StructX]			| Number Value			| Weapon Variable (X = 1-16)
+| 												|						|
+| [LOGIC_ElementalWeakness_StructX]				| Conditional Phrase	| Determines an Enemy's Elemental Weakness (X = 1-10)
+| [LOGIC_ElementalImmunity_StructX]				| Conditional Phrase	| Determines an Enemy's Elemental Immunity (X = 1-10)
+| [LOGIC_StatusStrength_StructX]				| Conditional Phrase	| Determines an Enemy's Most-Resistant Status (X = 1-10)
+| [LOGIC_StatusWeakness_StructX]				| Conditional Phrase	| Determines an Enemy's Least-Resistant Status (X = 1-10)
+| [LOGIC_SuperguardYN_StructX]					| Yes/No				| Determines if attack is Superguardable at all (X = 1-16)
+| [LOGIC_StatusAffliction_StructX]				| Conditional Phrase	| Determines most likely status affliction from an attack (X = 1-16)
++-----------------------------------------------+-----------------------+---------------------------------------------------------------------
