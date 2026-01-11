@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v2.3.1 (1/10/26): Fixed a bug with exporting tattles correctly.
+
 UPDATED v2.3.0 (1/9/26): Added Fields for Stat Upgrades for Mario and Party, added a Update Tattles button - Clicking it will update all the tattles of the opened file's enemies using the format specified in TattleFormat.json and the text from Tattle Data.xlsx, moved Status Vulnerability Structs to the Defenses List to remove clutter, added icons to all the different structs for visual representation, fixed a bug where Yoshi Swallow Attributes weren't always saving properly, and fixed some typos in the input json.
 
 UPDATED v2.2.0 (9/19/25): Added a few new fields in BattleUnitKind, added Enemy Icons to the Unit Selector, modified the File selector to show Location Names when selecting a file, fixed a bug where the Action Command Difficulty Level Selector would grow larger than intended, and fixed a bug where Target Weighting flags in BattleWeapon weren't preloading correctly.
