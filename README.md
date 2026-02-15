@@ -5,6 +5,8 @@ A tool to modify ttyd's unit stats
 
 ## Updates
 
+UPDATED v2.4.0 (2/14/26): Added tooltips when hovering over fields for further information on what each field does, added a ton of new fields that were previously missing, when opening the tool, it now remembers your last opened root and starts there, when saving files, the start directory is now the opened root folder, global.txt is now backed up as well when updating tattles, those who are wanting to use custom-made rel files can now add them to the UnitData.json file and have them pop up when the tool is searching a directory, fixed a bug where CannotTargetGrounded would not load correctly, tons of various backend code restructuring/changes.
+
 UPDATED v2.3.1 (1/10/26): Fixed a bug with exporting tattles correctly.
 
 UPDATED v2.3.0 (1/9/26): Added Fields for Stat Upgrades for Mario and Party, added a Update Tattles button - Clicking it will update all the tattles of the opened file's enemies using the format specified in TattleFormat.json and the text from Tattle Data.xlsx, moved Status Vulnerability Structs to the Defenses List to remove clutter, added icons to all the different structs for visual representation, fixed a bug where Yoshi Swallow Attributes weren't always saving properly, and fixed some typos in the input json.
@@ -57,4 +59,7 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 
 ## Planned Future Features/Additions
   - Implement enemy formations?
-  - Implement Random Option?
+  - Implement Random Option
+  - More documentation on Unknown Flags
+  - Combine Preset Buttons into one
+  - Add options button/menu
