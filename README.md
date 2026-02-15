@@ -35,7 +35,9 @@ UPDATED v1.0.0 (6/27/25): Initial Release Version
 
 ## Additional Mentions
 
-Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/ttyd-utils/blob/master/docs/ttyd_structures_pseudocode.txt) on TTYD's unit structures
+Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/ttyd-utils/blob/master/docs/ttyd_structures_pseudocode.txt) on TTYD's unit structures and their [sheet](https://docs.google.com/spreadsheets/d/15hTm80MaefXxEuWorJOSBD3e6lvw2CCAQTtKUVRhbf4/edit?gid=0#gid=0) on the Switch remake's registry values which helped obtain some of the flag names
+
+Huge thanks to **Silver** for their work on writing the tooltips and research on [various flag and value scenarios](https://www.youtube.com/@SilverGames136/videos)
 
 <br/>
 
