@@ -9,6 +9,8 @@ Huge thanks to **Jdaster64** for [documentation](https://github.com/jdaster64/tt
 
 Huge thanks to **Silver** for their work on writing the tooltips and research on [various flag and value scenarios](https://www.youtube.com/@SilverGames136/videos)
 
+Shoutouts to hirothetraveler, Reed, Diagamma, cursedGM, and others for their suggestions and feedback!
+
 <br/>
 
 ## Latest Usage
