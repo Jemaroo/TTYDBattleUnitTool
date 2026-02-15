@@ -13,6 +13,7 @@ public class BattleWeapon
     public int superguard_state = 0;
     public int sylish_multiplier = 0;
     public int bingo_slot_inc_chance = 0;
+    public long base_damage_fn = 0;
     public int base_damage1 = 0;
     public int base_damage2 = 0;
     public int base_damage3 = 0;
@@ -34,35 +35,35 @@ public class BattleWeapon
     public boolean CannotTargetMarioOrShellShield = false;
     public boolean CannotTargetPartner = false;
     public boolean CannotTargetEnemy = false;
-    public boolean Unused1 = false;
-    public boolean Unused2 = false;
+    public boolean CannotTargetTreeOrSwitch = false;
+    public boolean CannotTargetSystem = false;
     public boolean CannotTargetOppositeAlliance = false;
     public boolean CannotTargetOwnAlliance = false;
     public boolean CannotTargetSelf = false;
     public boolean CannotTargetSameSpecies = false;
     public boolean OnlyTargetSelf = false;
     public boolean OnlyTargetMario = false;
-    public boolean Unused3 = false;
-    public boolean Unused4 = false;
-    public boolean Unused5 = false;
+    public boolean OnlyTargetTreeOrSwitch = false;
+    public boolean OnlyTargetPreferredParts = false;
+    public boolean OnlyTargetSelectParts = false;
     public boolean SingleTarget = false;
     public boolean MultipleTarget = false;
-    public boolean Unused6 = false;
+    public boolean CannotTargetAnything = false;
 
     //TargetPropertyFlags
     public boolean Tattlelike = false;
-    public boolean Unused7 = false;
+    public boolean CannotTargetFloating2 = false;
     public boolean CannotTargetCeiling = false;
     public boolean CannotTargetFloating = false;
     public boolean CannotTargetGrounded = false;
     public boolean Jumplike = false;
     public boolean Hammerlike = false;
     public boolean ShellTosslike = false;
-    public boolean Unused8 = false;
+    public boolean CannotTargetGroundedVariant = false;
     public boolean RecoilDamage = false;
     public boolean CanOnlyTargetFrontmost = false;
-    public boolean Unused9 = false;
-    public boolean Unused10 = false;
+    public boolean CannotTargetShellShield = false;
+    public boolean CannotTargetCustom = false;
     public boolean TargetSameAllianceDirection = false;
     public boolean TargetOppositeAllianceDirection = false;
 
@@ -78,18 +79,18 @@ public class BattleWeapon
     public boolean DiminishingReturnsByHit = false;
     public boolean DiminishingReturnsByTarget = false;
     public boolean PiercesDefense = false;
-    public boolean Unused11 = false;
+    public boolean CanBreakIce = false;
     public boolean IgnoreTargetStatusVulnerability = false;
-    public boolean Unused12 = false;
+    public boolean SPFx200 = false;
     public boolean IgnitesIfBurned = false;
-    public boolean Unused13 = false;
+    public boolean PlayActiveFXSound = false;
     public boolean FlipsShellEnemies = false;
     public boolean FlipsBombFlippableEnemies = false;
     public boolean GroundsWingedEnemies = false;
-    public boolean Unused14 = false;
+    public boolean SPFx8000 = false;
     public boolean CanBeUsedAsConfusedAction = false;
     public boolean Unguardable = false;
-    public boolean Unused15 = false;
+    public boolean CanHitClonelike = false;
 
     //CounterResistanceFlags
     public boolean Electric = false;
@@ -116,7 +117,7 @@ public class BattleWeapon
     public boolean PreferLowerHP = false;
     public boolean PreferHigherHP = false;
     public boolean PreferInPeril = false;
-    public boolean Unused16 = false;
+    public boolean TWFx2000 = false;
     public boolean ChooseWeightedRandomly = false;
 
     public int sleep_chance = 0;
@@ -165,6 +166,7 @@ public class BattleWeapon
     public int hp_regen_strength = 0;
     public int fp_regen_time = 0;
     public int fp_regen_strength = 0;
+    public long attack_evt = 0;
     public int stage_background_fallweight1 = 0;
     public int stage_background_fallweight2 = 0;
     public int stage_background_fallweight3 = 0;
@@ -180,6 +182,7 @@ public class BattleWeapon
     public final int superguard_state_offset = 19;
     public final int sylish_multiplier_offset = 24;
     public final int bingo_slot_inc_chance_offset = 26;
+    public final int base_damage_fn_offset = 28;
     public final int base_damage1_offset = 32;
     public final int base_damage2_offset = 36;
     public final int base_damage3_offset = 40;
@@ -250,6 +253,7 @@ public class BattleWeapon
     public final int hp_regen_strength_offset = 171;
     public final int fp_regen_time_offset = 172;
     public final int fp_regen_strength_offset = 173;
+    public final int attack_evt_offset = 176;
     public final int stage_background_fallweight1_offset = 180;
     public final int stage_background_fallweight2_offset = 181;
     public final int stage_background_fallweight3_offset = 182;
@@ -264,20 +268,20 @@ public class BattleWeapon
         CannotTargetMarioOrShellShield(0x1),
         CannotTargetPartner(0x2),
         CannotTargetEnemy(0x10),
-        Unused1(0x20),
-        Unused2(0x40),
+        CannotTargetTreeOrSwitch(0x20),
+        CannotTargetSystem(0x40),
         CannotTargetOppositeAlliance(0x100),
         CannotTargetOwnAlliance(0x200),
         CannotTargetSelf(0x1000),
         CannotTargetSameSpecies(0x2000),
         OnlyTargetSelf(0x4000),
         OnlyTargetMario(0x10000),
-        Unused3(0x20000),
-        Unused4(0x100000),
-        Unused5(0x200000),
+        OnlyTargetTreeOrSwitch(0x20000),
+        OnlyTargetPreferredParts(0x100000),
+        OnlyTargetSelectParts(0x200000),
         SingleTarget(0x1000000),
         MultipleTarget(0x2000000),
-        Unused6(0x80000000);
+        CannotTargetAnything(0x80000000);
 
         public final int mask;
         
@@ -290,18 +294,18 @@ public class BattleWeapon
     public enum TargetPropertyFlags 
     {
         Tattlelike(0x1),
-        Unused7(0x2),
+        CannotTargetFloating2(0x2),
         CannotTargetCeiling(0x4),
         CannotTargetFloating(0x8),
         CannotTargetGrounded(0x10),
         Jumplike(0x1000),
         Hammerlike(0x2000),
         ShellTosslike(0x4000),
-        Unused8(0x8000),
+        CannotTargetGroundedVariant(0x8000),
         RecoilDamage(0x100000),
         CanOnlyTargetFrontmost(0x1000000),
-        Unused9(0x2000000),
-        Unused10(0x4000000),
+        CannotTargetShellShield(0x2000000),
+        CannotTargetCustom(0x4000000),
         TargetSameAllianceDirection(0x10000000),
         TargetOppositeAllianceDirection(0x20000000);
 
@@ -322,18 +326,18 @@ public class BattleWeapon
         DiminishingReturnsByHit(0x10),
         DiminishingReturnsByTarget(0x20),
         PiercesDefense(0x40),
-        Unused11(0x80),
+        CanBreakIce(0x80),
         IgnoreTargetStatusVulnerability(0x100),
-        Unused12(0x200),
+        SPFx200(0x200),
         IgnitesIfBurned(0x400),
-        Unused13(0x800),
+        PlayActiveFXSound(0x800),
         FlipsShellEnemies(0x1000),
         FlipsBombFlippableEnemies(0x2000),
         GroundsWingedEnemies(0x4000),
-        Unused14(0x8000),
+        SPFx8000(0x8000),
         CanBeUsedAsConfusedAction(0x10000),
         Unguardable(0x20000),
-        Unused15(0x40000);
+        CanHitClonelike(0x40000);
 
         public final int mask;
         
@@ -378,7 +382,7 @@ public class BattleWeapon
         PreferLowerHP(0x400),
         PreferHigherHP(0x800),
         PreferInPeril(0x1000),
-        Unused16(0x2000),
+        TWFx2000(0x2000),
         ChooseWeightedRandomly(0x80000000);
 
         public final int mask;
