@@ -20,6 +20,31 @@ public class BattleUnitKind
     public int ultraHammerKnockChance = 0;
     public int itemStealParameter = 0;
 
+    //UnitAttributeFlags
+    public boolean MapObj = false;
+    public boolean OutOfReach = false;
+    public boolean Unquakeable = false;
+    public boolean IsInvisible = false;
+    public boolean IsVeiled = false;
+    public boolean ShellShielded = false;
+    public boolean NeverTargetable = false;
+    public boolean LimitSwitch = false;
+    public boolean DisableZeroGravityFloat = false;
+    public boolean DisableZeroGravityImmobility = false;
+    public boolean immuneToUltraHammerKnock = false;
+    public boolean IsUndead = false;
+    public boolean IsCorpse = false;
+    public boolean IsLeader = false;
+    public boolean CannotTakeActions = false;
+    public boolean NotSpunByLoveSlap = false;
+    public boolean DisableDamageStars = false;
+    public boolean DisableAllPartVisibility = false;
+    public boolean DisableHPGauge = false;
+    public boolean LookCamera = false;
+    public boolean NonCombatant = false;
+    public boolean NoShadow = false;
+    public boolean DisableDamage = false;
+
     public final int HP_offset = 8;
     public final int dangerHP_offset = 12;
     public final int perilHP_offset = 13;
@@ -34,4 +59,39 @@ public class BattleUnitKind
     public final int swallowAttribute_offset = 139;
     public final int ultraHammerKnockChance_offset = 140;
     public final int itemStealParameter_offset = 141;
+    public final int UnitAttributeFlags_offset = 172;
+
+    public enum UnitAttributeFlags 
+    {
+        MapObj(0x1),
+        OutOfReach(0x2),
+        Unquakeable(0x4),
+        IsInvisible(0x8),
+        IsVeiled(0x10),
+        ShellShielded(0x20),
+        NeverTargetable(0x40),
+        LimitSwitch(0x100),
+        DisableZeroGravityFloat(0x1000),
+        DisableZeroGravityImmobility(0x2000),
+        immuneToUltraHammerKnock(0x4000),
+        IsUndead(0x10000),
+        IsCorpse(0x20000),
+        IsLeader(0x40000),
+        CannotTakeActions(0x80000),
+        NotSpunByLoveSlap(0x200000),
+        DisableDamageStars(0x400000),
+        DisableAllPartVisibility(0x1000000),
+        DisableHPGauge(0x2000000),
+        LookCamera(0x4000000),
+        NonCombatant(0x10000000),
+        NoShadow(0x20000000),
+        DisableDamage(0x40000000);
+
+        public final int mask;
+        
+        UnitAttributeFlags(int mask) 
+        {
+            this.mask = mask;
+        }
+    }
 }
