@@ -1,5 +1,8 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -7,7 +10,15 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.Desktop;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.simple.parser.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -15,6 +26,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.*;
+import javafx.util.Duration;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -28,13 +40,16 @@ import com.technicjelle.UpdateChecker;
 
 //TODO
 // - Enemy Formations?
-// - Write Tattle Log?
-// - Randomizer Option?
+// - Research Unknown Flags more
+// - Randomizer Option
+// - Combine preset buttons into one
+// - Add options menu
+// - Add BattleUnitSetup Alliance field?
 
 public class GUI extends Application 
 {
     private ArrayList<String> validFileNames = new ArrayList<String>();
-    boolean isFileOpened = false;
+    boolean isFileOpened = false; 
     Stage window;
     File givenFile;
     private ArrayList<UnitData> units = new ArrayList<UnitData>();
@@ -48,695 +63,48 @@ public class GUI extends Application
     HBox upperBox = new HBox();
     HBox upperBox2 = new HBox();
 
-    Image unitImage = new Image(getClass().getResource("/icons/unit.png").toExternalForm());
-    Image defendPlusImage = new Image(getClass().getResource("/icons/defendPlus.png").toExternalForm());
-    Image feelingFineImage = new Image(getClass().getResource("/icons/feelingFine.png").toExternalForm());
-    Image hammerImage = new Image(getClass().getResource("/icons/hammer.png").toExternalForm());
-    Image heartImage = new Image(getClass().getResource("/icons/heart.png").toExternalForm());
-    Image dangerHeartCustomImage = new Image(getClass().getResource("/icons/dangerHeartCustom.png").toExternalForm());
-    Image audienceStarImage = new Image(getClass().getResource("/icons/audienceStar.png").toExternalForm());
-    Image XPImage = new Image(getClass().getResource("/icons/XP.png").toExternalForm());
-    Image coinImage = new Image(getClass().getResource("/icons/coin.png").toExternalForm());
-    Image runArrowImage = new Image(getClass().getResource("/icons/runArrow.png").toExternalForm());
-    Image powerBounceImage = new Image(getClass().getResource("/icons/powerBounce.png").toExternalForm());
-    Image ultraHammerImage = new Image(getClass().getResource("/icons/ultraHammer.png").toExternalForm());
-    Image defenseUpStatusImage = new Image(getClass().getResource("/icons/defenseUpStatus.png").toExternalForm());
-    Image spikeShieldCustomImage = new Image(getClass().getResource("/icons/spikeShieldCustom.png").toExternalForm());
-    Image fireShieldCustomImage = new Image(getClass().getResource("/icons/fireShieldCustom.png").toExternalForm());
-    Image iceShieldCustomImage = new Image(getClass().getResource("/icons/iceShieldCustom.png").toExternalForm());
-    Image burstShieldCustomImage = new Image(getClass().getResource("/icons/burstShieldCustom.png").toExternalForm());
-    Image zapShieldCustomImage = new Image(getClass().getResource("/icons/zapShieldCustom.png").toExternalForm());
-    Image sleepStatusImage = new Image(getClass().getResource("/icons/sleepStatus.png").toExternalForm());
-    Image stopStatusImage = new Image(getClass().getResource("/icons/stopStatus.png").toExternalForm());
-    Image dizzyStatusImage = new Image(getClass().getResource("/icons/dizzyStatus.png").toExternalForm());
-    Image poisonStatusImage = new Image(getClass().getResource("/icons/poisonStatus.png").toExternalForm());
-    Image confuseStatusImage = new Image(getClass().getResource("/icons/confuseStatus.png").toExternalForm());
-    Image electricStatusImage = new Image(getClass().getResource("/icons/electricStatus.png").toExternalForm());
-    Image burnStatusImage = new Image(getClass().getResource("/icons/burnStatus.png").toExternalForm());
-    Image freezeStatusImage = new Image(getClass().getResource("/icons/freezeStatus.png").toExternalForm());
-    Image hugeStatusImage = new Image(getClass().getResource("/icons/hugeStatus.png").toExternalForm());
-    Image tinyStatusImage = new Image(getClass().getResource("/icons/tinyStatus.png").toExternalForm());
-    Image attackUpStatusImage = new Image(getClass().getResource("/icons/attackUpStatus.png").toExternalForm());
-    Image attackDownStatusImage = new Image(getClass().getResource("/icons/attackDownStatus.png").toExternalForm());
-    Image defenseDownStatusImage = new Image(getClass().getResource("/icons/defenseDownStatus.png").toExternalForm());
-    Image allergicStatusImage = new Image(getClass().getResource("/icons/allergicStatus.png").toExternalForm());
-    Image frightMaskImage = new Image(getClass().getResource("/icons/frightMask.png").toExternalForm());
-    Image flurriePartnerSwitchImage = new Image(getClass().getResource("/icons/flurriePartnerSwitch.png").toExternalForm());
-    Image fastStatusImage = new Image(getClass().getResource("/icons/fastStatus.png").toExternalForm());
-    Image slowStatusImage = new Image(getClass().getResource("/icons/slowStatus.png").toExternalForm());
-    Image dodgyStatusImage = new Image(getClass().getResource("/icons/dodgyStatus.png").toExternalForm());
-    Image invisibleStatusImage = new Image(getClass().getResource("/icons/invisibleStatus.png").toExternalForm());
-    Image garnetStarImage = new Image(getClass().getResource("/icons/garnetStar.png").toExternalForm());
-    Image appealActionImage = new Image(getClass().getResource("/icons/appealAction.png").toExternalForm());
-    Image flowerImage = new Image(getClass().getResource("/icons/flower.png").toExternalForm());
-    Image SPOrb1Image = new Image(getClass().getResource("/icons/SPOrb1.png").toExternalForm());
-    Image superChargeImage = new Image(getClass().getResource("/icons/superCharge.png").toExternalForm());
-    Image shineSpriteImage = new Image(getClass().getResource("/icons/shineSprite.png").toExternalForm());
-    Image zapTapImage = new Image(getClass().getResource("/icons/zapTap.png").toExternalForm());
-    Image tacticsFlagImage = new Image(getClass().getResource("/icons/tacticsFlag.png").toExternalForm());
-    Image chargeImage = new Image(getClass().getResource("/icons/charge.png").toExternalForm());
-    Image paybackStatusImage = new Image(getClass().getResource("/icons/paybackStatus.png").toExternalForm());
-    Image bobberyPartnerSwitchImage = new Image(getClass().getResource("/icons/bobberyPartnerSwitch.png").toExternalForm());
-    Image HPRegenStatusImage = new Image(getClass().getResource("/icons/HPRegenStatus.png").toExternalForm());
-    Image FPRegenStatusImage = new Image(getClass().getResource("/icons/FPRegenStatus.png").toExternalForm());
-    Image gateHandleImage = new Image(getClass().getResource("/icons/gateHandle.png").toExternalForm());
-    Image actionCommandStarImage = new Image(getClass().getResource("/icons/actionCommandStar.png").toExternalForm());
-    Image unknownImage = new Image(getClass().getResource("/icons/unknown.png").toExternalForm());
-    Image unusedPaperImage = new Image(getClass().getResource("/icons/unusedPaper.png").toExternalForm());
-    Image magicalMap2Image = new Image(getClass().getResource("/icons/magicalMap2.png").toExternalForm());
-    Image fahrOutpostBombCustomImage = new Image(getClass().getResource("/icons/fahrOutpostBombCustom.png").toExternalForm());
-    Image puniCustomImage = new Image(getClass().getResource("/icons/puniCustom.png").toExternalForm());
-    Image koopaCustomImage = new Image(getClass().getResource("/icons/koopaCustom.png").toExternalForm());
-    Image BPEmblemCustomImage = new Image(getClass().getResource("/icons/BPEmblemCustom.png").toExternalForm());
-    Image HPUpgradeImage = new Image(getClass().getResource("/icons/HPUpgrade.png").toExternalForm());
-    Image FPUpgradeImage = new Image(getClass().getResource("/icons/FPUpgrade.png").toExternalForm());
-    Image BPUpgradeImage = new Image(getClass().getResource("/icons/BPUpgrade.png").toExternalForm());
-    Image partnerlvl1CustomImage = new Image(getClass().getResource("/icons/partnerlvl1Custom.png").toExternalForm());
-    Image unitAmazyDayzeeImage = new Image(getClass().getResource("/icons/unitAmazyDayzee.png").toExternalForm());
-    Image unitArantulaImage = new Image(getClass().getResource("/icons/unitArantula.png").toExternalForm());
-    Image unitAtomicBooImage = new Image(getClass().getResource("/icons/unitAtomicBoo.png").toExternalForm());
-    Image unitBadgeBanditImage = new Image(getClass().getResource("/icons/unitBadgeBandit.png").toExternalForm());
-    Image unitBaldCleftImage = new Image(getClass().getResource("/icons/unitBaldCleft.png").toExternalForm());
-    Image unitBanditImage = new Image(getClass().getResource("/icons/unitBandit.png").toExternalForm());
-    Image unitBeldamImage = new Image(getClass().getResource("/icons/unitBeldam.png").toExternalForm());
-    Image unitBigBanditImage = new Image(getClass().getResource("/icons/unitBigBandit.png").toExternalForm());
-    Image unitBillBlasterImage = new Image(getClass().getResource("/icons/unitBillBlaster.png").toExternalForm());
-    Image unitBlooperImage = new Image(getClass().getResource("/icons/unitBlooper.png").toExternalForm());
-    Image unitBobombImage = new Image(getClass().getResource("/icons/unitBob-omb.png").toExternalForm());
-    Image unitBobulkImage = new Image(getClass().getResource("/icons/unitBob-ulk.png").toExternalForm());
-    Image unitBombshellBillImage = new Image(getClass().getResource("/icons/unitBombshellBill.png").toExternalForm());
-    Image unitBombshellBillBlasterImage = new Image(getClass().getResource("/icons/unitBombshellBillBlaster.png").toExternalForm());
-    Image unitBombSquadBombImage = new Image(getClass().getResource("/icons/unitBombSquadBomb.png").toExternalForm());
-    Image unitBonetailImage = new Image(getClass().getResource("/icons/unitBonetail.png").toExternalForm());
-    Image unitBooImage = new Image(getClass().getResource("/icons/unitBoo.png").toExternalForm());
-    Image unitBoomerangBroImage = new Image(getClass().getResource("/icons/unitBoomerangBro.png").toExternalForm());
-    Image unitBowserImage = new Image(getClass().getResource("/icons/unitBowser.png").toExternalForm());
-    Image unitBristleImage = new Image(getClass().getResource("/icons/unitBristle.png").toExternalForm());
-    Image unitBulkyBobombImage = new Image(getClass().getResource("/icons/unitBulkyBob-omb.png").toExternalForm());
-    Image unitBulletBillImage = new Image(getClass().getResource("/icons/unitBulletBill.png").toExternalForm());
-    Image unitBuzzyBeetleImage = new Image(getClass().getResource("/icons/unitBuzzyBeetle.png").toExternalForm());
-    Image unitChainChompImage = new Image(getClass().getResource("/icons/unitChainChomp.png").toExternalForm());
-    Image unitCleftImage = new Image(getClass().getResource("/icons/unitCleft.png").toExternalForm());
-    Image unitCortezImage = new Image(getClass().getResource("/icons/unitCortez.png").toExternalForm());
-    Image unitCortezBonePileImage = new Image(getClass().getResource("/icons/unitCortezBonePile.png").toExternalForm());
-    Image unitCortezHookImage = new Image(getClass().getResource("/icons/unitCortezHook.png").toExternalForm());
-    Image unitCortezRapierImage = new Image(getClass().getResource("/icons/unitCortezRapier.png").toExternalForm());
-    Image unitCortezSaberImage = new Image(getClass().getResource("/icons/unitCortezSaber.png").toExternalForm());
-    Image unitCortezSwordImage = new Image(getClass().getResource("/icons/unitCortezSword.png").toExternalForm());
-    Image unitCrazeeDayzeeImage = new Image(getClass().getResource("/icons/unitCrazeeDayzee.png").toExternalForm());
-    Image unitDarkBonesImage = new Image(getClass().getResource("/icons/unitDarkBones.png").toExternalForm());
-    Image unitDarkBooImage = new Image(getClass().getResource("/icons/unitDarkBoo.png").toExternalForm());
-    Image unitDarkBristleImage = new Image(getClass().getResource("/icons/unitDarkBristle.png").toExternalForm());
-    Image unitDarkCrawImage = new Image(getClass().getResource("/icons/unitDarkCraw.png").toExternalForm());
-    Image unitDarkKoopaImage = new Image(getClass().getResource("/icons/unitDarkKoopa.png").toExternalForm());
-    Image unitDarkKoopatrolImage = new Image(getClass().getResource("/icons/unitDarkKoopatrol.png").toExternalForm());
-    Image unitDarkLakituImage = new Image(getClass().getResource("/icons/unitDarkLakitu.png").toExternalForm());
-    Image unitDarkParatroopaImage = new Image(getClass().getResource("/icons/unitDarkParatroopa.png").toExternalForm());
-    Image unitDarkPuffImage = new Image(getClass().getResource("/icons/unitDarkPuff.png").toExternalForm());
-    Image unitDarkWizzerdImage = new Image(getClass().getResource("/icons/unitDarkWizzerd.png").toExternalForm());
-    Image unitDooplissImage = new Image(getClass().getResource("/icons/unitDoopliss.png").toExternalForm());
-    Image unitDooplissMarioImage = new Image(getClass().getResource("/icons/unitDooplissMario.png").toExternalForm());
-    Image unitDryBonesImage = new Image(getClass().getResource("/icons/unitDryBones.png").toExternalForm());
-    Image unitDullBonesImage = new Image(getClass().getResource("/icons/unitDullBones.png").toExternalForm());
-    Image unitEliteWizzerdImage = new Image(getClass().getResource("/icons/unitEliteWizzerd.png").toExternalForm());
-    Image unitEliteXNautImage = new Image(getClass().getResource("/icons/unitEliteX-Naut.png").toExternalForm());
-    Image unitEmberImage = new Image(getClass().getResource("/icons/unitEmber.png").toExternalForm());
-    Image unitFireBroImage = new Image(getClass().getResource("/icons/unitFireBro.png").toExternalForm());
-    Image unitFlowerFuzzyImage = new Image(getClass().getResource("/icons/unitFlowerFuzzy.png").toExternalForm());
-    Image unitFrostPiranhaImage = new Image(getClass().getResource("/icons/unitFrostPiranha.png").toExternalForm());
-    Image unitFuzzyImage = new Image(getClass().getResource("/icons/unitFuzzy.png").toExternalForm());
-    Image unitGloombaImage = new Image(getClass().getResource("/icons/unitGloomba.png").toExternalForm());
-    Image unitGloomtailImage = new Image(getClass().getResource("/icons/unitGloomtail.png").toExternalForm());
-    Image unitGoldFuzzyImage = new Image(getClass().getResource("/icons/unitGoldFuzzy.png").toExternalForm());
-    Image unitGoombaImage = new Image(getClass().getResource("/icons/unitGoomba.png").toExternalForm());
-    Image unitGreenFuzzyImage = new Image(getClass().getResource("/icons/unitGreenFuzzy.png").toExternalForm());
-    Image unitGreenMagikoopaImage = new Image(getClass().getResource("/icons/unitGreenMagikoopa.png").toExternalForm());
-    Image unitGrodusImage = new Image(getClass().getResource("/icons/unitGrodus.png").toExternalForm());
-    Image unitGrodusXImage = new Image(getClass().getResource("/icons/unitGrodusX.png").toExternalForm());
-    Image unitGusImage = new Image(getClass().getResource("/icons/unitGus.png").toExternalForm());
-    Image unitHammerBroImage = new Image(getClass().getResource("/icons/unitHammerBro.png").toExternalForm());
-    Image unitHooktailImage = new Image(getClass().getResource("/icons/unitHooktail.png").toExternalForm());
-    Image unitHyperBaldCleftImage = new Image(getClass().getResource("/icons/unitHyperBaldCleft.png").toExternalForm());
-    Image unitHyperCleftImage = new Image(getClass().getResource("/icons/unitHyperCleft.png").toExternalForm());
-    Image unitHyperGoombaImage = new Image(getClass().getResource("/icons/unitHyperGoomba.png").toExternalForm());
-    Image unitHyperParagoombaImage = new Image(getClass().getResource("/icons/unitHyperParagoomba.png").toExternalForm());
-    Image unitHyperSpikyGoombaImage = new Image(getClass().getResource("/icons/unitHyperSpikyGoomba.png").toExternalForm());
-    Image unitIcePuffImage = new Image(getClass().getResource("/icons/unitIcePuff.png").toExternalForm());
-    Image unitIronCleft1Image = new Image(getClass().getResource("/icons/unitIronCleft1.png").toExternalForm());
-    Image unitIronCleft2Image = new Image(getClass().getResource("/icons/unitIronCleft2.png").toExternalForm());
-    Image unitKammyKoopaImage = new Image(getClass().getResource("/icons/unitKammyKoopa.png").toExternalForm());
-    Image unitKoopatrolImage = new Image(getClass().getResource("/icons/unitKoopatrol.png").toExternalForm());
-    Image unitKoopaTroopaImage = new Image(getClass().getResource("/icons/unitKoopaTroopa.png").toExternalForm());
-    Image unitKPKoopaImage = new Image(getClass().getResource("/icons/unitKPKoopa.png").toExternalForm());
-    Image unitKPParatroopaImage = new Image(getClass().getResource("/icons/unitKPParatroopa.png").toExternalForm());
-    Image unitLakituImage = new Image(getClass().getResource("/icons/unitLakitu.png").toExternalForm());
-    Image unitLavaBubbleImage = new Image(getClass().getResource("/icons/unitLavaBubble.png").toExternalForm());
-    Image unitLordCrumpImage = new Image(getClass().getResource("/icons/unitLordCrump.png").toExternalForm());
-    Image unitMachoGrubbaImage = new Image(getClass().getResource("/icons/unitMachoGrubba.png").toExternalForm());
-    Image unitMagikoopaImage = new Image(getClass().getResource("/icons/unitMagikoopa.png").toExternalForm());
-    Image unitMagnusVonGrappleImage = new Image(getClass().getResource("/icons/unitMagnusVonGrapple.png").toExternalForm());
-    Image unitMagnusVonGrapple2Image = new Image(getClass().getResource("/icons/unitMagnusVonGrapple2.png").toExternalForm());
-    Image unitMarilynImage = new Image(getClass().getResource("/icons/unitMarilyn.png").toExternalForm());
-    Image unitMiniXYuxImage = new Image(getClass().getResource("/icons/unitMini-X-Yux.png").toExternalForm());
-    Image unitMiniYuxImage = new Image(getClass().getResource("/icons/unitMini-Yux.png").toExternalForm());
-    Image unitMiniZYuxImage = new Image(getClass().getResource("/icons/unitMini-Z-Yux.png").toExternalForm());
-    Image unitMoonCleftImage = new Image(getClass().getResource("/icons/unitMoonCleft.png").toExternalForm());
-    Image unitPalePiranhaImage = new Image(getClass().getResource("/icons/unitPalePiranha.png").toExternalForm());
-    Image unitParabuzzyImage = new Image(getClass().getResource("/icons/unitParabuzzy.png").toExternalForm());
-    Image unitParagloombaImage = new Image(getClass().getResource("/icons/unitParagloomba.png").toExternalForm());
-    Image unitParagoombaImage = new Image(getClass().getResource("/icons/unitParagoomba.png").toExternalForm());
-    Image unitParatroopaImage = new Image(getClass().getResource("/icons/unitParakoopa.png").toExternalForm());
-    Image unitPhantomEmberImage = new Image(getClass().getResource("/icons/unitPhantomEmber.png").toExternalForm());
-    Image unitPiderImage = new Image(getClass().getResource("/icons/unitPider.png").toExternalForm());
-    Image unitPiranhaPlantImage = new Image(getClass().getResource("/icons/unitPiranhaPlant.png").toExternalForm());
-    Image unitPoisonPokeyImage = new Image(getClass().getResource("/icons/unitPoisonPokey.png").toExternalForm());
-    Image unitPoisonPuffImage = new Image(getClass().getResource("/icons/unitPoisonPuff.png").toExternalForm());
-    Image unitPokeyImage = new Image(getClass().getResource("/icons/unitPokey.png").toExternalForm());
-    Image unitProfessorFranklyImage = new Image(getClass().getResource("/icons/unitProfessorFrankly.png").toExternalForm());
-    Image unitPutridPiranhaImage = new Image(getClass().getResource("/icons/unitPutridPiranha.png").toExternalForm());
-    Image unitRawkHawkImage = new Image(getClass().getResource("/icons/unitRawkHawk.png").toExternalForm());
-    Image unitRedBonesImage = new Image(getClass().getResource("/icons/unitRedBones.png").toExternalForm());
-    Image unitRedChompImage = new Image(getClass().getResource("/icons/unitRedChomp.png").toExternalForm());
-    Image unitRedMagikoopaImage = new Image(getClass().getResource("/icons/unitRedMagikoopa.png").toExternalForm());
-    Image unitRedSpikyBuzzyImage = new Image(getClass().getResource("/icons/unitRedSpikyBuzzy.png").toExternalForm());
-    Image unitRuffPuffImage = new Image(getClass().getResource("/icons/unitRuffPuff.png").toExternalForm());
-    Image unitShadowHand1Image = new Image(getClass().getResource("/icons/unitShadowHand1.png").toExternalForm());
-    Image unitShadowHand2Image = new Image(getClass().getResource("/icons/unitShadowHand2.png").toExternalForm());
-    Image unitShadowPeachImage = new Image(getClass().getResource("/icons/unitShadowPeach.png").toExternalForm());
-    Image unitShadowQueenImage = new Image(getClass().getResource("/icons/unitShadowQueen.png").toExternalForm());
-    Image unitShadyKoopaImage = new Image(getClass().getResource("/icons/unitShadyKoopa.png").toExternalForm());
-    Image unitShadyParatroopaImage = new Image(getClass().getResource("/icons/unitShadyParatroopa.png").toExternalForm());
-    Image unitShellShieldImage = new Image(getClass().getResource("/icons/unitShellShield.png").toExternalForm());
-    Image unitSkyBlueSpinyImage = new Image(getClass().getResource("/icons/unitSkyBlueSpiny.png").toExternalForm());
-    Image unitSmallShadowHandsImage = new Image(getClass().getResource("/icons/unitSmallShadowHands.png").toExternalForm());
-    Image unitSmorgImage = new Image(getClass().getResource("/icons/unitSmorg.png").toExternalForm());
-    Image unitSpaniaImage = new Image(getClass().getResource("/icons/unitSpania.png").toExternalForm());
-    Image unitSpikyBuzzyImage = new Image(getClass().getResource("/icons/unitSpikyBuzzy.png").toExternalForm());
-    Image unitSpikyGloombaImage = new Image(getClass().getResource("/icons/unitSpikyGloomba.png").toExternalForm());
-    Image unitSpikyGoombaImage = new Image(getClass().getResource("/icons/unitSpikyGoomba.png").toExternalForm());
-    Image unitSpikyParabuzzyImage = new Image(getClass().getResource("/icons/unitSpikyParabuzzy.png").toExternalForm());
-    Image unitSpiniaImage = new Image(getClass().getResource("/icons/unitSpinia.png").toExternalForm());
-    Image unitSpinyImage = new Image(getClass().getResource("/icons/unitSpiny.png").toExternalForm());
-    Image unitSpuniaImage = new Image(getClass().getResource("/icons/unitSpunia.png").toExternalForm());
-    Image unitSwampireImage = new Image(getClass().getResource("/icons/unitSwampire.png").toExternalForm());
-    Image unitSwooperImage = new Image(getClass().getResource("/icons/unitSwooper.png").toExternalForm());
-    Image unitSwoopulaImage = new Image(getClass().getResource("/icons/unitSwoopula.png").toExternalForm());
-    Image unitWhiteMagikoopaImage = new Image(getClass().getResource("/icons/unitWhiteMagikoopa.png").toExternalForm());
-    Image unitWizzerdImage = new Image(getClass().getResource("/icons/unitWizzerd.png").toExternalForm());
-    Image unitXNautImage = new Image(getClass().getResource("/icons/unitX-Naut.png").toExternalForm());
-    Image unitXNautPHDImage = new Image(getClass().getResource("/icons/unitX-NautPHD.png").toExternalForm());
-    Image unitXYuxImage = new Image(getClass().getResource("/icons/unitX-Yux.png").toExternalForm());
-    Image unitYuxImage = new Image(getClass().getResource("/icons/unitYux.png").toExternalForm());
-    Image unitZYuxImage = new Image(getClass().getResource("/icons/unitZ-Yux.png").toExternalForm());
-    Image femaleToadCustomImage = new Image(getClass().getResource("/icons/femaleToadCustom.png").toExternalForm());
-    Image goombellaPartnerSwitchImage = new Image(getClass().getResource("/icons/goombellaPartnerSwitch.png").toExternalForm());
-    Image itemsIconImage = new Image(getClass().getResource("/icons/itemsIcon.png").toExternalForm());
-    Image koopsPartnerSwitchImage = new Image(getClass().getResource("/icons/koopsPartnerSwitch.png").toExternalForm());
-    Image marioHeadCustomImage = new Image(getClass().getResource("/icons/marioHeadCustom.png").toExternalForm());
-    Image mowzPartnerSwitchImage = new Image(getClass().getResource("/icons/mowzPartnerSwitch.png").toExternalForm());
-    Image toadCustomImage = new Image(getClass().getResource("/icons/toadCustom.png").toExternalForm());
-    Image vivianPartnerSwitchImage = new Image(getClass().getResource("/icons/vivianPartnerSwitch.png").toExternalForm());
-    Image yoshiPartnerSwitchImage = new Image(getClass().getResource("/icons/yoshiPartnerSwitch.png").toExternalForm());
-    Image audienceBoneImage = new Image(getClass().getResource("/icons/audienceBone.png").toExternalForm());
-    Image audienceCanImage = new Image(getClass().getResource("/icons/audienceCan.png").toExternalForm());
-    Image audienceHammerImage = new Image(getClass().getResource("/icons/audienceHammer.png").toExternalForm());
-    Image audienceRockImage = new Image(getClass().getResource("/icons/audienceRock.png").toExternalForm());
-    Image boosSheetImage = new Image(getClass().getResource("/icons/boosSheet.png").toExternalForm());
-    Image bootsImage = new Image(getClass().getResource("/icons/boots.png").toExternalForm());
-    Image chargeBadgeImage = new Image(getClass().getResource("/icons/chargeBadge.png").toExternalForm());
-    Image chargePImage = new Image(getClass().getResource("/icons/chargeP.png").toExternalForm());
-    Image coconutBombImage = new Image(getClass().getResource("/icons/coconutBomb.png").toExternalForm());
-    Image couplesCakeImage = new Image(getClass().getResource("/icons/couplesCake.png").toExternalForm());
-    Image courageMealImage = new Image(getClass().getResource("/icons/courageMeal.png").toExternalForm());
-    Image courageShellImage = new Image(getClass().getResource("/icons/courageShell.png").toExternalForm());
-    Image crystalStarImage = new Image(getClass().getResource("/icons/crystalStar.png").toExternalForm());
-    Image defendImage = new Image(getClass().getResource("/icons/defend.png").toExternalForm());
-    Image diamondStarImage = new Image(getClass().getResource("/icons/diamondStar.png").toExternalForm());
-    Image dizzyDialImage = new Image(getClass().getResource("/icons/dizzyDial.png").toExternalForm());
-    Image doubleDipImage = new Image(getClass().getResource("/icons/doubleDip.png").toExternalForm());
-    Image driedShroomImage = new Image(getClass().getResource("/icons/driedShroom.png").toExternalForm());
-    Image earthQuakeImage = new Image(getClass().getResource("/icons/earthQuake.png").toExternalForm());
-    Image eggBombImage = new Image(getClass().getResource("/icons/eggBomb.png").toExternalForm());
-    Image electroPopImage = new Image(getClass().getResource("/icons/electroPop.png").toExternalForm());
-    Image emeraldStarImage = new Image(getClass().getResource("/icons/emeraldStar.png").toExternalForm());
-    Image fireDriveImage = new Image(getClass().getResource("/icons/fireDrive.png").toExternalForm());
-    Image fireFlowerImage = new Image(getClass().getResource("/icons/fireFlower.png").toExternalForm());
-    Image freshJuiceImage = new Image(getClass().getResource("/icons/freshJuice.png").toExternalForm());
-    Image goldStarImage = new Image(getClass().getResource("/icons/goldStar.png").toExternalForm());
-    Image gradualSyrupImage = new Image(getClass().getResource("/icons/gradualSyrup.png").toExternalForm());
-    Image hammerThrowImage = new Image(getClass().getResource("/icons/hammerThrow.png").toExternalForm());
-    Image headRattleImage = new Image(getClass().getResource("/icons/headRattle.png").toExternalForm());
-    Image healthySaladImage = new Image(getClass().getResource("/icons/healthySalad.png").toExternalForm());
-    Image heartfulCakeImage = new Image(getClass().getResource("/icons/heartfulCake.png").toExternalForm());
-    Image honeySyrupImage = new Image(getClass().getResource("/icons/honeySyrup.png").toExternalForm());
-    Image hotSauceImage = new Image(getClass().getResource("/icons/hotSauce.png").toExternalForm());
-    Image HPDrain1Image = new Image(getClass().getResource("/icons/HPDrain1.png").toExternalForm());
-    Image iceSmashImage = new Image(getClass().getResource("/icons/iceSmash.png").toExternalForm());
-    Image iceStormImage = new Image(getClass().getResource("/icons/iceStorm.png").toExternalForm());
-    Image iciclePopImage = new Image(getClass().getResource("/icons/iciclePop.png").toExternalForm());
-    Image jamminJellyImage = new Image(getClass().getResource("/icons/jamminJelly.png").toExternalForm());
-    Image koopaCurseImage = new Image(getClass().getResource("/icons/koopaCurse.png").toExternalForm());
-    Image lifeShroomImage = new Image(getClass().getResource("/icons/lifeShroom.png").toExternalForm());
-    Image lovePuddingImage = new Image(getClass().getResource("/icons/lovePudding.png").toExternalForm());
-    Image luckyStartImage = new Image(getClass().getResource("/icons/luckyStart.png").toExternalForm());
-    Image lvl1MoveImage = new Image(getClass().getResource("/icons/lvl1Move.png").toExternalForm());
-    Image lvl2MoveImage = new Image(getClass().getResource("/icons/lvl2Move.png").toExternalForm());
-    Image lvl3MoveImage = new Image(getClass().getResource("/icons/lvl3Move.png").toExternalForm());
-    Image lvl4MoveImage = new Image(getClass().getResource("/icons/lvl4Move.png").toExternalForm());
-    Image mapleSyrupImage = new Image(getClass().getResource("/icons/mapleSyrup.png").toExternalForm());
-    Image megaJumpImage = new Image(getClass().getResource("/icons/megaJump.png").toExternalForm());
-    Image megaQuakeImage = new Image(getClass().getResource("/icons/megaQuake.png").toExternalForm());
-    Image megaSmashImage = new Image(getClass().getResource("/icons/megaSmash.png").toExternalForm());
-    Image meteorMealImage = new Image(getClass().getResource("/icons/meteorMeal.png").toExternalForm());
-    Image miniMrMiniImage = new Image(getClass().getResource("/icons/miniMrMini.png").toExternalForm());
-    Image mrsoftenerImage = new Image(getClass().getResource("/icons/mrsoftener.png").toExternalForm());
-    Image multibounceImage = new Image(getClass().getResource("/icons/multibounce.png").toExternalForm());
-    Image mushroomImage = new Image(getClass().getResource("/icons/mushroom.png").toExternalForm());
-    Image mysteryImage = new Image(getClass().getResource("/icons/mystery.png").toExternalForm());
-    Image peachTartImage = new Image(getClass().getResource("/icons/peachTart.png").toExternalForm());
-    Image piercingBlowImage = new Image(getClass().getResource("/icons/piercingBlow.png").toExternalForm());
-    Image pointSwapImage = new Image(getClass().getResource("/icons/pointSwap.png").toExternalForm());
-    Image poisonShroomImage = new Image(getClass().getResource("/icons/poisonShroom.png").toExternalForm());
-    Image powBlockImage = new Image(getClass().getResource("/icons/powBlock.png").toExternalForm());
-    Image powerJumpImage = new Image(getClass().getResource("/icons/powerJump.png").toExternalForm());
-    Image powerPunchImage = new Image(getClass().getResource("/icons/powerPunch.png").toExternalForm());
-    Image powerSmashImage = new Image(getClass().getResource("/icons/powerSmash.png").toExternalForm());
-    Image quakeHammerImage = new Image(getClass().getResource("/icons/quakeHammer.png").toExternalForm());
-    Image repelCapeImage = new Image(getClass().getResource("/icons/repelCape.png").toExternalForm());
-    Image rubyStarImage = new Image(getClass().getResource("/icons/rubyStar.png").toExternalForm());
-    Image ruinPowderImage = new Image(getClass().getResource("/icons/ruinPowder.png").toExternalForm());
-    Image sapphireStarImage = new Image(getClass().getResource("/icons/sapphireStar.png").toExternalForm());
-    Image shootingStarImage = new Image(getClass().getResource("/icons/shootingStar.png").toExternalForm());
-    Image shrinkStompImage = new Image(getClass().getResource("/icons/shrinkStomp.png").toExternalForm());
-    Image shroomBrothImage = new Image(getClass().getResource("/icons/shroomBroth.png").toExternalForm());
-    Image sleepySheepImage = new Image(getClass().getResource("/icons/sleepySheep.png").toExternalForm());
-    Image sleepyStompImage = new Image(getClass().getResource("/icons/sleepyStomp.png").toExternalForm());
-    Image slowShroomImage = new Image(getClass().getResource("/icons/slowShroom.png").toExternalForm());
-    Image snowBunnyImage = new Image(getClass().getResource("/icons/snowBunny.png").toExternalForm());
-    Image softStompImage = new Image(getClass().getResource("/icons/softStomp.png").toExternalForm());
-    Image spaceFoodImage = new Image(getClass().getResource("/icons/spaceFood.png").toExternalForm());
-    Image spicyPastaImage = new Image(getClass().getResource("/icons/spicyPasta.png").toExternalForm());
-    Image spitePouchImage = new Image(getClass().getResource("/icons/spitePouch.png").toExternalForm());
-    Image stopwatchImage = new Image(getClass().getResource("/icons/stopwatch.png").toExternalForm());
-    Image superBootsImage = new Image(getClass().getResource("/icons/superBoots.png").toExternalForm());
-    Image superChargeBadgeImage = new Image(getClass().getResource("/icons/superChargeBadge.png").toExternalForm());
-    Image superChargePImage = new Image(getClass().getResource("/icons/superChargeP.png").toExternalForm());
-    Image superHammerImage = new Image(getClass().getResource("/icons/superHammer.png").toExternalForm());
-    Image superShroomImage = new Image(getClass().getResource("/icons/superShroom.png").toExternalForm());
-    Image tastyTonicImage = new Image(getClass().getResource("/icons/tastyTonic.png").toExternalForm());
-    Image thunderBoltImage = new Image(getClass().getResource("/icons/thunderBolt.png").toExternalForm());
-    Image thunderRageImage = new Image(getClass().getResource("/icons/thunderRage.png").toExternalForm());
-    Image tornadoJumpImage = new Image(getClass().getResource("/icons/tornadoJump.png").toExternalForm());
-    Image tradeOffImage = new Image(getClass().getResource("/icons/tradeOff.png").toExternalForm());
-    Image trialStewImage = new Image(getClass().getResource("/icons/trialStew.png").toExternalForm());
-    Image tripleDipImage = new Image(getClass().getResource("/icons/tripleDip.png").toExternalForm());
-    Image ultraBootsImage = new Image(getClass().getResource("/icons/ultraBoots.png").toExternalForm());
-    Image ultraShroomImage = new Image(getClass().getResource("/icons/ultraShroom.png").toExternalForm());
-    Image voltShroomImage = new Image(getClass().getResource("/icons/voltShroom.png").toExternalForm());
-    Image whackaBumpImage = new Image(getClass().getResource("/icons/whackaBump.png").toExternalForm());
-    Image zessDynamiteImage = new Image(getClass().getResource("/icons/zessDynamite.png").toExternalForm());
-    Image zessFrappeImage = new Image(getClass().getResource("/icons/zessFrappe.png").toExternalForm());
-    Image redPotionImage = new Image(getClass().getResource("/icons/redPotion.png").toExternalForm());
-    Image bluePotionImage = new Image(getClass().getResource("/icons/bluePotion.png").toExternalForm());
-    Image orangePotionImage = new Image(getClass().getResource("/icons/orangePotion.png").toExternalForm());
-    Image greenPotionImage = new Image(getClass().getResource("/icons/greenPotion.png").toExternalForm());
-    Image iceCustomImage = new Image(getClass().getResource("/icons/iceCustom.png").toExternalForm());
-    Image burnCustomImage = new Image(getClass().getResource("/icons/burnCustom.png").toExternalForm());
-    Image musicNoteCustomImage = new Image(getClass().getResource("/icons/musicNoteCustom.png").toExternalForm());
-    Image poisonCustomImage = new Image(getClass().getResource("/icons/poisonCustom.png").toExternalForm());
+    HBox topMenu = new HBox();
+    HBox centerMenu = new HBox();
+    Button openButton = new Button("Open Directory");
+    ComboBox<File> fileSelector = new ComboBox<>();
+    Button exportButton = new Button("Export File");
+    Button saveFilePresetButton = new Button("Save File Preset");
+    Button loadFilePresetButton = new Button("Load File Preset");
+    Button updateTattlesButton = new Button("Update Tattles");
+    Button closeButton = new Button("Close File");
+    Button aboutButton = new Button("About");
+    boolean hasStartPath = false;
+    BorderPane borderPane = new BorderPane();
 
-    ImageView BUK1ImageView = new ImageView(heartImage);
-    ImageView BUK2ImageView = new ImageView(audienceStarImage);
-    ImageView BUK3ImageView = new ImageView(XPImage);
-    ImageView BUK4ImageView = new ImageView(coinImage);
-    ImageView BUK5ImageView = new ImageView(coinImage);
-    ImageView BUK6ImageView = new ImageView(coinImage);
-    ImageView BUK7ImageView = new ImageView(runArrowImage);
-    ImageView BUK8ImageView = new ImageView(powerBounceImage);
-    ImageView BUK9ImageView = new ImageView(dangerHeartCustomImage);
-    ImageView BUK10ImageView = new ImageView(dangerHeartCustomImage);
-    ImageView BUK11ImageView = new ImageView(yoshiPartnerSwitchImage);
-    ImageView BUK12ImageView = new ImageView(yoshiPartnerSwitchImage);
-    ImageView BUK13ImageView = new ImageView(ultraHammerImage);
-    ImageView BUK14ImageView = new ImageView(mowzPartnerSwitchImage);
+    HashMap<String, Image> images = new HashMap<String, Image>();
 
-    ImageView BUD1ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BUD2ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BUD3ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BUD4ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BUD5ImageView = new ImageView(defenseUpStatusImage);
-
-    ImageView BUDA1ImageView = new ImageView(spikeShieldCustomImage);
-    ImageView BUDA2ImageView = new ImageView(fireShieldCustomImage);
-    ImageView BUDA3ImageView = new ImageView(iceShieldCustomImage);
-    ImageView BUDA4ImageView = new ImageView(burstShieldCustomImage);
-    ImageView BUDA5ImageView = new ImageView(zapShieldCustomImage);
-
-    ImageView SV1ImageView = new ImageView(sleepStatusImage);
-    ImageView SV2ImageView = new ImageView(stopStatusImage);
-    ImageView SV3ImageView = new ImageView(dizzyStatusImage);
-    ImageView SV4ImageView = new ImageView(poisonStatusImage);
-    ImageView SV5ImageView = new ImageView(confuseStatusImage);
-    ImageView SV6ImageView = new ImageView(electricStatusImage);
-    ImageView SV7ImageView = new ImageView(burnStatusImage);
-    ImageView SV8ImageView = new ImageView(freezeStatusImage);
-    ImageView SV9ImageView = new ImageView(hugeStatusImage);
-    ImageView SV10ImageView = new ImageView(tinyStatusImage);
-    ImageView SV11ImageView = new ImageView(attackUpStatusImage);
-    ImageView SV12ImageView = new ImageView(attackDownStatusImage);
-    ImageView SV13ImageView = new ImageView(defenseUpStatusImage);
-    ImageView SV14ImageView = new ImageView(defenseDownStatusImage);
-    ImageView SV15ImageView = new ImageView(allergicStatusImage);
-    ImageView SV16ImageView = new ImageView(frightMaskImage);
-    ImageView SV17ImageView = new ImageView(flurriePartnerSwitchImage);
-    ImageView SV18ImageView = new ImageView(fastStatusImage);
-    ImageView SV19ImageView = new ImageView(slowStatusImage);
-    ImageView SV20ImageView = new ImageView(dodgyStatusImage);
-    ImageView SV21ImageView = new ImageView(invisibleStatusImage);
-    ImageView SV22ImageView = new ImageView(garnetStarImage);
-
-    ImageView BW1ImageView = new ImageView(appealActionImage);
-    ImageView BW2ImageView = new ImageView(flowerImage);
-    ImageView BW3ImageView = new ImageView(SPOrb1Image);
-    ImageView BW4ImageView = new ImageView(superChargeImage);
-    ImageView BW5ImageView = new ImageView(audienceStarImage);
-    ImageView BW6ImageView = new ImageView(shineSpriteImage);
-    ImageView BW7ImageView = new ImageView(hammerImage);
-    ImageView BW8ImageView = new ImageView(hammerImage);
-    ImageView BW9ImageView = new ImageView(hammerImage);
-    ImageView BW10ImageView = new ImageView(hammerImage);
-    ImageView BW11ImageView = new ImageView(hammerImage);
-    ImageView BW12ImageView = new ImageView(hammerImage);
-    ImageView BW13ImageView = new ImageView(hammerImage);
-    ImageView BW14ImageView = new ImageView(hammerImage);
-    ImageView BW15ImageView = new ImageView(flowerImage);
-    ImageView BW16ImageView = new ImageView(flowerImage);
-    ImageView BW17ImageView = new ImageView(flowerImage);
-    ImageView BW18ImageView = new ImageView(flowerImage);
-    ImageView BW19ImageView = new ImageView(flowerImage);
-    ImageView BW20ImageView = new ImageView(flowerImage);
-    ImageView BW21ImageView = new ImageView(flowerImage);
-    ImageView BW22ImageView = new ImageView(flowerImage);
-    ImageView BW23ImageView = new ImageView(zapTapImage);
-    ImageView BW24ImageView = new ImageView(tacticsFlagImage);
-    ImageView BW25ImageView = new ImageView(sleepStatusImage);
-    ImageView BW26ImageView = new ImageView(sleepStatusImage);
-    ImageView BW27ImageView = new ImageView(stopStatusImage);
-    ImageView BW28ImageView = new ImageView(stopStatusImage);
-    ImageView BW29ImageView = new ImageView(dizzyStatusImage);
-    ImageView BW30ImageView = new ImageView(dizzyStatusImage);
-    ImageView BW31ImageView = new ImageView(poisonStatusImage);
-    ImageView BW32ImageView = new ImageView(poisonStatusImage);
-    ImageView BW33ImageView = new ImageView(poisonStatusImage);
-    ImageView BW34ImageView = new ImageView(confuseStatusImage);
-    ImageView BW35ImageView = new ImageView(confuseStatusImage);
-    ImageView BW36ImageView = new ImageView(electricStatusImage);
-    ImageView BW37ImageView = new ImageView(electricStatusImage);
-    ImageView BW38ImageView = new ImageView(dodgyStatusImage);
-    ImageView BW39ImageView = new ImageView(dodgyStatusImage);
-    ImageView BW40ImageView = new ImageView(burnStatusImage);
-    ImageView BW41ImageView = new ImageView(burnStatusImage);
-    ImageView BW42ImageView = new ImageView(freezeStatusImage);
-    ImageView BW43ImageView = new ImageView(freezeStatusImage);
-    ImageView BW44ImageView = new ImageView(hugeStatusImage);
-    ImageView BW45ImageView = new ImageView(hugeStatusImage);
-    ImageView BW46ImageView = new ImageView(hugeStatusImage);
-    ImageView BW47ImageView = new ImageView(attackDownStatusImage);
-    ImageView BW48ImageView = new ImageView(attackDownStatusImage);
-    ImageView BW49ImageView = new ImageView(attackDownStatusImage);
-    ImageView BW50ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BW51ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BW52ImageView = new ImageView(defenseUpStatusImage);
-    ImageView BW53ImageView = new ImageView(allergicStatusImage);
-    ImageView BW54ImageView = new ImageView(allergicStatusImage);
-    ImageView BW55ImageView = new ImageView(garnetStarImage);
-    ImageView BW56ImageView = new ImageView(chargeImage);
-    ImageView BW57ImageView = new ImageView(fastStatusImage);
-    ImageView BW58ImageView = new ImageView(fastStatusImage);
-    ImageView BW59ImageView = new ImageView(slowStatusImage);
-    ImageView BW60ImageView = new ImageView(slowStatusImage);
-    ImageView BW61ImageView = new ImageView(frightMaskImage);
-    ImageView BW62ImageView = new ImageView(flurriePartnerSwitchImage);
-    ImageView BW63ImageView = new ImageView(paybackStatusImage);
-    ImageView BW64ImageView = new ImageView(bobberyPartnerSwitchImage);
-    ImageView BW65ImageView = new ImageView(invisibleStatusImage);
-    ImageView BW66ImageView = new ImageView(invisibleStatusImage);
-    ImageView BW67ImageView = new ImageView(HPRegenStatusImage);
-    ImageView BW68ImageView = new ImageView(HPRegenStatusImage);
-    ImageView BW69ImageView = new ImageView(FPRegenStatusImage);
-    ImageView BW70ImageView = new ImageView(FPRegenStatusImage);
-    ImageView BW71ImageView = new ImageView(gateHandleImage);
-    ImageView BW72ImageView = new ImageView(gateHandleImage);
-    ImageView BW73ImageView = new ImageView(gateHandleImage);
-    ImageView BW74ImageView = new ImageView(gateHandleImage);
-    ImageView BW75ImageView = new ImageView(gateHandleImage);
-    ImageView BW76ImageView = new ImageView(gateHandleImage);
-    ImageView BW77ImageView = new ImageView(gateHandleImage);
-    ImageView BW78ImageView = new ImageView(gateHandleImage);
-    ImageView BW79ImageView = new ImageView(actionCommandStarImage);
-
-    ImageView HU1ImageView = new ImageView(heartImage);
-    ImageView HU2ImageView = new ImageView(flowerImage);
-    ImageView HU3ImageView = new ImageView(BPEmblemCustomImage);
-    ImageView HU4ImageView = new ImageView(HPUpgradeImage);
-    ImageView HU5ImageView = new ImageView(FPUpgradeImage);
-    ImageView HU6ImageView = new ImageView(BPUpgradeImage);
-
-    private TextField HPField = new TextField();
-    private TextField dangerHPField = new TextField();
-    private TextField perilHPField = new TextField();
-    private TextField levelField = new TextField();
-    private TextField bonusXPField = new TextField();
-    private TextField bonusCoinField = new TextField();
-    private TextField bonusCoinRateField = new TextField();
-    private TextField baseCoinField = new TextField();
-    private TextField runRateField = new TextField();
-    private TextField pbCapField = new TextField();
-    private TextField swallowChanceField = new TextField();
-    ComboBox<String> swallowAttributeSelector = new ComboBox<>();
-    private TextField UltraHammerKnockChanceField = new TextField();
-    private TextField ItemStealParameterField = new TextField();
-
-    private TextField NormalField = new TextField();
-    private TextField FireField = new TextField();
-    private TextField IceField = new TextField();
-    private TextField ExplosionField = new TextField();
-    private TextField ElectricField = new TextField();
-
-    ComboBox<String> NormalSelector = new ComboBox<>();
-    ComboBox<String> FireSelector = new ComboBox<>();
-    ComboBox<String> IceSelector = new ComboBox<>();
-    ComboBox<String> ExplosionSelector = new ComboBox<>();
-    ComboBox<String> ElectricSelector = new ComboBox<>();
-
-    private TextField SleepField = new TextField();
-    private TextField StopField = new TextField();
-    private TextField DizzyField = new TextField();
-    private TextField PoisonField = new TextField();
-    private TextField ConfuseField = new TextField();
-    //ElectricField borrowed from Defense
-    private TextField BurnField = new TextField();
-    private TextField FreezeField = new TextField();
-    private TextField HugeField = new TextField();
-    private TextField TinyField = new TextField();
-    private TextField AttackUpField = new TextField();
-    private TextField AttackDownField = new TextField();
-    private TextField DefenseUpField = new TextField();
-    private TextField DefenseDownField = new TextField();
-    private TextField AllergicField = new TextField();
-    private TextField FrightField = new TextField();
-    private TextField GaleForceField = new TextField();
-    private TextField FastField = new TextField();
-    private TextField SlowField = new TextField();
-    private TextField DodgyField = new TextField();
-    private TextField InvisibleField = new TextField();
-    private TextField OHKOField = new TextField();
-
-    private TextField AccuracyField = new TextField();
-    private TextField FPCostField = new TextField();
-    private TextField SPCostField = new TextField();
-    ComboBox<String> SuperguardStateSelector = new ComboBox<>();
-    private TextField StylishMultiplierField = new TextField();
-    private TextField BingoSlotIncChanceField = new TextField();
-    private TextField BaseDamage1Field = new TextField();
-    private TextField BaseDamage2Field = new TextField();
-    private TextField BaseDamage3Field = new TextField();
-    private TextField BaseDamage4Field = new TextField();
-    private TextField BaseDamage5Field = new TextField();
-    private TextField BaseDamage6Field = new TextField();
-    private TextField BaseDamage7Field = new TextField();
-    private TextField BaseDamage8Field = new TextField();
-    private TextField BaseFPDamage1Field = new TextField();
-    private TextField BaseFPDamage2Field = new TextField();
-    private TextField BaseFPDamage3Field = new TextField();
-    private TextField BaseFPDamage4Field = new TextField();
-    private TextField BaseFPDamage5Field = new TextField();
-    private TextField BaseFPDamage6Field = new TextField();
-    private TextField BaseFPDamage7Field = new TextField();
-    private TextField BaseFPDamage8Field = new TextField();
-    private CheckBox TCF1Box = new CheckBox();
-    private CheckBox TCF2Box = new CheckBox();
-    private CheckBox TCF3Box = new CheckBox();
-    private CheckBox TCF4Box = new CheckBox();
-    private CheckBox TCF5Box = new CheckBox();
-    private CheckBox TCF6Box = new CheckBox();
-    private CheckBox TCF7Box = new CheckBox();
-    private CheckBox TCF8Box = new CheckBox();
-    private CheckBox TCF9Box = new CheckBox();
-    private CheckBox TCF10Box = new CheckBox();
-    private CheckBox TCF11Box = new CheckBox();
-    private CheckBox TPF1Box = new CheckBox();
-    private CheckBox TPF2Box = new CheckBox();
-    private CheckBox TPF3Box = new CheckBox();
-    private CheckBox TPF4Box = new CheckBox();
-    private CheckBox TPF5Box = new CheckBox();
-    private CheckBox TPF6Box = new CheckBox();
-    private CheckBox TPF7Box = new CheckBox();
-    private CheckBox TPF8Box = new CheckBox();
-    private CheckBox TPF9Box = new CheckBox();
-    private CheckBox TPF10Box = new CheckBox();
-    private CheckBox TPF11Box = new CheckBox();
-    ComboBox<String> ElementSelector = new ComboBox<>();
-    ComboBox<String> DamagePatternSelector = new ComboBox<>();
-    ComboBox<String> ACLevelSelector = new ComboBox<>();
-    private CheckBox SPF1Box = new CheckBox();
-    private CheckBox SPF2Box = new CheckBox();
-    private CheckBox SPF3Box = new CheckBox();
-    private CheckBox SPF4Box = new CheckBox();
-    private CheckBox SPF5Box = new CheckBox();
-    private CheckBox SPF6Box = new CheckBox();
-    private CheckBox SPF7Box = new CheckBox();
-    private CheckBox SPF8Box = new CheckBox();
-    private CheckBox SPF9Box = new CheckBox();
-    private CheckBox SPF10Box = new CheckBox();
-    private CheckBox SPF11Box = new CheckBox();
-    private CheckBox SPF12Box = new CheckBox();
-    private CheckBox SPF13Box = new CheckBox();
-    private CheckBox SPF14Box = new CheckBox();
-    private CheckBox CRF1Box = new CheckBox();
-    private CheckBox CRF2Box = new CheckBox();
-    private CheckBox CRF3Box = new CheckBox();
-    private CheckBox CRF4Box = new CheckBox();
-    private CheckBox CRF5Box = new CheckBox();
-    private CheckBox CRF6Box = new CheckBox();
-    private CheckBox CRF7Box = new CheckBox();
-    private CheckBox CRF8Box = new CheckBox();
-    private CheckBox CRF9Box = new CheckBox();
-    private CheckBox CRF10Box = new CheckBox();
-    private CheckBox CRF11Box = new CheckBox();
-    private CheckBox TWF1Box = new CheckBox();
-    private CheckBox TWF2Box = new CheckBox();
-    private CheckBox TWF3Box = new CheckBox();
-    private CheckBox TWF4Box = new CheckBox();
-    private CheckBox TWF5Box = new CheckBox();
-    private CheckBox TWF6Box = new CheckBox();
-    private CheckBox TWF7Box = new CheckBox();
-    private CheckBox TWF8Box = new CheckBox();
-    private CheckBox TWF9Box = new CheckBox();
-    private CheckBox TWF10Box = new CheckBox();
-    private CheckBox TWF11Box = new CheckBox();
-    private CheckBox TWF12Box = new CheckBox();
-    private TextField SleepChanceField = new TextField();
-    private TextField SleepTimeField = new TextField();
-    private TextField StopChanceField = new TextField();
-    private TextField StopTimeField = new TextField();
-    private TextField DizzyChanceField = new TextField();
-    private TextField DizzyTimeField = new TextField();
-    private TextField PoisonChanceField = new TextField();
-    private TextField PoisonTimeField = new TextField();
-    private TextField PoisonStrengthField = new TextField();
-    private TextField ConfuseChanceField = new TextField();
-    private TextField ConfuseTimeField = new TextField();
-    private TextField ElectricChanceField = new TextField();
-    private TextField ElectricTimeField = new TextField();
-    private TextField DodgyChanceField = new TextField();
-    private TextField DodgyTimeField = new TextField();
-    private TextField BurnChanceField = new TextField();
-    private TextField BurnTimeField = new TextField();
-    private TextField FreezeChanceField = new TextField();
-    private TextField FreezeTimeField = new TextField();
-    private TextField SizeChangeChanceField = new TextField();
-    private TextField SizeChangeTimeField = new TextField();
-    private TextField SizeChangeStrengthField = new TextField();
-    private TextField AtkChangeChanceField = new TextField();
-    private TextField AtkChangeTimeField = new TextField();
-    private TextField AtkChangeStrengthField = new TextField();
-    private TextField DefChangeChanceField = new TextField();
-    private TextField DefChangeTimeField = new TextField();
-    private TextField DefChangeStrengthField = new TextField();
-    private TextField AllergicChanceField = new TextField();
-    private TextField AllergicTimeField = new TextField();
-    private TextField OHKOChanceField = new TextField();
-    private TextField ChargeStrengthField = new TextField();
-    private TextField FastChanceField = new TextField();
-    private TextField FastTimeField = new TextField();
-    private TextField SlowChanceField = new TextField();
-    private TextField SlowTimeField = new TextField();
-    private TextField FrightChanceField = new TextField();
-    private TextField GaleForceChanceField = new TextField();
-    private TextField PaybackTimeField = new TextField();
-    private TextField HoldFastTimeField = new TextField();
-    private TextField InvisibleChanceField = new TextField();
-    private TextField InvisibleTimeField = new TextField();
-    private TextField HPRegenTimeField = new TextField();
-    private TextField HPRegenStrengthField = new TextField();
-    private TextField FPRegenTimeField = new TextField();
-    private TextField FPRegenStrengthField = new TextField();
-    private TextField STGFall1Field = new TextField();
-    private TextField STGFall2Field = new TextField();
-    private TextField STGFall3Field = new TextField();
-    private TextField STGFall4Field = new TextField();
-    private TextField STGNozzleTurnField = new TextField();
-    private TextField STGNozzleFireField = new TextField();
-    private TextField STGCeilingFallField = new TextField();
-    private TextField STGObjectFallField = new TextField();
-
-    private CheckBox PAF1Box = new CheckBox();
-    private CheckBox PAF2Box = new CheckBox();
-    private CheckBox PAF3Box = new CheckBox();
-    private CheckBox PAF4Box = new CheckBox();
-    private CheckBox PAF5Box = new CheckBox();
-    private CheckBox PAF6Box = new CheckBox();
-    private CheckBox PAF7Box = new CheckBox();
-    private CheckBox PAF8Box = new CheckBox();
-    private CheckBox PAF9Box = new CheckBox();
-    private CheckBox PAF10Box = new CheckBox();
-    private CheckBox PAF11Box = new CheckBox();
-    private CheckBox PAF12Box = new CheckBox();
-    private CheckBox PAF13Box = new CheckBox();
-    private CheckBox PAF14Box = new CheckBox();
-    private CheckBox PAF15Box = new CheckBox();
-    private CheckBox PAF16Box = new CheckBox();
-    private CheckBox PCAF1Box = new CheckBox();
-    private CheckBox PCAF2Box = new CheckBox();
-    private CheckBox PCAF3Box = new CheckBox();
-    private CheckBox PCAF4Box = new CheckBox();
-    private CheckBox PCAF5Box = new CheckBox();
-    private CheckBox PCAF6Box = new CheckBox();
-    private CheckBox PCAF7Box = new CheckBox();
-    private CheckBox PCAF8Box = new CheckBox();
-    private CheckBox PCAF9Box = new CheckBox();
-    private CheckBox PCAF10Box = new CheckBox();
-    private CheckBox PCAF11Box = new CheckBox();
-    private CheckBox PCAF12Box = new CheckBox();
-    private CheckBox PCAF13Box = new CheckBox();
-
-    private TextField startHPField = new TextField();
-    private TextField startFPField = new TextField();
-    private TextField startBPField = new TextField();
-    private TextField upgradeHPField = new TextField();
-    private TextField upgradeFPField = new TextField();
-    private TextField upgradeBPField = new TextField();
+    private TextField[] textFields; //75
+    private ComboBox<String>[] comboBoxFields; //6
+    private CheckBox[] checkBoxFields; //75
 
     @Override
     public void start(Stage primaryStage) 
     {
-        String[] tempValidFileNames = {"main.dol", "Start.dol", "aji.rel", "bom.rel", "dou.rel", "eki.rel", "gon.rel", "gor.rel", "gra.rel", "hei.rel", "jin.rel", "jon.rel", "las.rel", "moo.rel", "mri.rel", "muj.rel", "nok.rel", "pik.rel", "rsh.rel", "tik.rel", "tou2.rel", "win.rel", "mod.rel"};
-        for(int i = 0; i < tempValidFileNames.length; i++)
+        try
         {
-            validFileNames.add(tempValidFileNames[i]);
-        }
+            File jsonFile = new File("src\\UnitData.json");
+            JSONParser parser = new JSONParser();
+            JSONObject root = (JSONObject)parser.parse(new FileReader(jsonFile));
+            JSONArray fileArray = (JSONArray)root.get("File");
+            JSONObject fileObj = null;
 
+            for(int i = 0; i < fileArray.size(); i ++)
+            {
+                fileObj = (JSONObject)fileArray.get(i);
+                validFileNames.add((String)fileObj.get("Name"));
+            }
+        }
+        catch (FileNotFoundException e){System.out.println("There was an Error Finding the JSON File");}
+        catch (IOException e){System.out.println("There was an Error Reading the JSON File");}
+        catch (ParseException e){System.out.println("There was an Error Parsing the JSON File");}
+
+        initializeFields();
+        setImages();
         setRed0TextFieldFormats();
 
         //Window
@@ -744,29 +112,38 @@ public class GUI extends Application
         window.setTitle("Battle Unit Tool");
 
         //Menu Buttons
-        HBox topMenu = new HBox();
-        HBox centerMenu = new HBox();
-        Button openButton = new Button("Open Directory");
-        ComboBox<File> fileSelector = new ComboBox<>();
-        Button exportButton = new Button("Export File");
-        Button saveFilePresetButton = new Button("Save File Preset");
-        Button loadFilePresetButton = new Button("Load File Preset");
-        Button updateTattlesButton = new Button("Update Tattles");
-        Button closeButton = new Button("Close File");
-        Button aboutButton = new Button("About");
+        fileSelector.getItems().clear();
         topMenu.getChildren().addAll(openButton, aboutButton);
         topMenu.setPadding(new Insets(5));
         topMenu.setSpacing(5);
 
         //Alligning Menu Buttons to Top
-        BorderPane borderPane = new BorderPane();
         borderPane.setTop(topMenu);
 
         fileSelector.setMaxWidth(270);
 
         //Scene
-        Scene emptyScene = new Scene(borderPane, 800, 600);
+        Scene emptyScene = new Scene(borderPane, 818, 600);
         window.setScene(emptyScene);
+
+        String startPath = "";
+        try
+        {
+            File jsonFile = new File("src\\options.json");
+            JSONParser parser = new JSONParser();
+            JSONObject root = (JSONObject)parser.parse(new FileReader(jsonFile));
+
+            startPath = (String)root.get("startPath");
+        }
+        catch (FileNotFoundException e){System.out.println("There was an Error Finding the JSON File");}
+        catch (IOException e){System.out.println("There was an Error Reading the JSON File");}
+        catch (ParseException e){System.out.println("There was an Error Parsing the JSON File");}
+
+        if(!startPath.equals(""))
+        {
+            givenFile = new File(startPath);
+            loadGUIMenus();
+        }
 
         openButton.setOnAction(new EventHandler<ActionEvent>() 
         {
@@ -776,1319 +153,26 @@ public class GUI extends Application
                 directoryChooser.setTitle("Select the root folder");
                 givenFile = directoryChooser.showDialog(window);
 
-                ArrayList<File> validFiles = Main.findMatchingFiles(givenFile, validFileNames);
-
-                fileSelector.getItems().clear();
-                topMenu.getChildren().clear();
-                topMenu.getChildren().addAll(openButton, fileSelector, exportButton, saveFilePresetButton, loadFilePresetButton, updateTattlesButton, closeButton, aboutButton);
-
-                for (File f : validFiles)
+                try
                 {
-                    fileSelector.getItems().add(f);
+                    File jsonFile = new File("src\\options.json");
+                    JSONParser parser = new JSONParser();
+                    JSONObject root = (JSONObject)parser.parse(new FileReader(jsonFile));
+
+                    root.put("startPath", givenFile.getAbsolutePath());
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    Object asJson = gson.fromJson(root.toJSONString(), Object.class);
+                    try (FileWriter writer = new FileWriter(jsonFile)) 
+                    {
+                        gson.toJson(asJson, writer);
+                    }
                 }
-
-                //Setting list names for Directory Chooser
-                fileSelector.setCellFactory(lv -> new ListCell<File>() 
-                {
-                    @Override protected void updateItem(File item, boolean empty) 
-                    {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) 
-                        {
-                            setText(null);
-                            setGraphic(null);
-                        } 
-                        else 
-                        {
-                            setText(fileNameSelector(item.getName()));
-                            setGraphic(fileImageSelector(item.getName()));
-                        }
-                    }
-                });
-                fileSelector.setButtonCell(new ListCell<File>() 
-                {
-                    @Override protected void updateItem(File item, boolean empty) 
-                    {
-                        super.updateItem(item, empty);
-
-                        if (empty || item == null) 
-                        {
-                            setText(null);
-                            setGraphic(null);
-                        } 
-                        else 
-                        {
-                            setText(item.getName());
-                            setGraphic(fileImageSelector(item.getName()));
-                        }
-                    }
-                });
-
-                fileSelector.setOnAction(e -> 
-                {
-                    centerMenu.getChildren().clear();
-
-                    units = Main.getTableData(fileSelector.getSelectionModel().getSelectedItem());
-                    isFileOpened = true;
-                    test.testUnitData(units);
-
-                    VBox leftMenu = new VBox();
-                    unitSelector = new ComboBox<>();
-                    for (UnitData unit : units) 
-                    {
-                        unitSelector.getItems().add(unit);
-                    }
-                    unitSelector.setMaxWidth(130);
-
-                    unitSelector.setCellFactory(lv -> new ListCell<UnitData>()
-                    {
-                        @Override protected void updateItem(UnitData unit, boolean empty)
-                        {
-                            super.updateItem(unit, empty);
-
-                            if(empty || unit == null)
-                            {
-                                setText(null);
-                                setGraphic(null);
-                            }
-                            else
-                            {
-                                setText(unit.name);
-                                setGraphic(unitImageSelector(unit.name));
-                            }
-                        }
-                    });
-                    unitSelector.setButtonCell(new ListCell<UnitData>() 
-                    {
-                        @Override protected void updateItem(UnitData unit, boolean empty) 
-                        {
-                            super.updateItem(unit, empty);
-
-                            if (empty || unit == null) 
-                            {
-                                setText(null);
-                                setGraphic(null);
-                            } 
-                            else 
-                            {
-                                setText(unit.name);
-                                setGraphic(unitImageSelector(unit.name));
-                            }
-                        }
-                    });
-
-                    //Setting struct names for BattleUnitKind
-                    kindList = new ListView<>();
-                    kindList.setCellFactory(lv -> new ListCell<Object>() 
-                    {
-                        @Override protected void updateItem(Object item, boolean empty) 
-                        {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) 
-                            {
-                                setText(null);
-                                setGraphic(null);
-                            } 
-                            else 
-                            {
-                                int count = 0;
-                                if (getListView().getItems() != null) 
-                                {
-                                    for (int i = 0; i < getIndex(); i++) 
-                                    {
-                                        Object previousItem = getListView().getItems().get(i);
-                                        if (item instanceof BattleUnitKind && previousItem instanceof BattleUnitKind) 
-                                        {
-                                            count++;
-                                        } 
-                                        else if (item instanceof BattleUnitKindPart && previousItem instanceof BattleUnitKindPart) 
-                                        {
-                                            count++;
-                                        }
-                                        else if (item instanceof HealthUpgrades && previousItem instanceof HealthUpgrades) 
-                                        {
-                                            count++;
-                                        }
-                                    }
-                                }
-
-                                if(item instanceof BattleUnitKind)
-                                {
-                                    setText("Kind Struct " + (count + 1));
-                                    setGraphic(imageViewCreator(unitImage));
-                                }
-                                else if(item instanceof BattleUnitKindPart)
-                                {
-                                    setText("Part Struct " + (count + 1));
-                                    setGraphic(imageViewCreator(unusedPaperImage));
-                                }
-                                else if(item instanceof HealthUpgrades)
-                                {
-                                    setText("Stat Upgrades");
-                                    setGraphic(imageViewCreator(shineSpriteImage));
-                                }
-                            }
-                        }
-                    });
-
-                    //Setting struct names for BattleUnitDefense, BattleUnitDefenseAttr, and StatusVulnerability
-                    defenseList = new ListView<>();
-                    defenseList.setCellFactory(lv -> new ListCell<Object>() 
-                    {
-                        @Override protected void updateItem(Object item, boolean empty) 
-                        {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) 
-                            {
-                                setText(null);
-                                setGraphic(null);
-                            } 
-                            else 
-                            {
-                                int count = 0;
-                                if (getListView().getItems() != null) 
-                                {
-                                    for (int i = 0; i < getIndex(); i++) 
-                                    {
-                                        Object previousItem = getListView().getItems().get(i);
-                                        if (item instanceof BattleUnitDefense && previousItem instanceof BattleUnitDefense) 
-                                        {
-                                            count++;
-                                        } 
-                                        else if (item instanceof BattleUnitDefenseAttr && previousItem instanceof BattleUnitDefenseAttr) 
-                                        {
-                                            count++;
-                                        }
-                                        else if (item instanceof StatusVulnerability && previousItem instanceof StatusVulnerability) 
-                                        {
-                                            count++;
-                                        }
-                                    }
-                                }
-
-                                if(item instanceof BattleUnitDefense)
-                                {
-                                    setText("Defense Struct " + (count + 1));
-                                    setGraphic(imageViewCreator(defendPlusImage));
-                                }
-                                else if(item instanceof BattleUnitDefenseAttr)
-                                {
-                                    setText("Defense Attribute Struct " + (count + 1));
-                                    setGraphic(imageViewCreator(spikeShieldCustomImage));
-                                }
-                                else if(item instanceof StatusVulnerability)
-                                {
-                                    setText("Status Vulnerability Struct " + (count + 1));
-                                    setGraphic(imageViewCreator(feelingFineImage));
-                                }
-                            }
-                        }
-                    });
-
-                    //Setting struct names for BattleWeapon
-                    weaponList = new ListView<>();
-                    weaponList.setCellFactory(lv -> new ListCell<BattleWeapon>() 
-                    {
-                        @Override protected void updateItem(BattleWeapon item, boolean empty) 
-                        {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) 
-                            {
-                                setText(null);
-                                setGraphic(null);
-                            } 
-                            else 
-                            {
-                                setText(item.attackName);
-                                setGraphic(attackNameImageSelector(item.attackName));
-                            }
-                        }
-                    });
-
-                    GridPane leftMenuForm = new GridPane();
-                    upperBox.setPadding(new Insets(3));
-                    upperBox.getChildren().clear();
-                    upperBox.getChildren().add(unitSelector);
-                    upperBox.setSpacing(5);
-                    upperBox.setAlignment(Pos.CENTER_LEFT);
-                    leftMenuForm.add(upperBox, 0, 0);
-
-                    upperBox2 = new HBox();
-                    upperBox2.setPadding(new Insets(3));
-                    upperBox2.setSpacing(3);
-                    upperBox2.getChildren().clear();
-                    upperBox2.getChildren().add(new Label(""));
-                    upperBox2.setAlignment(Pos.CENTER);
-                    leftMenuForm.add(upperBox2, 0, 1);
-
-                    HBox baseBox = new HBox();
-                    baseBox.setPadding(new Insets(3));
-                    baseBox.getChildren().add(new Label("Base:"));
-                    leftMenuForm.add(baseBox, 0, 2);
-                    leftMenuForm.add(kindList, 0, 3);
-
-                    HBox defenseBox = new HBox();
-                    defenseBox.setPadding(new Insets(3));
-                    defenseBox.getChildren().add(new Label("Defense:"));
-                    leftMenuForm.add(defenseBox, 0, 4);
-                    leftMenuForm.add(defenseList, 0, 5);
-
-                    HBox weaponBox = new HBox();
-                    weaponBox.setPadding(new Insets(3));
-                    weaponBox.getChildren().add(new Label("Attacks:"));
-                    leftMenuForm.add(weaponBox, 0, 6);
-                    leftMenuForm.add(weaponList, 0, 7);
-                    
-                    borderPane.setLeft(leftMenuForm);
-
-                    GridPane form = new GridPane();
-
-                    unitSelector.setOnAction(e2 -> 
-                    {
-                        centerMenu.getChildren().clear();
-                        upperBox.getChildren().clear();
-                        upperBox2.getChildren().clear();
-                        upperBox.getChildren().add(unitSelector);
-                        upperBox2.getChildren().add(new Label(""));
-                        loadSelectedUnit(unitSelector.getSelectionModel().getSelectedIndex());
-                    });
-
-                    saveChangesButton.setOnAction(new EventHandler<ActionEvent>() 
-                    {
-                        @Override public void handle(ActionEvent event)
-                        {
-                            saveFieldsToSelectedStruct();
-                            saveChangesButton.setText("    Changes Saved     ");
-                        }
-                    });
-
-                    saveStructPresetButton.setOnAction(new EventHandler<ActionEvent>() 
-                    {
-                        @Override public void handle(ActionEvent event)
-                        {
-                            Object selected = null;
-                            byte[] presetFileData = null;
-                            FileChooser presetFileChooser = new FileChooser();
-
-                            if (kindList.getSelectionModel().getSelectedItem() != null) 
-                            {
-                                selected = kindList.getSelectionModel().getSelectedItem();
-                            } 
-                            else if (defenseList.getSelectionModel().getSelectedItem() != null) 
-                            {
-                                selected = defenseList.getSelectionModel().getSelectedItem();
-                            } 
-                            else if (weaponList.getSelectionModel().getSelectedItem() != null)
-                            {
-                                selected = weaponList.getSelectionModel().getSelectedItem();
-                            }
-
-                            if (selected instanceof BattleUnitKind b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + kindList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof BattleUnitKindPart b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + kindList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof HealthUpgrades b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + kindList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof BattleUnitDefense b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + defenseList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof BattleUnitDefenseAttr b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + defenseList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof StatusVulnerability b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + defenseList.getSelectionModel().getSelectedItem().toString());
-                            }
-                            else if (selected instanceof BattleWeapon b) 
-                            {
-                                presetFileData = Main.buildPresetFile(givenFile, b);
-                                presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().toString() + b.attackName.replace(" ", "") + weaponList.getSelectionModel().getSelectedItem().toString());
-                            }
-
-                            FileChooser.ExtensionFilter bupFilter = new FileChooser.ExtensionFilter("Battle Unit Preset File Format (*.bup)", "*.bup");
-                            presetFileChooser.getExtensionFilters().addAll(bupFilter);
-                            presetFileChooser.setTitle("Save As");
-
-                            File dest = presetFileChooser.showSaveDialog(window);
-                            if (dest != null) 
-                            {
-                                try 
-                                {
-                                    FileOutputStream fos = new FileOutputStream(dest);
-                                    fos.write(presetFileData);
-                                    fos.close();
-
-                                    Stage successBox = new Stage();
-                                    successBox.setTitle("Export");
-                                    successBox.getIcons().add(unitImage);
-
-                                    VBox successMenu = new VBox();
-                                    Text message = new Text("Successfully Saved!");
-                                    message.setWrappingWidth(290);
-                                    message.setTextAlignment(TextAlignment.CENTER);
-                                    successMenu.getChildren().addAll(new Label(""), message);
-
-                                    StackPane successPane = new StackPane();
-                                    successPane.getChildren().add(successMenu);
-                                    successPane.setAlignment(Pos.CENTER);
-
-                                    Scene successScene = new Scene(successPane, 150, 50);
-
-                                    successBox.setScene(successScene);
-                                    successBox.initModality(Modality.APPLICATION_MODAL);
-                                    successBox.show();
-
-                                    test.testUnitData(units);
-                                } 
-                                catch (IOException ex) 
-                                {
-                                    System.out.println("There was an error creating the output file");
-                                }
-                            }
-                        }
-                    });
-
-                    loadStructPresetButton.setOnAction(new EventHandler<ActionEvent>() 
-                    {
-                        @Override public void handle(ActionEvent event)
-                        {
-                            File givenPreset = null;
-                            FileChooser fileChooser = new FileChooser();
-                            fileChooser.setTitle("Select a Preset File");
-                            FileChooser.ExtensionFilter bupFilter = new FileChooser.ExtensionFilter("Battle Unit Preset File Format (*.bup)", "*.bup");
-                            fileChooser.getExtensionFilters().addAll(bupFilter);
-                            givenPreset = fileChooser.showOpenDialog(window);
-
-                            byte[] givenPresetData = ByteUtils.readData(givenPreset);
-
-                            Object selected = null;
-                            if (kindList.getSelectionModel().getSelectedItem() != null) 
-                            {
-                                selected = kindList.getSelectionModel().getSelectedItem();
-                            } 
-                            else if (defenseList.getSelectionModel().getSelectedItem() != null) 
-                            {
-                                selected = defenseList.getSelectionModel().getSelectedItem();
-                            } 
-                            else if (weaponList.getSelectionModel().getSelectedItem() != null)
-                            {
-                                selected = weaponList.getSelectionModel().getSelectedItem();
-                            }
-
-                            if(givenPresetData[0] == 0x00)
-                            {
-                                showGiveValidFileWindow();
-                            }
-                            else if (selected instanceof BattleUnitKind b) 
-                            {
-                                if(givenPresetData[0] == 0x01)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitKindData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof BattleUnitKindPart b) 
-                            {
-                                if(givenPresetData[0] == 0x02)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitKindPartData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof HealthUpgrades b) 
-                            {
-                                if(givenPresetData[0] == 0x07)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).HealthUpgradesData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof BattleUnitDefense b) 
-                            {
-                                if(givenPresetData[0] == 0x03)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitDefenseData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof BattleUnitDefenseAttr b) 
-                            {
-                                if(givenPresetData[0] == 0x04)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitDefenseAttrData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof StatusVulnerability b) 
-                            {
-                                if(givenPresetData[0] == 0x05)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).StatusVulnerabilityData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                            else if (selected instanceof BattleWeapon b) 
-                            {
-                                if(givenPresetData[0] == 0x06)
-                                {
-                                    ArrayList<UnitData> tempPreset = Main.getPresetData(givenPreset);
-                                    savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleWeaponData.get(0));
-                                    loadStructFields(selected);
-                                    showPresetSuccessWindow();
-                                }
-                                else
-                                {
-                                    showGiveValidFileWindow();
-                                }
-                            }
-                        }
-                    });
-
-                    kindList.setOnMouseClicked(e2 -> 
-                    {                    
-                        centerMenu.getChildren().clear();
-                        form.getChildren().clear();
-                        defenseList.getSelectionModel().clearSelection();
-                        weaponList.getSelectionModel().clearSelection();
-
-                        upperBox.getChildren().clear();
-                        upperBox.getChildren().addAll(unitSelector, saveChangesButton);
-
-                        upperBox2.getChildren().clear();
-                        upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
-
-                        if(kindList.getSelectionModel().getSelectedItem() instanceof BattleUnitKind)
-                        {
-                            swallowAttributeSelector.getItems().clear();
-                            swallowAttributeSelector.getItems().addAll("None", "Swallow Bomb", "Spit into Other Enemy", "Spit Fireball", "Swallow Part of Enemy");
-
-                            BattleUnitKind selected = (BattleUnitKind) kindList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            BUK1ImageView.setFitWidth(20); BUK1ImageView.setFitHeight(20); form.add(BUK1ImageView, 0, 0);
-                            form.add(new Label("HP:"), 1, 0);
-                            form.add(HPField, 2, 0);
-                            BUK9ImageView.setFitWidth(20); BUK9ImageView.setFitHeight(20); form.add(BUK9ImageView, 0, 1);
-                            form.add(new Label("Danger HP:"), 1, 1);
-                            form.add(dangerHPField, 2, 1);
-                            BUK10ImageView.setFitWidth(20); BUK10ImageView.setFitHeight(20); form.add(BUK10ImageView, 0, 2);
-                            form.add(new Label("Peril HP:"), 1, 2);
-                            form.add(perilHPField, 2, 2);
-                            BUK2ImageView.setFitWidth(20); BUK2ImageView.setFitHeight(20); form.add(BUK2ImageView, 0, 3);
-                            form.add(new Label("Level:"), 1, 3);
-                            form.add(levelField, 2, 3);
-                            BUK3ImageView.setFitWidth(20); BUK3ImageView.setFitHeight(20); form.add(BUK3ImageView, 0, 4);
-                            form.add(new Label("Bonus XP:"), 1, 4);
-                            form.add(bonusXPField, 2, 4);
-                            BUK4ImageView.setFitWidth(20); BUK4ImageView.setFitHeight(20); form.add(BUK4ImageView, 0, 5);
-                            form.add(new Label("Bonus Coin:"), 1, 5);
-                            form.add(bonusCoinField, 2, 5);
-                            BUK5ImageView.setFitWidth(20); BUK5ImageView.setFitHeight(20); form.add(BUK5ImageView, 0, 6);
-                            form.add(new Label("Bonus Coin Rate:"), 1, 6);
-                            form.add(bonusCoinRateField, 2, 6);
-                            BUK6ImageView.setFitWidth(20); BUK6ImageView.setFitHeight(20); form.add(BUK6ImageView, 0, 7);
-                            form.add(new Label("Base Coin:"), 1, 7);
-                            form.add(baseCoinField, 2, 7);
-                            BUK7ImageView.setFitWidth(20); BUK7ImageView.setFitHeight(20); form.add(BUK7ImageView, 0, 8);
-                            form.add(new Label("Run Rate:"), 1, 8);
-                            form.add(runRateField, 2, 8);
-                            BUK8ImageView.setFitWidth(20); BUK8ImageView.setFitHeight(20); form.add(BUK8ImageView, 0, 9);
-                            form.add(new Label("PB Cap:"), 1, 9);
-                            form.add(pbCapField, 2, 9);
-                            BUK11ImageView.setFitWidth(20); BUK11ImageView.setFitHeight(20); form.add(BUK11ImageView, 0, 10);
-                            form.add(new Label("Swallow Chance:"), 1, 10);
-                            form.add(swallowChanceField, 2, 10);
-                            BUK12ImageView.setFitWidth(20); BUK12ImageView.setFitHeight(20); form.add(BUK12ImageView, 0, 11);
-                            form.add(new Label("Swallow Attribute:"), 1, 11);
-                            form.add(swallowAttributeSelector, 2, 11);
-                            BUK13ImageView.setFitWidth(20); BUK13ImageView.setFitHeight(20); form.add(BUK13ImageView, 0, 12);
-                            form.add(new Label("Hammer Knockback Chance:"), 1, 12);
-                            form.add(UltraHammerKnockChanceField, 2, 12);
-                            BUK14ImageView.setFitWidth(20); BUK14ImageView.setFitHeight(20); form.add(BUK14ImageView, 0, 13);
-                            form.add(new Label("Item Steal Difficulty:"), 1, 13);
-                            form.add(ItemStealParameterField, 2, 13);
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                        else if(kindList.getSelectionModel().getSelectedItem() instanceof BattleUnitKindPart)
-                        {
-                            BattleUnitKindPart selected = (BattleUnitKindPart) kindList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            form.add(new Label("Select Most Preferred Target:"), 0, 0);
-                            form.add(PAF1Box, 1, 0);
-                            form.add(new Label("Select Preferred Target:"), 0, 1);
-                            form.add(PAF2Box, 1, 1);
-                            form.add(new Label("Select Target:"), 0, 2);
-                            form.add(PAF3Box, 1, 2);
-                            form.add(new Label("Weak to Attack FX R:"), 0, 3);
-                            form.add(PAF4Box, 1, 3);
-                            form.add(new Label("Weak to Ice Power:"), 0, 4);
-                            form.add(PAF5Box, 1, 4);
-                            form.add(new Label("Is Winged:"), 0, 5);
-                            form.add(PAF6Box, 1, 5);
-                            form.add(new Label("Is Shelled:"), 0, 6);
-                            form.add(PAF7Box, 1, 6);
-                            form.add(new Label("Is Bomb Flippable:"), 0, 7);
-                            form.add(PAF8Box, 1, 7);
-                            form.add(new Label("Never Targetable:"), 0, 8);
-                            form.add(PAF9Box, 1, 8);
-                            form.add(new Label("Cannot be Tattled:"), 0, 9);
-                            form.add(PAF10Box, 1, 9);
-                            form.add(new Label("Jump-like Attacks Cannot Target:"), 0, 10);
-                            form.add(PAF11Box, 1, 10);
-                            form.add(new Label("Hammer-like Attacks Cannot Target:"), 0, 11);
-                            form.add(PAF12Box, 1, 11);
-                            form.add(new Label("Shell Toss-like Attacks Cannot Target:"), 0, 12);
-                            form.add(PAF13Box, 1, 12);
-                            form.add(new Label("Is Immune to Damage and Status:"), 0, 13);
-                            form.add(PAF14Box, 1, 13);
-                            form.add(new Label("Is Immune to OHKO:"), 0, 14);
-                            form.add(PAF15Box, 1, 14);
-                            form.add(new Label("Is Immune to Status:"), 0, 15);
-                            form.add(PAF16Box, 1, 15);
-                            form.add(new Label("Is Top Spiky:"), 0, 16);
-                            form.add(PCAF1Box, 1, 16);
-                            form.add(new Label("Is Preemptive Front Spiky:"), 0, 17);
-                            form.add(PCAF2Box, 1, 17);
-                            form.add(new Label("Is Front Spiky:"), 0, 18);
-                            form.add(PCAF3Box, 1, 18);
-                            form.add(new Label("Is Fiery:"), 0, 19);
-                            form.add(PCAF4Box, 1, 19);
-                            form.add(new Label("Has a Fiery Status:"), 0, 20);
-                            form.add(PCAF5Box, 1, 20);
-                            form.add(new Label("Is Icy:"), 0, 21);
-                            form.add(PCAF6Box, 1, 21);
-                            form.add(new Label("Has an Icy Status:"), 0, 22);
-                            form.add(PCAF7Box, 1, 22);
-                            form.add(new Label("Is Poisonous:"), 0, 23);
-                            form.add(PCAF8Box, 1, 23);
-                            form.add(new Label("Has a Poison Status:"), 0, 24);
-                            form.add(PCAF9Box, 1, 24);
-                            form.add(new Label("Is Electric:"), 0, 25);
-                            form.add(PCAF10Box, 1, 25);
-                            form.add(new Label("Has an Electric Status:"), 0, 26);
-                            form.add(PCAF11Box, 1, 26);
-                            form.add(new Label("Is Explosive:"), 0, 27);
-                            form.add(PCAF12Box, 1, 27);
-                            form.add(new Label("Is Volatile Explosive:"), 0, 28);
-                            form.add(PCAF13Box, 1, 28);
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                        else if(kindList.getSelectionModel().getSelectedItem() instanceof HealthUpgrades)
-                        {
-                            HealthUpgrades selected = (HealthUpgrades) kindList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            String namecheck = unitSelector.getSelectionModel().getSelectedItem().name;
-                            if(namecheck.equals("Goombella") || namecheck.equals("Koops") || namecheck.equals("Flurrie") || namecheck.equals("Yoshi") ||
-                               namecheck.equals("Vivian") || namecheck.equals("Bobbery") || namecheck.equals("Ms. Mowz"))
-                            {
-                                HU1ImageView = new ImageView(partnerlvl1CustomImage);
-                                HU2ImageView = new ImageView(lvl3MoveImage);
-                                HU3ImageView = new ImageView(lvl4MoveImage);
-
-                                HU1ImageView.setFitWidth(20); HU1ImageView.setFitHeight(20); form.add(HU1ImageView, 0, 0);
-                                form.add(new Label("Level 1 HP:"), 1, 0);
-                                form.add(startHPField, 2, 0);
-                                HU2ImageView.setFitWidth(20); HU2ImageView.setFitHeight(20); form.add(HU2ImageView, 0, 1);
-                                form.add(new Label("Level 2 HP:"), 1, 1);
-                                form.add(startFPField, 2, 1);
-                                HU3ImageView.setFitWidth(20); HU3ImageView.setFitHeight(20); form.add(HU3ImageView, 0, 2);
-                                form.add(new Label("Level 3 HP:"), 1, 2);
-                                form.add(startBPField, 2, 2);
-                            }
-                            else
-                            {
-                                HU1ImageView = new ImageView(heartImage);
-                                HU2ImageView = new ImageView(flowerImage);
-                                HU3ImageView = new ImageView(BPEmblemCustomImage);
-
-                                HU1ImageView.setFitWidth(20); HU1ImageView.setFitHeight(20); form.add(HU1ImageView, 0, 0);
-                                form.add(new Label("Starting HP:"), 1, 0);
-                                form.add(startHPField, 2, 0);
-                                HU2ImageView.setFitWidth(20); HU2ImageView.setFitHeight(20); form.add(HU2ImageView, 0, 1);
-                                form.add(new Label("Starting FP:"), 1, 1);
-                                form.add(startFPField, 2, 1);
-                                HU3ImageView.setFitWidth(20); HU3ImageView.setFitHeight(20); form.add(HU3ImageView, 0, 2);
-                                form.add(new Label("Starting BP:"), 1, 2);
-                                form.add(startBPField, 2, 2);
-                                HU4ImageView.setFitWidth(20); HU4ImageView.setFitHeight(20); form.add(HU4ImageView, 0, 3);
-                                form.add(new Label("Upgrade HP:"), 1, 3);
-                                form.add(upgradeHPField, 2, 3);
-                                HU5ImageView.setFitWidth(20); HU5ImageView.setFitHeight(20); form.add(HU5ImageView, 0, 4);
-                                form.add(new Label("Upgrade FP:"), 1, 4);
-                                form.add(upgradeFPField, 2, 4);
-                                HU6ImageView.setFitWidth(20); HU6ImageView.setFitHeight(20); form.add(HU6ImageView, 0, 5);
-                                form.add(new Label("Upgrade BP:"), 1, 5);
-                                form.add(upgradeBPField, 2, 5);
-                            }
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                    });  
-                    defenseList.setOnMouseClicked(e2 -> 
-                    {
-                        centerMenu.getChildren().clear();
-                        form.getChildren().clear();
-                        kindList.getSelectionModel().clearSelection();
-                        weaponList.getSelectionModel().clearSelection();
-
-                        upperBox.getChildren().clear();
-                        upperBox.getChildren().addAll(unitSelector, saveChangesButton);
-
-                        upperBox2.getChildren().clear();
-                        upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
-
-                        if(defenseList.getSelectionModel().getSelectedItem() instanceof BattleUnitDefense)
-                        {
-                            BattleUnitDefense selected = (BattleUnitDefense) defenseList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            BUD1ImageView.setFitWidth(20); BUD1ImageView.setFitHeight(20); form.add(BUD1ImageView, 0, 0);
-                            form.add(new Label("Normal Defense:"), 1, 0);
-                            form.add(NormalField, 2, 0);
-                            BUD2ImageView.setFitWidth(20); BUD2ImageView.setFitHeight(20); form.add(BUD2ImageView, 0, 1);
-                            form.add(new Label("Fire Defense:"), 1, 1);
-                            form.add(FireField, 2, 1);
-                            BUD3ImageView.setFitWidth(20); BUD3ImageView.setFitHeight(20); form.add(BUD3ImageView, 0, 2);
-                            form.add(new Label("Ice Defense:"), 1, 2);
-                            form.add(IceField, 2, 2);
-                            BUD4ImageView.setFitWidth(20); BUD4ImageView.setFitHeight(20); form.add(BUD4ImageView, 0, 3);
-                            form.add(new Label("Explosion Defense:"), 1, 3);
-                            form.add(ExplosionField, 2, 3);
-                            BUD5ImageView.setFitWidth(20); BUD5ImageView.setFitHeight(20); form.add(BUD5ImageView, 0, 4);
-                            form.add(new Label("Electric Defense:"), 1, 4);
-                            form.add(ElectricField, 2, 4);
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                        else if(defenseList.getSelectionModel().getSelectedItem() instanceof BattleUnitDefenseAttr)
-                        {
-                            NormalSelector.getItems().clear();
-                            FireSelector.getItems().clear();
-                            IceSelector.getItems().clear();
-                            ExplosionSelector.getItems().clear();
-                            ElectricSelector.getItems().clear();
-
-                            NormalSelector.getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
-                            FireSelector.getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
-                            IceSelector.getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
-                            ExplosionSelector.getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
-                            ElectricSelector.getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
-
-                            BattleUnitDefenseAttr selected = (BattleUnitDefenseAttr) defenseList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            BUDA1ImageView.setFitWidth(20); BUDA1ImageView.setFitHeight(20); form.add(BUDA1ImageView, 0, 0);
-                            form.add(new Label("Normal Attribute Defense:"), 1, 0);
-                            form.add(NormalSelector, 2, 0);
-                            BUDA2ImageView.setFitWidth(20); BUDA2ImageView.setFitHeight(20); form.add(BUDA2ImageView, 0, 1);
-                            form.add(new Label("Fire Attribute Defense:"), 1, 1);
-                            form.add(FireSelector, 2, 1);
-                            BUDA3ImageView.setFitWidth(20); BUDA3ImageView.setFitHeight(20); form.add(BUDA3ImageView, 0, 2);
-                            form.add(new Label("Ice Attribute Defense:"), 1, 2);
-                            form.add(IceSelector, 2, 2);
-                            BUDA4ImageView.setFitWidth(20); BUDA4ImageView.setFitHeight(20); form.add(BUDA4ImageView, 0, 3);
-                            form.add(new Label("Explosion Attribute Defense:"), 1, 3);
-                            form.add(ExplosionSelector, 2, 3);
-                            BUDA5ImageView.setFitWidth(20); BUDA5ImageView.setFitHeight(20); form.add(BUDA5ImageView, 0, 4);
-                            form.add(new Label("Electric Attribute Defense:"), 1, 4);
-                            form.add(ElectricSelector, 2, 4);
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                        else if(defenseList.getSelectionModel().getSelectedItem() instanceof StatusVulnerability)
-                        {
-                            centerMenu.getChildren().clear();
-                            form.getChildren().clear();
-                            kindList.getSelectionModel().clearSelection();
-                            weaponList.getSelectionModel().clearSelection();
-
-                            upperBox.getChildren().clear();
-                            upperBox.getChildren().addAll(unitSelector, saveChangesButton);
-
-                            upperBox2.getChildren().clear();
-                            upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
-
-                            StatusVulnerability selected = (StatusVulnerability) defenseList.getSelectionModel().getSelectedItem();
-
-                            if (selected != null) loadStructFields(selected);
-
-                            saveChangesButton.setText("Save Struct Changes");
-
-                            form.setVgap(5);
-                            form.setHgap(10);
-                            form.setPadding(new Insets(10));
-
-                            SV1ImageView.setFitWidth(20); SV1ImageView.setFitHeight(20); form.add(SV1ImageView, 0, 0);
-                            form.add(new Label("Sleep Susceptibility:"), 1, 0);
-                            form.add(SleepField, 2, 0);
-                            SV2ImageView.setFitWidth(20); SV2ImageView.setFitHeight(20); form.add(SV2ImageView, 0, 1);
-                            form.add(new Label("Stop Susceptibility:"), 1, 1);
-                            form.add(StopField, 2, 1);
-                            SV3ImageView.setFitWidth(20); SV3ImageView.setFitHeight(20); form.add(SV3ImageView, 0, 2);
-                            form.add(new Label("Dizzy Susceptibility:"), 1, 2);
-                            form.add(DizzyField, 2, 2);
-                            SV4ImageView.setFitWidth(20); SV4ImageView.setFitHeight(20); form.add(SV4ImageView, 0, 3);
-                            form.add(new Label("Poison Susceptibility:"), 1, 3);
-                            form.add(PoisonField, 2, 3);
-                            SV5ImageView.setFitWidth(20); SV5ImageView.setFitHeight(20); form.add(SV5ImageView, 0, 4);
-                            form.add(new Label("Confuse Susceptibility:"), 1, 4);
-                            form.add(ConfuseField, 2, 4);
-                            SV6ImageView.setFitWidth(20); SV6ImageView.setFitHeight(20); form.add(SV6ImageView, 0, 5);
-                            form.add(new Label("Electric Susceptibility:"), 1, 5);
-                            form.add(ElectricField, 2, 5);
-                            SV7ImageView.setFitWidth(20); SV7ImageView.setFitHeight(20); form.add(SV7ImageView, 0, 6);
-                            form.add(new Label("Burn Susceptibility:"), 1, 6);
-                            form.add(BurnField, 2, 6);
-                            SV8ImageView.setFitWidth(20); SV8ImageView.setFitHeight(20); form.add(SV8ImageView, 0, 7);
-                            form.add(new Label("Freeze Susceptibility:"), 1, 7);
-                            form.add(FreezeField, 2, 7);
-                            SV9ImageView.setFitWidth(20); SV9ImageView.setFitHeight(20); form.add(SV9ImageView, 0, 8);
-                            form.add(new Label("Huge Susceptibility:"), 1, 8);
-                            form.add(HugeField, 2, 8);
-                            SV10ImageView.setFitWidth(20); SV10ImageView.setFitHeight(20); form.add(SV10ImageView, 0, 9);
-                            form.add(new Label("Tiny Susceptibility:"), 1, 9);
-                            form.add(TinyField, 2, 9);
-                            SV11ImageView.setFitWidth(20); SV11ImageView.setFitHeight(20); form.add(SV11ImageView, 0, 10);
-                            form.add(new Label("Attack Up Susceptibility:"), 1, 10);
-                            form.add(AttackUpField, 2, 10);
-                            SV12ImageView.setFitWidth(20); SV12ImageView.setFitHeight(20); form.add(SV12ImageView, 0, 11);
-                            form.add(new Label("Attack Down Susceptibility:"), 1, 11);
-                            form.add(AttackDownField, 2, 11);
-                            SV13ImageView.setFitWidth(20); SV13ImageView.setFitHeight(20); form.add(SV13ImageView, 0, 12);
-                            form.add(new Label("Defense Up Susceptibility:"), 1, 12);
-                            form.add(DefenseUpField, 2, 12);
-                            SV14ImageView.setFitWidth(20); SV14ImageView.setFitHeight(20); form.add(SV14ImageView, 0, 13);
-                            form.add(new Label("Defense Down Susceptibility:"), 1, 13);
-                            form.add(DefenseDownField, 2, 13);
-                            SV15ImageView.setFitWidth(20); SV15ImageView.setFitHeight(20); form.add(SV15ImageView, 0, 14);
-                            form.add(new Label("Allergic Susceptibility:"), 1, 14);
-                            form.add(AllergicField, 2, 14);
-                            SV16ImageView.setFitWidth(20); SV16ImageView.setFitHeight(20); form.add(SV16ImageView, 0, 15);
-                            form.add(new Label("Fright Susceptibility:"), 1, 15);
-                            form.add(FrightField, 2, 15);
-                            SV17ImageView.setFitWidth(20); SV17ImageView.setFitHeight(20); form.add(SV17ImageView, 0, 16);
-                            form.add(new Label("Gale Force Susceptibility:"), 1, 16);
-                            form.add(GaleForceField, 2, 16);
-                            SV18ImageView.setFitWidth(20); SV18ImageView.setFitHeight(20); form.add(SV18ImageView, 0, 17);
-                            form.add(new Label("Fast Susceptibility:"), 1, 17);
-                            form.add(FastField, 2, 17);
-                            SV19ImageView.setFitWidth(20); SV19ImageView.setFitHeight(20); form.add(SV19ImageView, 0, 18);
-                            form.add(new Label("Slow Susceptibility:"), 1, 18);
-                            form.add(SlowField, 2, 18);
-                            SV20ImageView.setFitWidth(20); SV20ImageView.setFitHeight(20); form.add(SV20ImageView, 0, 19);
-                            form.add(new Label("Dodgy Susceptibility:"), 1, 19);
-                            form.add(DodgyField, 2, 19);
-                            SV21ImageView.setFitWidth(20); SV21ImageView.setFitHeight(20); form.add(SV21ImageView, 0, 20);
-                            form.add(new Label("Invisible Susceptibility:"), 1, 20);
-                            form.add(InvisibleField, 2, 20);
-                            SV22ImageView.setFitWidth(20); SV22ImageView.setFitHeight(20); form.add(SV22ImageView, 0, 21);
-                            form.add(new Label("OHKO Susceptibility:"), 1, 21);
-                            form.add(OHKOField, 2, 21);
-
-                            centerMenu.getChildren().add(form);
-                            ScrollPane centerScroll = new ScrollPane();
-                            centerScroll.setContent(centerMenu);
-                            borderPane.setCenter(centerScroll);
-                        }
-                    });
-                    weaponList.setOnMouseClicked(e2 -> 
-                    {
-                        centerMenu.getChildren().clear();
-                        form.getChildren().clear();
-                        kindList.getSelectionModel().clearSelection();
-                        defenseList.getSelectionModel().clearSelection();
-
-                        upperBox.getChildren().clear();
-                        upperBox.getChildren().addAll(unitSelector, saveChangesButton);
-
-                        upperBox2.getChildren().clear();
-                        upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
-
-                        SuperguardStateSelector.getItems().clear();
-                        ElementSelector.getItems().clear();
-                        DamagePatternSelector.getItems().clear();
-                        ACLevelSelector.getItems().clear();
-                        SuperguardStateSelector.getItems().addAll("Unsuperguardable", "Superguardable with Recoil", "Superguardable without Recoil");
-                        ElementSelector.getItems().addAll("Normal", "Fire", "Ice", "Explosive", "Electric");
-                        DamagePatternSelector.getItems().addAll("None", "???", "Gulp Knocked onto Ground", "Gulp Knocked into next Target", "???", "Squashed Type 1", "Squashed Type 2", "Squashed Type 3", "Inked", "Super Hammer Knocked Back", "Ultra Hammer Knocked Back", "???", "Confusion Effect", "Spin Once 1", "Spin Once 2", "Quickly Spin 1", "Quickly Spin 2", "Blown Away", "???");
-                        ACLevelSelector.getItems().addAll("Extremely Easy", "Very Easy", "Easy", "Normal", "Difficult", "Very Difficult", "Extremely Difficult");
-
-                        BattleWeapon selected = weaponList.getSelectionModel().getSelectedItem();
-
-                        if (selected != null) loadStructFields(selected);
-
-                        saveChangesButton.setText("Save Struct Changes");
-
-                        form.setVgap(5);
-                        form.setHgap(10);
-                        form.setPadding(new Insets(10));
-
-                        BW1ImageView.setFitWidth(20); BW1ImageView.setFitHeight(20); form.add(BW1ImageView, 0, 0);
-                        form.add(new Label("Accuracy:"), 1, 0);
-                        form.add(AccuracyField, 2, 0);
-                        BW2ImageView.setFitWidth(20); BW2ImageView.setFitHeight(20); form.add(BW2ImageView, 0, 1);
-                        form.add(new Label("FP Cost:"), 1, 1);
-                        form.add(FPCostField, 2, 1);
-                        BW3ImageView.setFitWidth(20); BW3ImageView.setFitHeight(20); form.add(BW3ImageView, 0, 2);
-                        form.add(new Label("SP Cost:"), 1, 2);
-                        form.add(SPCostField, 2, 2);
-                        BW4ImageView.setFitWidth(20); BW4ImageView.setFitHeight(20); form.add(BW4ImageView, 0, 3);
-                        form.add(new Label("Superguard State:"), 1, 3);
-                        form.add(SuperguardStateSelector, 2, 3);
-                        BW5ImageView.setFitWidth(20); BW5ImageView.setFitHeight(20); form.add(BW5ImageView, 0, 4);
-                        form.add(new Label("Stylish Multiplier:"), 1, 4);
-                        form.add(StylishMultiplierField, 2, 4);
-                        BW6ImageView.setFitWidth(20); BW6ImageView.setFitHeight(20); form.add(BW6ImageView, 0, 5);
-                        form.add(new Label("Increase Bingo Slot Chance:"), 1, 5);
-                        form.add(BingoSlotIncChanceField, 2, 5);
-                        BW7ImageView.setFitWidth(20); BW7ImageView.setFitHeight(20); form.add(BW7ImageView, 0, 6);
-                        form.add(new Label("Base Damage Parameter 1:"), 1, 6);
-                        form.add(BaseDamage1Field, 2, 6);
-                        BW8ImageView.setFitWidth(20); BW8ImageView.setFitHeight(20); form.add(BW8ImageView, 0, 7);
-                        form.add(new Label("Base Damage Parameter 2:"), 1, 7);
-                        form.add(BaseDamage2Field, 2, 7);
-                        BW9ImageView.setFitWidth(20); BW9ImageView.setFitHeight(20); form.add(BW9ImageView, 0, 8);
-                        form.add(new Label("Base Damage Parameter 3:"), 1, 8);
-                        form.add(BaseDamage3Field, 2, 8);
-                        BW10ImageView.setFitWidth(20); BW10ImageView.setFitHeight(20); form.add(BW10ImageView, 0, 9);
-                        form.add(new Label("Base Damage Parameter 4:"), 1, 9);
-                        form.add(BaseDamage4Field, 2, 9);
-                        BW11ImageView.setFitWidth(20); BW11ImageView.setFitHeight(20); form.add(BW11ImageView, 0, 10);
-                        form.add(new Label("Base Damage Parameter 5:"), 1, 10);
-                        form.add(BaseDamage5Field, 2, 10);
-                        BW12ImageView.setFitWidth(20); BW12ImageView.setFitHeight(20); form.add(BW12ImageView, 0, 11);
-                        form.add(new Label("Base Damage Parameter 6:"), 1, 11);
-                        form.add(BaseDamage6Field, 2, 11);
-                        BW13ImageView.setFitWidth(20); BW13ImageView.setFitHeight(20); form.add(BW13ImageView, 0, 12);
-                        form.add(new Label("Base Damage Parameter 7:"), 1, 12);
-                        form.add(BaseDamage7Field, 2, 12);
-                        BW14ImageView.setFitWidth(20); BW14ImageView.setFitHeight(20); form.add(BW14ImageView, 0, 13);
-                        form.add(new Label("Base Damage Parameter 8:"), 1, 13);
-                        form.add(BaseDamage8Field, 2, 13);
-                        BW15ImageView.setFitWidth(20); BW15ImageView.setFitHeight(20); form.add(BW15ImageView, 0, 14);
-                        form.add(new Label("Base FP Damage Parameter 1:"), 1, 14);
-                        form.add(BaseFPDamage1Field, 2, 14);
-                        BW16ImageView.setFitWidth(20); BW16ImageView.setFitHeight(20); form.add(BW16ImageView, 0, 15);
-                        form.add(new Label("Base FP Damage Parameter 2:"), 1, 15);
-                        form.add(BaseFPDamage2Field, 2, 15);
-                        BW17ImageView.setFitWidth(20); BW17ImageView.setFitHeight(20); form.add(BW17ImageView, 0, 16);
-                        form.add(new Label("Base FP Damage Parameter 3:"), 1, 16);
-                        form.add(BaseFPDamage3Field, 2, 16);
-                        BW18ImageView.setFitWidth(20); BW18ImageView.setFitHeight(20); form.add(BW18ImageView, 0, 17);
-                        form.add(new Label("Base FP Damage Parameter 4:"), 1, 17);
-                        form.add(BaseFPDamage4Field, 2, 17);
-                        BW19ImageView.setFitWidth(20); BW19ImageView.setFitHeight(20); form.add(BW19ImageView, 0, 18);
-                        form.add(new Label("Base FP Damage Parameter 5:"), 1, 18);
-                        form.add(BaseFPDamage5Field, 2, 18);
-                        BW20ImageView.setFitWidth(20); BW20ImageView.setFitHeight(20); form.add(BW20ImageView, 0, 19);
-                        form.add(new Label("Base FP Damage Parameter 6:"), 1, 19);
-                        form.add(BaseFPDamage6Field, 2, 19);
-                        BW21ImageView.setFitWidth(20); BW21ImageView.setFitHeight(20); form.add(BW21ImageView, 0, 20);
-                        form.add(new Label("Base FP Damage Parameter 7:"), 1, 20);
-                        form.add(BaseFPDamage7Field, 2, 20);
-                        BW22ImageView.setFitWidth(20); BW22ImageView.setFitHeight(20); form.add(BW22ImageView, 0, 21);
-                        form.add(new Label("Base FP Damage Parameter 8:"), 1, 21);
-                        form.add(BaseFPDamage8Field, 2, 21);
-                        BW23ImageView.setFitWidth(20); BW23ImageView.setFitHeight(20); form.add(BW23ImageView, 0, 22);
-                        form.add(new Label("Element:"), 1, 22);
-                        form.add(ElementSelector, 2, 22);
-                        BW24ImageView.setFitWidth(20); BW24ImageView.setFitHeight(20); form.add(BW24ImageView, 0, 23);
-                        form.add(new Label("Damage Pattern:"), 1, 23);
-                        form.add(DamagePatternSelector, 2, 23);
-                        BW79ImageView.setFitWidth(20); BW79ImageView.setFitHeight(20); form.add(BW79ImageView, 0, 24);
-                        form.add(new Label("Action Command Difficulty:"), 1, 24);
-                        form.add(ACLevelSelector, 2, 24);
-                        BW25ImageView.setFitWidth(20); BW25ImageView.setFitHeight(20); form.add(BW25ImageView, 0, 25);
-                        form.add(new Label("Sleep Chance:"), 1, 25);
-                        form.add(SleepChanceField, 2, 25);
-                        BW26ImageView.setFitWidth(20); BW26ImageView.setFitHeight(20); form.add(BW26ImageView, 0, 26);
-                        form.add(new Label("Sleep Time:"), 1, 26);
-                        form.add(SleepTimeField, 2, 26);
-                        BW27ImageView.setFitWidth(20); BW27ImageView.setFitHeight(20); form.add(BW27ImageView, 0, 27);
-                        form.add(new Label("Stop Chance:"), 1, 27);
-                        form.add(StopChanceField, 2, 27);
-                        BW28ImageView.setFitWidth(20); BW28ImageView.setFitHeight(20); form.add(BW28ImageView, 0, 28);
-                        form.add(new Label("Stop Time:"), 1, 28);
-                        form.add(StopTimeField, 2, 28);
-                        BW29ImageView.setFitWidth(20); BW29ImageView.setFitHeight(20); form.add(BW29ImageView, 0, 29);
-                        form.add(new Label("Dizzy Chance:"), 1, 29);
-                        form.add(DizzyChanceField, 2, 29);
-                        BW30ImageView.setFitWidth(20); BW30ImageView.setFitHeight(20); form.add(BW30ImageView, 0, 30);
-                        form.add(new Label("Dizzy Time:"), 1, 30);
-                        form.add(DizzyTimeField, 2, 30);
-                        BW31ImageView.setFitWidth(20); BW31ImageView.setFitHeight(20); form.add(BW31ImageView, 0, 31);
-                        form.add(new Label("Poison Chance:"), 1, 31);
-                        form.add(PoisonChanceField, 2, 31);
-                        BW32ImageView.setFitWidth(20); BW32ImageView.setFitHeight(20); form.add(BW32ImageView, 0, 32);
-                        form.add(new Label("Poison Time:"), 1, 32);
-                        form.add(PoisonTimeField, 2, 32);
-                        BW33ImageView.setFitWidth(20); BW33ImageView.setFitHeight(20); form.add(BW33ImageView, 0, 33);
-                        form.add(new Label("Poison Strength:"), 1, 33);
-                        form.add(PoisonStrengthField, 2, 33);
-                        BW34ImageView.setFitWidth(20); BW34ImageView.setFitHeight(20); form.add(BW34ImageView, 0, 34);
-                        form.add(new Label("Confuse Chance:"), 1, 34);
-                        form.add(ConfuseChanceField, 2, 34);
-                        BW35ImageView.setFitWidth(20); BW35ImageView.setFitHeight(20); form.add(BW35ImageView, 0, 35);
-                        form.add(new Label("Confuse Time:"), 1, 35);
-                        form.add(ConfuseTimeField, 2, 35);
-                        BW36ImageView.setFitWidth(20); BW36ImageView.setFitHeight(20); form.add(BW36ImageView, 0, 36);
-                        form.add(new Label("Electric Chance:"), 1, 36);
-                        form.add(ElectricChanceField, 2, 36);
-                        BW37ImageView.setFitWidth(20); BW37ImageView.setFitHeight(20); form.add(BW37ImageView, 0, 37);
-                        form.add(new Label("Electric Time:"), 1, 37);
-                        form.add(ElectricTimeField, 2, 37);
-                        BW38ImageView.setFitWidth(20); BW38ImageView.setFitHeight(20); form.add(BW38ImageView, 0, 38);
-                        form.add(new Label("Dodgy Chance:"), 1, 38);
-                        form.add(DodgyChanceField, 2, 38);
-                        BW39ImageView.setFitWidth(20); BW39ImageView.setFitHeight(20); form.add(BW39ImageView, 0, 39);
-                        form.add(new Label("Dodgy Time:"), 1, 39);
-                        form.add(DodgyTimeField, 2, 39);
-                        BW40ImageView.setFitWidth(20); BW40ImageView.setFitHeight(20); form.add(BW40ImageView, 0, 40);
-                        form.add(new Label("Burn Chance:"), 1, 40);
-                        form.add(BurnChanceField, 2, 40);
-                        BW41ImageView.setFitWidth(20); BW41ImageView.setFitHeight(20); form.add(BW41ImageView, 0, 41);
-                        form.add(new Label("Burn Time:"), 1, 41);
-                        form.add(BurnTimeField, 2, 41);
-                        BW42ImageView.setFitWidth(20); BW42ImageView.setFitHeight(20); form.add(BW42ImageView, 0, 42);
-                        form.add(new Label("Freeze Chance:"), 1, 42);
-                        form.add(FreezeChanceField, 2, 42);
-                        BW43ImageView.setFitWidth(20); BW43ImageView.setFitHeight(20); form.add(BW43ImageView, 0, 43);
-                        form.add(new Label("Freeze Time:"), 1, 43);
-                        form.add(FreezeTimeField, 2, 43);
-                        BW44ImageView.setFitWidth(20); BW44ImageView.setFitHeight(20); form.add(BW44ImageView, 0, 44);
-                        form.add(new Label("Size Change Chance:"), 1, 44);
-                        form.add(SizeChangeChanceField, 2, 44);
-                        BW45ImageView.setFitWidth(20); BW45ImageView.setFitHeight(20); form.add(BW45ImageView, 0, 45);
-                        form.add(new Label("Size Change Time:"), 1, 45);
-                        form.add(SizeChangeTimeField, 2, 45);
-                        BW46ImageView.setFitWidth(20); BW46ImageView.setFitHeight(20); form.add(BW46ImageView, 0, 46);
-                        form.add(new Label("Size Change Strength:"), 1, 46);
-                        form.add(SizeChangeStrengthField, 2, 46);
-                        BW47ImageView.setFitWidth(20); BW47ImageView.setFitHeight(20); form.add(BW47ImageView, 0, 47);
-                        form.add(new Label("Atk Change Chance:"), 1, 47);
-                        form.add(AtkChangeChanceField, 2, 47);
-                        BW48ImageView.setFitWidth(20); BW48ImageView.setFitHeight(20); form.add(BW48ImageView, 0, 48);
-                        form.add(new Label("Atk Change Time:"), 1, 48);
-                        form.add(AtkChangeTimeField, 2, 48);
-                        BW49ImageView.setFitWidth(20); BW49ImageView.setFitHeight(20); form.add(BW49ImageView, 0, 49);
-                        form.add(new Label("Atk Change Strength:"), 1, 49);
-                        form.add(AtkChangeStrengthField, 2, 49);
-                        BW50ImageView.setFitWidth(20); BW50ImageView.setFitHeight(20); form.add(BW50ImageView, 0, 50);
-                        form.add(new Label("Def Change Chance:"), 1, 50);
-                        form.add(DefChangeChanceField, 2, 50);
-                        BW51ImageView.setFitWidth(20); BW51ImageView.setFitHeight(20); form.add(BW51ImageView, 0, 51);
-                        form.add(new Label("Def Change Time:"), 1, 51);
-                        form.add(DefChangeTimeField, 2, 51);
-                        BW52ImageView.setFitWidth(20); BW52ImageView.setFitHeight(20); form.add(BW52ImageView, 0, 52);
-                        form.add(new Label("Def Change Strength:"), 1, 52);
-                        form.add(DefChangeStrengthField, 2, 52);
-                        BW53ImageView.setFitWidth(20); BW53ImageView.setFitHeight(20); form.add(BW53ImageView, 0, 53);
-                        form.add(new Label("Allergic Chance:"), 1, 53);
-                        form.add(AllergicChanceField, 2, 53);
-                        BW54ImageView.setFitWidth(20); BW54ImageView.setFitHeight(20); form.add(BW54ImageView, 0, 54);
-                        form.add(new Label("Allergic Time:"), 1, 54);
-                        form.add(AllergicTimeField, 2, 54);
-                        BW55ImageView.setFitWidth(20); BW55ImageView.setFitHeight(20); form.add(BW55ImageView, 0, 55);
-                        form.add(new Label("OHKO Chance:"), 1, 55);
-                        form.add(OHKOChanceField, 2, 55);
-                        BW56ImageView.setFitWidth(20); BW56ImageView.setFitHeight(20); form.add(BW56ImageView, 0, 56);
-                        form.add(new Label("Charge Strength:"), 1, 56);
-                        form.add(ChargeStrengthField, 2, 56);
-                        BW57ImageView.setFitWidth(20); BW57ImageView.setFitHeight(20); form.add(BW57ImageView, 0, 57);
-                        form.add(new Label("Fast Chance:"), 1, 57);
-                        form.add(FastChanceField, 2, 57);
-                        BW58ImageView.setFitWidth(20); BW58ImageView.setFitHeight(20); form.add(BW58ImageView, 0, 58);
-                        form.add(new Label("Fast Time:"), 1, 58);
-                        form.add(FastTimeField, 2, 58);
-                        BW59ImageView.setFitWidth(20); BW59ImageView.setFitHeight(20); form.add(BW59ImageView, 0, 59);
-                        form.add(new Label("Slow Chance:"), 1, 59);
-                        form.add(SlowChanceField, 2, 59);
-                        BW60ImageView.setFitWidth(20); BW60ImageView.setFitHeight(20); form.add(BW60ImageView, 0, 60);
-                        form.add(new Label("Slow Time:"), 1, 60);
-                        form.add(SlowTimeField, 2, 60);
-                        BW61ImageView.setFitWidth(20); BW61ImageView.setFitHeight(20); form.add(BW61ImageView, 0, 61);
-                        form.add(new Label("Fright Chance:"), 1, 61);
-                        form.add(FrightChanceField, 2, 61);
-                        BW62ImageView.setFitWidth(20); BW62ImageView.setFitHeight(20); form.add(BW62ImageView, 0, 62);
-                        form.add(new Label("Gale Force Chance:"), 1, 62);
-                        form.add(GaleForceChanceField, 2, 62);
-                        BW63ImageView.setFitWidth(20); BW63ImageView.setFitHeight(20); form.add(BW63ImageView, 0, 63);
-                        form.add(new Label("Payback Time:"), 1, 63);
-                        form.add(PaybackTimeField, 2, 63);
-                        BW64ImageView.setFitWidth(20); BW64ImageView.setFitHeight(20); form.add(BW64ImageView, 0, 64);
-                        form.add(new Label("Hold Fast Time:"), 1, 64);
-                        form.add(HoldFastTimeField, 2, 64);
-                        BW65ImageView.setFitWidth(20); BW65ImageView.setFitHeight(20); form.add(BW65ImageView, 0, 65);
-                        form.add(new Label("Invisible Chance:"), 1, 65);
-                        form.add(InvisibleChanceField, 2, 65);
-                        BW66ImageView.setFitWidth(20); BW66ImageView.setFitHeight(20); form.add(BW66ImageView, 0, 66);
-                        form.add(new Label("Invisible Time:"), 1, 66);
-                        form.add(InvisibleTimeField, 2, 66);
-                        BW67ImageView.setFitWidth(20); BW67ImageView.setFitHeight(10); form.add(BW67ImageView, 0, 67);
-                        form.add(new Label("HP Regen Time:"), 1, 67);
-                        form.add(HPRegenTimeField, 2, 67);
-                        BW68ImageView.setFitWidth(20); BW68ImageView.setFitHeight(10); form.add(BW68ImageView, 0, 68);
-                        form.add(new Label("HP Regen Strength:"), 1, 68);
-                        form.add(HPRegenStrengthField, 2, 68);
-                        BW69ImageView.setFitWidth(20); BW69ImageView.setFitHeight(10); form.add(BW69ImageView, 0, 69);
-                        form.add(new Label("FP Regen Time:"), 1, 69);
-                        form.add(FPRegenTimeField, 2, 69);
-                        BW70ImageView.setFitWidth(20); BW70ImageView.setFitHeight(10); form.add(BW70ImageView, 0, 70);
-                        form.add(new Label("FP Regen Strength:"), 1, 70);
-                        form.add(FPRegenStrengthField, 2, 70);
-                        BW71ImageView.setFitWidth(20); BW71ImageView.setFitHeight(20); form.add(BW71ImageView, 0, 71);
-                        form.add(new Label("Stage Background Fall Chance 1:"), 1, 71);
-                        form.add(STGFall1Field, 2, 71);
-                        BW72ImageView.setFitWidth(20); BW72ImageView.setFitHeight(20); form.add(BW72ImageView, 0, 72);
-                        form.add(new Label("Stage Background Fall Chance 2:"), 1, 72);
-                        form.add(STGFall2Field, 2, 72);
-                        BW73ImageView.setFitWidth(20); BW73ImageView.setFitHeight(20); form.add(BW73ImageView, 0, 73);
-                        form.add(new Label("Stage Background Fall Chance 3:"), 1, 73);
-                        form.add(STGFall3Field, 2, 73);
-                        BW74ImageView.setFitWidth(20); BW74ImageView.setFitHeight(20); form.add(BW74ImageView, 0, 74);
-                        form.add(new Label("Stage Background Fall Chance 4:"), 1, 74);
-                        form.add(STGFall4Field, 2, 74);
-                        BW75ImageView.setFitWidth(20); BW75ImageView.setFitHeight(20); form.add(BW75ImageView, 0, 75);
-                        form.add(new Label("Stage Nozzle Turn Chance:"), 1, 75);
-                        form.add(STGNozzleTurnField, 2, 75);
-                        BW76ImageView.setFitWidth(20); BW76ImageView.setFitHeight(20); form.add(BW76ImageView, 0, 76);
-                        form.add(new Label("Stage Nozzle Fire Chance:"), 1, 76);
-                        form.add(STGNozzleFireField, 2, 76);
-                        BW77ImageView.setFitWidth(20); BW77ImageView.setFitHeight(20); form.add(BW77ImageView, 0, 77);
-                        form.add(new Label("Stage Ceiling Fall Chance:"), 1, 77);
-                        form.add(STGCeilingFallField, 2, 77);
-                        BW78ImageView.setFitWidth(20); BW78ImageView.setFitHeight(20); form.add(BW78ImageView, 0, 78);
-                        form.add(new Label("Stage Object Fall Chance:"), 1, 78);
-                        form.add(STGObjectFallField, 2, 78);
-                        form.add(new Label("Cannot Target Mario or Shell Shield:"), 1, 79);
-                        form.add(TCF1Box, 2, 79);
-                        form.add(new Label("Cannot Target Partner:"), 1, 80);
-                        form.add(TCF2Box, 2, 80);
-                        form.add(new Label("Cannot Target Enemy:"), 1, 81);
-                        form.add(TCF3Box, 2, 81);
-                        form.add(new Label("Cannot Target Opposite Alliance:"), 1, 82);
-                        form.add(TCF4Box, 2, 82);
-                        form.add(new Label("Cannot Target Own Alliance:"), 1, 83);
-                        form.add(TCF5Box, 2, 83);
-                        form.add(new Label("Cannot Target Self:"), 1, 84);
-                        form.add(TCF6Box, 2, 84);
-                        form.add(new Label("Cannot Target Same Species:"), 1, 85);
-                        form.add(TCF7Box, 2, 85);
-                        form.add(new Label("Only Target Self:"), 1, 86);
-                        form.add(TCF8Box, 2, 86);
-                        form.add(new Label("Only Target Mario:"), 1, 87);
-                        form.add(TCF9Box, 2, 87);
-                        form.add(new Label("Single Target:"), 1, 88);
-                        form.add(TCF10Box, 2, 88);
-                        form.add(new Label("Multiple Target:"), 1, 89);
-                        form.add(TCF11Box, 2, 89);
-                        form.add(new Label("Is Tattle-like:"), 1, 90);
-                        form.add(TPF1Box, 2, 90);
-                        form.add(new Label("Cannot Target Ceiling:"), 1, 91);
-                        form.add(TPF2Box, 2, 91);
-                        form.add(new Label("Cannot Target Floating:"), 1, 92);
-                        form.add(TPF3Box, 2, 92);
-                        form.add(new Label("Cannot Target Grounded:"), 1, 93);
-                        form.add(TPF4Box, 2, 93);
-                        form.add(new Label("Is Jump-like:"), 1, 94);
-                        form.add(TPF5Box, 2, 94);
-                        form.add(new Label("Is Hammer-like:"), 1, 95);
-                        form.add(TPF6Box, 2, 95);
-                        form.add(new Label("Is Shell Toss-like:"), 1, 96);
-                        form.add(TPF7Box, 2, 96);
-                        form.add(new Label("Has Recoil Damage:"), 1, 97);
-                        form.add(TPF8Box, 2, 97);
-                        form.add(new Label("Can Only Target Frontmost:"), 1, 98);
-                        form.add(TPF9Box, 2, 98);
-                        form.add(new Label("Target Same Alliance Direction:"), 1, 99);
-                        form.add(TPF10Box, 2, 99);
-                        form.add(new Label("Target Opposite Alliance Direction:"), 1, 100);
-                        form.add(TPF11Box, 2, 100);
-                        form.add(new Label("Badge Can Affect Power:"), 1, 101);
-                        form.add(SPF1Box, 2, 101);
-                        form.add(new Label("Status Can Affect Power:"), 1, 102);
-                        form.add(SPF2Box, 2, 102);
-                        form.add(new Label("Is Chargeable:"), 1, 103);
-                        form.add(SPF3Box, 2, 103);
-                        form.add(new Label("Cannot Miss:"), 1, 104);
-                        form.add(SPF4Box, 2, 104);
-                        form.add(new Label("Has Diminishing Damage by Hit:"), 1, 105);
-                        form.add(SPF5Box, 2, 105);
-                        form.add(new Label("Has Diminishing Damage by Target:"), 1, 106);
-                        form.add(SPF6Box, 2, 106);
-                        form.add(new Label("Pierces Defense:"), 1, 107);
-                        form.add(SPF7Box, 2, 107);
-                        form.add(new Label("Ingore Target Status Vulnerability:"), 1, 108);
-                        form.add(SPF8Box, 2, 108);
-                        form.add(new Label("Change Element to Fire if Target Burned:"), 1, 109);
-                        form.add(SPF9Box, 2, 109);
-                        form.add(new Label("Flips Shell Enemies:"), 1, 110);
-                        form.add(SPF10Box, 2, 110);
-                        form.add(new Label("Flips Bomb-Flippable Enemies:"), 1, 111);
-                        form.add(SPF11Box, 2, 111);
-                        form.add(new Label("Grounds Winged Enemies:"), 1, 112);
-                        form.add(SPF12Box, 2, 112);
-                        form.add(new Label("Can be Used when Confused:"), 1, 113);
-                        form.add(SPF13Box, 2, 113);
-                        form.add(new Label("Is Unguardable:"), 1, 114);
-                        form.add(SPF14Box, 2, 114);
-                        form.add(new Label("Ignore Electric Resistance:"), 1, 115);
-                        form.add(CRF1Box, 2, 115);
-                        form.add(new Label("Ignore Top Spiky Resistance:"), 1, 116);
-                        form.add(CRF2Box, 2, 116);
-                        form.add(new Label("Ignore Pre-emptive Front Spiky Resistance:"), 1, 117);
-                        form.add(CRF3Box, 2, 117);
-                        form.add(new Label("Ignore Front Spiky Resistance:"), 1, 118);
-                        form.add(CRF4Box, 2, 118);
-                        form.add(new Label("Ignore Fire Resistance:"), 1, 119);
-                        form.add(CRF5Box, 2, 119);
-                        form.add(new Label("Ignore Ice Resistance:"), 1, 120);
-                        form.add(CRF6Box, 2, 120);
-                        form.add(new Label("Ignore Poison Resistance:"), 1, 121);
-                        form.add(CRF7Box, 2, 121);
-                        form.add(new Label("Ignore Explosive Resistance:"), 1, 122);
-                        form.add(CRF8Box, 2, 122);
-                        form.add(new Label("Ignore Volatile Explosive Resistance:"), 1, 123);
-                        form.add(CRF9Box, 2, 123);
-                        form.add(new Label("Ignore Payback Resistance:"), 1, 124);
-                        form.add(CRF10Box, 2, 124);
-                        form.add(new Label("Ignore Hold Fast Resistance:"), 1, 125);
-                        form.add(CRF11Box, 2, 125);
-                        form.add(new Label("Prefer Targeting Mario:"), 1, 126);
-                        form.add(TWF1Box, 2, 126);
-                        form.add(new Label("Prefer Targeting Partner:"), 1, 127);
-                        form.add(TWF2Box, 2, 127);
-                        form.add(new Label("Prefer Targeting Front:"), 1, 128);
-                        form.add(TWF3Box, 2, 128);
-                        form.add(new Label("Prefer Targeting Back:"), 1, 129);
-                        form.add(TWF4Box, 2, 129);
-                        form.add(new Label("Prefer Targeting Same Alliance:"), 1, 130);
-                        form.add(TWF5Box, 2, 130);
-                        form.add(new Label("Prefer Targeting Opposite Alliance:"), 1, 131);
-                        form.add(TWF6Box, 2, 131);
-                        form.add(new Label("Prefer Targeting Less Healthy:"), 1, 132);
-                        form.add(TWF7Box, 2, 132);
-                        form.add(new Label("Greatly Prefer Targeting Less Healthy:"), 1, 133);
-                        form.add(TWF8Box, 2, 133);
-                        form.add(new Label("Prefer Targeting Lower HP Target:"), 1, 134);
-                        form.add(TWF9Box, 2, 134);
-                        form.add(new Label("Prefer Targeting Higher HP Target:"), 1, 135);
-                        form.add(TWF10Box, 2, 135);
-                        form.add(new Label("Prefer Targeting Target in Peril:"), 1, 136);
-                        form.add(TWF11Box, 2, 136);
-                        form.add(new Label("Choose Targeting Randomly:"), 1, 137);
-                        form.add(TWF12Box, 2, 137);
-
-                        centerMenu.getChildren().add(form);
-                        ScrollPane centerScroll = new ScrollPane();
-                        centerScroll.setContent(centerMenu);
-                        borderPane.setCenter(centerScroll);
-                    });
-                });
+                catch (FileNotFoundException e){System.out.println("There was an Error Finding the JSON File");}
+                catch (IOException e){System.out.println("There was an Error Reading the JSON File");}
+                catch (ParseException e){System.out.println("There was an Error Parsing the JSON File");}
+
+                closeButton.fire();
+                loadGUIMenus();
             }
         });
 
@@ -2123,6 +207,7 @@ public class GUI extends Application
                         fileChooser.getExtensionFilters().addAll(relFilter);
                     }
                     fileChooser.setTitle("Save As");
+                    fileChooser.setInitialDirectory(givenFile);
 
                     File dest = fileChooser.showSaveDialog(window);
                     if (dest != null) 
@@ -2135,7 +220,7 @@ public class GUI extends Application
 
                             Stage successBox = new Stage();
                             successBox.setTitle("Export");
-                            successBox.getIcons().add(unitImage);
+                            successBox.getIcons().add(images.get("unit"));
 
                             VBox successMenu = new VBox();
                             Text message = new Text("Successfully Saved!");
@@ -2178,7 +263,7 @@ public class GUI extends Application
                     FileChooser presetFileChooser = new FileChooser();
                     String[] fileName = fileSelector.getSelectionModel().getSelectedItem().getName().split("\\.");
 
-                    presetFileData = Main.buildPresetFile(givenFile, units);
+                    presetFileData = PresetUtils.buildPresetFile(givenFile, units);
                     presetFileChooser.setInitialFileName(fileName[0]);
                     FileChooser.ExtensionFilter bupFilter = new FileChooser.ExtensionFilter("Battle Unit Preset File Format (*.bup)", "*.bup");
                     presetFileChooser.getExtensionFilters().addAll(bupFilter);
@@ -2195,7 +280,7 @@ public class GUI extends Application
 
                             Stage successBox = new Stage();
                             successBox.setTitle("Export");
-                            successBox.getIcons().add(unitImage);
+                            successBox.getIcons().add(images.get("unit"));
 
                             VBox successMenu = new VBox();
                             Text message = new Text("Successfully Saved!");
@@ -2245,7 +330,7 @@ public class GUI extends Application
 
                     if(givenPresetData[0] == 0x00)
                     {
-                        ArrayList<UnitData> presetUnits = Main.getPresetData(givenPreset);
+                        ArrayList<UnitData> presetUnits = PresetUtils.getPresetData(givenPreset);
 
                         for(int i = 0; i < presetUnits.size(); i++)
                         {
@@ -2327,14 +412,27 @@ public class GUI extends Application
                     fileChooser.setTitle("Select global.txt");
                     FileChooser.ExtensionFilter textFilter = new FileChooser.ExtensionFilter("Normal Text File Format (*.txt)", "*.txt");
                     fileChooser.getExtensionFilters().addAll(textFilter);
+                    fileChooser.setInitialDirectory(givenFile);
                     givenGlobal = fileChooser.showOpenDialog(window);
 
-                    byte[] newGlobalData = Main.buildNewTattleFile(givenGlobal, givenFile, units);
+                    try
+                    {
+                        java.nio.file.Path backupPath = Paths.get("backup", (LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy HH-mm-ss")) + " " + givenGlobal.getName()));
+                        Files.createDirectories(backupPath.getParent());
+                        Files.copy(givenGlobal.toPath(), backupPath);
+                    }   
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    byte[] newGlobalData = TattleUtils.buildNewTattleFile(givenGlobal, givenFile, units);
 
                     FileChooser globalFileSaver = new FileChooser();
                     globalFileSaver.setInitialFileName(givenGlobal.getName());
                     globalFileSaver.getExtensionFilters().addAll(textFilter);
                     globalFileSaver.setTitle("Save As");
+                    globalFileSaver.setInitialDirectory(givenFile);
 
                     File dest = globalFileSaver.showSaveDialog(window);
                     if (dest != null) 
@@ -2347,7 +445,7 @@ public class GUI extends Application
 
                             Stage successBox = new Stage();
                             successBox.setTitle("Export");
-                            successBox.getIcons().add(unitImage);
+                            successBox.getIcons().add(images.get("unit"));
 
                             VBox successMenu = new VBox();
                             Text message = new Text("Successfully Saved!");
@@ -2398,11 +496,11 @@ public class GUI extends Application
             {
                 Stage alertBox = new Stage();
                 alertBox.setTitle("About");
-                alertBox.getIcons().add(unitImage);
+                alertBox.getIcons().add(images.get("unit"));
 
                 VBox alertMenu = new VBox();
                 alertMenu.setAlignment(Pos.CENTER);
-                Text version = new Text("Written by Jemaroo     Version: 2.3.0");
+                Text version = new Text("Written by Jemaroo     Version: 2.4.0");
                 version.setWrappingWidth(290);
                 version.setTextAlignment(TextAlignment.CENTER);
                 Text description = new Text("TTYD BattleUnitTool allows you to open up the game's main dol or any rel file containing battle data and edit enemy unit fields.");
@@ -2422,17 +520,17 @@ public class GUI extends Application
             }
         });
 
-        window.getIcons().add(unitImage);
+        window.getIcons().add(images.get("unit"));
         window.show();
 
         //TODO Change update version
-        UpdateChecker updateChecker = new UpdateChecker("Jemaroo", "TTYDBattleUnitTool", "2.3.0");
+        UpdateChecker updateChecker = new UpdateChecker("Jemaroo", "TTYDBattleUnitTool", "2.4.0");
         updateChecker.check();
         if(updateChecker.isUpdateAvailable())
         {
             Stage updateBox = new Stage();
             updateBox.setTitle("Update Available");
-            updateBox.getIcons().add(unitImage);
+            updateBox.getIcons().add(images.get("unit"));
 
             Label updateMessage = new Label(updateChecker.getUpdateMessage().get());
             updateMessage.setAlignment(Pos.CENTER);
@@ -2490,6 +588,1583 @@ public class GUI extends Application
 
     /**
      * @Author Jemaroo
+     * @Function Opens the directory and sets up the correct fields
+     */
+    private void loadGUIMenus()
+    {
+        ArrayList<File> validFiles = Main.findMatchingFiles(givenFile, validFileNames);
+
+        fileSelector.getItems().clear();
+        topMenu.getChildren().clear();
+        topMenu.getChildren().addAll(openButton, fileSelector, exportButton, saveFilePresetButton, loadFilePresetButton, updateTattlesButton, closeButton, aboutButton);
+
+        for (File f : validFiles)
+        {
+            fileSelector.getItems().add(f);
+        }
+
+        //Setting list names for Directory Chooser
+        fileSelector.setCellFactory(lv -> new ListCell<File>() 
+        {
+            @Override protected void updateItem(File item, boolean empty) 
+            {
+                super.updateItem(item, empty);
+                if (empty || item == null) 
+                {
+                    setText(null);
+                    setGraphic(null);
+                } 
+                else 
+                {
+                    setText(fileNameSelector(item.getName()));
+                    setGraphic(fileImageSelector(item.getName()));
+                }
+            }
+        });
+        fileSelector.setButtonCell(new ListCell<File>() 
+        {
+            @Override protected void updateItem(File item, boolean empty) 
+            {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) 
+                {
+                    setText(null);
+                    setGraphic(null);
+                } 
+                else 
+                {
+                    setText(item.getName());
+                    setGraphic(fileImageSelector(item.getName()));
+                }
+            }
+        });
+
+        fileSelector.setOnAction(e -> 
+        {
+            centerMenu.getChildren().clear();
+
+            units = Main.getTableData(fileSelector.getSelectionModel().getSelectedItem());
+            isFileOpened = true;
+            test.testUnitData(units);
+
+            VBox leftMenu = new VBox();
+            unitSelector = new ComboBox<>();
+            for (UnitData unit : units) 
+            {
+                unitSelector.getItems().add(unit);
+            }
+            unitSelector.setMaxWidth(130);
+
+            unitSelector.setCellFactory(lv -> new ListCell<UnitData>()
+            {
+                @Override protected void updateItem(UnitData unit, boolean empty)
+                {
+                    super.updateItem(unit, empty);
+
+                    if(empty || unit == null)
+                    {
+                        setText(null);
+                        setGraphic(null);
+                    }
+                    else
+                    {
+                        setText(unit.name);
+                        setGraphic(unitImageSelector(unit.name));
+                    }
+                }
+            });
+            unitSelector.setButtonCell(new ListCell<UnitData>() 
+            {
+                @Override protected void updateItem(UnitData unit, boolean empty) 
+                {
+                    super.updateItem(unit, empty);
+
+                    if (empty || unit == null) 
+                    {
+                        setText(null);
+                        setGraphic(null);
+                    } 
+                    else 
+                    {
+                        setText(unit.name);
+                        setGraphic(unitImageSelector(unit.name));
+                    }
+                }
+            });
+
+            //Setting struct names for BattleUnitKind
+            kindList = new ListView<>();
+            kindList.setCellFactory(lv -> new ListCell<Object>() 
+            {
+                @Override protected void updateItem(Object item, boolean empty) 
+                {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) 
+                    {
+                        setText(null);
+                        setGraphic(null);
+                    } 
+                    else 
+                    {
+                        int count = 0;
+                        if (getListView().getItems() != null) 
+                        {
+                            for (int i = 0; i < getIndex(); i++) 
+                            {
+                                Object previousItem = getListView().getItems().get(i);
+                                if (item instanceof BattleUnitKind && previousItem instanceof BattleUnitKind) 
+                                {
+                                    count++;
+                                } 
+                                else if (item instanceof BattleUnitKindPart && previousItem instanceof BattleUnitKindPart) 
+                                {
+                                    count++;
+                                }
+                                else if (item instanceof HealthUpgrades && previousItem instanceof HealthUpgrades) 
+                                {
+                                    count++;
+                                }
+                            }
+                        }
+
+                        if(item instanceof BattleUnitKind)
+                        {
+                            setText("Kind Struct " + (count + 1));
+                            setGraphic(unitImageViewCreator(images.get("unit")));
+                        }
+                        else if(item instanceof BattleUnitKindPart)
+                        {
+                            setText("Part Struct " + (count + 1));
+                            setGraphic(unitImageViewCreator(images.get("unusedPaper")));
+                        }
+                        else if(item instanceof HealthUpgrades)
+                        {
+                            setText("Stat Upgrades");
+                            setGraphic(unitImageViewCreator(images.get("shineSprite")));
+                        }
+                    }
+                }
+            });
+
+            //Setting struct names for BattleUnitDefense, BattleUnitDefenseAttr, and StatusVulnerability
+            defenseList = new ListView<>();
+            defenseList.setCellFactory(lv -> new ListCell<Object>() 
+            {
+                @Override protected void updateItem(Object item, boolean empty) 
+                {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) 
+                    {
+                        setText(null);
+                        setGraphic(null);
+                    } 
+                    else 
+                    {
+                        int count = 0;
+                        if (getListView().getItems() != null) 
+                        {
+                            for (int i = 0; i < getIndex(); i++) 
+                            {
+                                Object previousItem = getListView().getItems().get(i);
+                                if (item instanceof BattleUnitDefense && previousItem instanceof BattleUnitDefense) 
+                                {
+                                    count++;
+                                } 
+                                else if (item instanceof BattleUnitDefenseAttr && previousItem instanceof BattleUnitDefenseAttr) 
+                                {
+                                    count++;
+                                }
+                                else if (item instanceof StatusVulnerability && previousItem instanceof StatusVulnerability) 
+                                {
+                                    count++;
+                                }
+                            }
+                        }
+
+                        if(item instanceof BattleUnitDefense)
+                        {
+                            setText("Defense Struct " + (count + 1));
+                            setGraphic(unitImageViewCreator(images.get("defendPlus")));
+                        }
+                        else if(item instanceof BattleUnitDefenseAttr)
+                        {
+                            setText("Defense Attribute Struct " + (count + 1));
+                            setGraphic(unitImageViewCreator(images.get("spikeShieldCustom")));
+                        }
+                        else if(item instanceof StatusVulnerability)
+                        {
+                            setText("Status Vulnerability Struct " + (count + 1));
+                            setGraphic(unitImageViewCreator(images.get("feelingFine")));
+                        }
+                    }
+                }
+            });
+
+            //Setting struct names for BattleWeapon
+            weaponList = new ListView<>();
+            weaponList.setCellFactory(lv -> new ListCell<BattleWeapon>() 
+            {
+                @Override protected void updateItem(BattleWeapon item, boolean empty) 
+                {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) 
+                    {
+                        setText(null);
+                        setGraphic(null);
+                    } 
+                    else 
+                    {
+                        setText(item.attackName);
+                        setGraphic(attackNameImageSelector(item.attackName));
+                    }
+                }
+            });
+
+            GridPane leftMenuForm = new GridPane();
+            upperBox.setPadding(new Insets(3));
+            upperBox.getChildren().clear();
+            upperBox.getChildren().add(unitSelector);
+            upperBox.setSpacing(5);
+            upperBox.setAlignment(Pos.CENTER_LEFT);
+            leftMenuForm.add(upperBox, 0, 0);
+
+            upperBox2 = new HBox();
+            upperBox2.setPadding(new Insets(3));
+            upperBox2.setSpacing(3);
+            upperBox2.getChildren().clear();
+            upperBox2.getChildren().add(new Label(""));
+            upperBox2.setAlignment(Pos.CENTER);
+            leftMenuForm.add(upperBox2, 0, 1);
+
+            HBox baseBox = new HBox();
+            baseBox.setPadding(new Insets(3));
+            baseBox.getChildren().add(new Label("Base:"));
+            leftMenuForm.add(baseBox, 0, 2);
+            leftMenuForm.add(kindList, 0, 3);
+
+            HBox defenseBox = new HBox();
+            defenseBox.setPadding(new Insets(3));
+            defenseBox.getChildren().add(new Label("Defense:"));
+            leftMenuForm.add(defenseBox, 0, 4);
+            leftMenuForm.add(defenseList, 0, 5);
+
+            HBox weaponBox = new HBox();
+            weaponBox.setPadding(new Insets(3));
+            weaponBox.getChildren().add(new Label("Attacks:"));
+            leftMenuForm.add(weaponBox, 0, 6);
+            leftMenuForm.add(weaponList, 0, 7);
+            
+            borderPane.setLeft(leftMenuForm);
+
+            GridPane form = new GridPane();
+
+            unitSelector.setOnAction(e2 -> 
+            {
+                centerMenu.getChildren().clear();
+                upperBox.getChildren().clear();
+                upperBox2.getChildren().clear();
+                upperBox.getChildren().add(unitSelector);
+                upperBox2.getChildren().add(new Label(""));
+                loadSelectedUnit(unitSelector.getSelectionModel().getSelectedIndex());
+            });
+
+            saveChangesButton.setOnAction(new EventHandler<ActionEvent>() 
+            {
+                @Override public void handle(ActionEvent event)
+                {
+                    saveFieldsToSelectedStruct();
+                    saveChangesButton.setText("    Changes Saved     ");
+                }
+            });
+
+            saveStructPresetButton.setOnAction(new EventHandler<ActionEvent>() 
+            {
+                @Override public void handle(ActionEvent event)
+                {
+                    Object selected = null;
+                    byte[] presetFileData = null;
+                    FileChooser presetFileChooser = new FileChooser();
+
+                    if (kindList.getSelectionModel().getSelectedItem() != null) 
+                    {
+                        selected = kindList.getSelectionModel().getSelectedItem();
+                    } 
+                    else if (defenseList.getSelectionModel().getSelectedItem() != null) 
+                    {
+                        selected = defenseList.getSelectionModel().getSelectedItem();
+                    } 
+                    else if (weaponList.getSelectionModel().getSelectedItem() != null)
+                    {
+                        selected = weaponList.getSelectionModel().getSelectedItem();
+                    }
+
+                    if (selected instanceof BattleUnitKind b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + kindList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof BattleUnitKindPart b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + kindList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof HealthUpgrades b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + kindList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof BattleUnitDefense b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + defenseList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof BattleUnitDefenseAttr b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + defenseList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof StatusVulnerability b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + defenseList.getSelectionModel().getSelectedItem().toString());
+                    }
+                    else if (selected instanceof BattleWeapon b) 
+                    {
+                        presetFileData = PresetUtils.buildPresetFile(givenFile, b);
+                        presetFileChooser.setInitialFileName(unitSelector.getSelectionModel().getSelectedItem().name + b.attackName.replace(" ", "") + weaponList.getSelectionModel().getSelectedItem().toString());
+                    }
+
+                    FileChooser.ExtensionFilter bupFilter = new FileChooser.ExtensionFilter("Battle Unit Preset File Format (*.bup)", "*.bup");
+                    presetFileChooser.getExtensionFilters().addAll(bupFilter);
+                    presetFileChooser.setTitle("Save As");
+                    presetFileChooser.setInitialDirectory(givenFile);
+
+                    File dest = presetFileChooser.showSaveDialog(window);
+                    if (dest != null) 
+                    {
+                        try 
+                        {
+                            FileOutputStream fos = new FileOutputStream(dest);
+                            fos.write(presetFileData);
+                            fos.close();
+
+                            Stage successBox = new Stage();
+                            successBox.setTitle("Export");
+                            successBox.getIcons().add(images.get("unit"));
+
+                            VBox successMenu = new VBox();
+                            Text message = new Text("Successfully Saved!");
+                            message.setWrappingWidth(290);
+                            message.setTextAlignment(TextAlignment.CENTER);
+                            successMenu.getChildren().addAll(new Label(""), message);
+
+                            StackPane successPane = new StackPane();
+                            successPane.getChildren().add(successMenu);
+                            successPane.setAlignment(Pos.CENTER);
+
+                            Scene successScene = new Scene(successPane, 150, 50);
+
+                            successBox.setScene(successScene);
+                            successBox.initModality(Modality.APPLICATION_MODAL);
+                            successBox.show();
+
+                            test.testUnitData(units);
+                        } 
+                        catch (IOException ex) 
+                        {
+                            System.out.println("There was an error creating the output file");
+                        }
+                    }
+                }
+            });
+
+            loadStructPresetButton.setOnAction(new EventHandler<ActionEvent>() 
+            {
+                @Override public void handle(ActionEvent event)
+                {
+                    File givenPreset = null;
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Select a Preset File");
+                    FileChooser.ExtensionFilter bupFilter = new FileChooser.ExtensionFilter("Battle Unit Preset File Format (*.bup)", "*.bup");
+                    fileChooser.getExtensionFilters().addAll(bupFilter);
+                    givenPreset = fileChooser.showOpenDialog(window);
+
+                    byte[] givenPresetData = ByteUtils.readData(givenPreset);
+
+                    Object selected = null;
+                    if (kindList.getSelectionModel().getSelectedItem() != null) 
+                    {
+                        selected = kindList.getSelectionModel().getSelectedItem();
+                    } 
+                    else if (defenseList.getSelectionModel().getSelectedItem() != null) 
+                    {
+                        selected = defenseList.getSelectionModel().getSelectedItem();
+                    } 
+                    else if (weaponList.getSelectionModel().getSelectedItem() != null)
+                    {
+                        selected = weaponList.getSelectionModel().getSelectedItem();
+                    }
+
+                    if(givenPresetData[0] == 0x00)
+                    {
+                        showGiveValidFileWindow();
+                    }
+                    else if (selected instanceof BattleUnitKind b) 
+                    {
+                        if(givenPresetData[0] == 0x01)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitKindData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof BattleUnitKindPart b) 
+                    {
+                        if(givenPresetData[0] == 0x02)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitKindPartData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof HealthUpgrades b) 
+                    {
+                        if(givenPresetData[0] == 0x07)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).HealthUpgradesData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof BattleUnitDefense b) 
+                    {
+                        if(givenPresetData[0] == 0x03)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitDefenseData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof BattleUnitDefenseAttr b) 
+                    {
+                        if(givenPresetData[0] == 0x04)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleUnitDefenseAttrData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof StatusVulnerability b) 
+                    {
+                        if(givenPresetData[0] == 0x05)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).StatusVulnerabilityData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                    else if (selected instanceof BattleWeapon b) 
+                    {
+                        if(givenPresetData[0] == 0x06)
+                        {
+                            ArrayList<UnitData> tempPreset = PresetUtils.getPresetData(givenPreset);
+                            savePresetFieldsToSelectedStruct(tempPreset.get(0).BattleWeaponData.get(0));
+                            loadStructFields(selected);
+                            showPresetSuccessWindow();
+                        }
+                        else
+                        {
+                            showGiveValidFileWindow();
+                        }
+                    }
+                }
+            });
+
+            kindList.setOnMouseClicked(e2 -> 
+            {                    
+                centerMenu.getChildren().clear();
+                form.getChildren().clear();
+                defenseList.getSelectionModel().clearSelection();
+                weaponList.getSelectionModel().clearSelection();
+
+                upperBox.getChildren().clear();
+                upperBox.getChildren().addAll(unitSelector, saveChangesButton);
+
+                upperBox2.getChildren().clear();
+                upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
+
+                if(kindList.getSelectionModel().getSelectedItem() instanceof BattleUnitKind)
+                {
+                    comboBoxFields[0].getItems().clear();
+                    comboBoxFields[0].getItems().addAll("None", "Swallow Bomb", "Spit into Other Enemy", "Spit Fireball", "Swallow Part of Enemy");
+
+                    BattleUnitKind selected = (BattleUnitKind) kindList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+
+                    form.add(fieldImageViewCreator(images.get("heart")), 0, 0);
+                    form.add(labelANDTooltipMaker("HP:", 1, 1), 1, 0);
+                    form.add(textFields[0], 2, 0);
+                    form.add(fieldImageViewCreator(images.get("dangerHeartCustom")), 0, 1);
+                    form.add(labelANDTooltipMaker("Danger HP:", 1, 2), 1, 1);
+                    form.add(textFields[1], 2, 1);
+                    form.add(fieldImageViewCreator(images.get("dangerHeartCustom")), 0, 2);
+                    form.add(labelANDTooltipMaker("Peril HP:", 1, 3), 1, 2);
+                    form.add(textFields[2], 2, 2);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 3);
+                    form.add(labelANDTooltipMaker("Level:", 1, 4), 1, 3);
+                    form.add(textFields[3], 2, 3);
+                    form.add(fieldImageViewCreator(images.get("XP")), 0, 4);
+                    form.add(labelANDTooltipMaker("Bonus XP:", 1, 5), 1, 4);
+                    form.add(textFields[4], 2, 4);
+                    form.add(fieldImageViewCreator(images.get("coin")), 0, 5);
+                    form.add(labelANDTooltipMaker("Bonus Coin:", 1, 6), 1, 5);
+                    form.add(textFields[5], 2, 5);
+                    form.add(fieldImageViewCreator(images.get("coin")), 0, 6);
+                    form.add(labelANDTooltipMaker("Bonus Coin Rate:", 1, 7), 1, 6);
+                    form.add(textFields[6], 2, 6);
+                    form.add(fieldImageViewCreator(images.get("coin")), 0, 7);
+                    form.add(labelANDTooltipMaker("Base Coin:", 1, 8), 1, 7);
+                    form.add(textFields[7], 2, 7);
+                    form.add(fieldImageViewCreator(images.get("runArrow")), 0, 8);
+                    form.add(labelANDTooltipMaker("Run Rate:", 1, 9), 1, 8);
+                    form.add(textFields[8], 2, 8);
+                    form.add(fieldImageViewCreator(images.get("powerBounce")), 0, 9);
+                    form.add(labelANDTooltipMaker("PB Cap:", 1, 10), 1, 9);
+                    form.add(textFields[9], 2, 9);
+                    form.add(fieldImageViewCreator(images.get("yoshiPartnerSwitch")), 0, 10);
+                    form.add(labelANDTooltipMaker("Swallow Chance:", 1, 11), 1, 10);
+                    form.add(textFields[10], 2, 10);
+                    form.add(fieldImageViewCreator(images.get("yoshiPartnerSwitch")), 0, 11);
+                    form.add(labelANDTooltipMaker("Swallow Attribute:", 1, 12), 1, 11);
+                    form.add(comboBoxFields[0], 2, 11);
+                    form.add(fieldImageViewCreator(images.get("ultraHammer")), 0, 12);
+                    form.add(labelANDTooltipMaker("Hammer Knockback Chance:", 1, 13), 1, 12);
+                    form.add(textFields[11], 2, 12);
+                    form.add(fieldImageViewCreator(images.get("mowzPartnerSwitch")), 0, 13);
+                    form.add(labelANDTooltipMaker("Item Steal Difficulty:", 1, 14), 1, 13);
+                    form.add(textFields[12], 2, 13);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 14);
+                    form.add(labelANDTooltipMaker("Is a Map Object:", 1, 15), 1, 14);
+                    form.add(checkBoxFields[0], 2, 14);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 15);
+                    form.add(labelANDTooltipMaker("Out of Reach:", 1, 16), 1, 15);
+                    form.add(checkBoxFields[1], 2, 15);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 16);
+                    form.add(labelANDTooltipMaker("Is Unquakeable:", 1, 17), 1, 16);
+                    form.add(checkBoxFields[2], 2, 16);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 17);
+                    form.add(labelANDTooltipMaker("Is Invisible:", 1, 18), 1, 17);
+                    form.add(checkBoxFields[3], 2, 17);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 18);
+                    form.add(labelANDTooltipMaker("Is Veiled:", 1, 19), 1, 18);
+                    form.add(checkBoxFields[4], 2, 18);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 19);
+                    form.add(labelANDTooltipMaker("Is Shell Shielded:", 1, 20), 1, 19);
+                    form.add(checkBoxFields[5], 2, 19);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 20);
+                    form.add(labelANDTooltipMaker("Never Targetable:", 1, 21), 1, 20);
+                    form.add(checkBoxFields[6], 2, 20);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 21);
+                    form.add(labelANDTooltipMaker("Limit Switch:", 1, 22), 1, 21);
+                    form.add(checkBoxFields[7], 2, 21);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 22);
+                    form.add(labelANDTooltipMaker("Disable Zero Gravity Floating:", 1, 23), 1, 22);
+                    form.add(checkBoxFields[8], 2, 22);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 23);
+                    form.add(labelANDTooltipMaker("Disable Zero Gravity Immobility:", 1, 24), 1, 23);
+                    form.add(checkBoxFields[9], 2, 23);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 24);
+                    form.add(labelANDTooltipMaker("Immune to Spin Hammer Knockback:", 1, 25), 1, 24);
+                    form.add(checkBoxFields[10], 2, 24);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 25);
+                    form.add(labelANDTooltipMaker("Is Undead:", 1, 26), 1, 25);
+                    form.add(checkBoxFields[11], 2, 25);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 26);
+                    form.add(labelANDTooltipMaker("Is Corpse:", 1, 27), 1, 26);
+                    form.add(checkBoxFields[12], 2, 26);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 27);
+                    form.add(labelANDTooltipMaker("Is Leader:", 1, 28), 1, 27);
+                    form.add(checkBoxFields[13], 2, 27);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 28);
+                    form.add(labelANDTooltipMaker("Cannot Take Actions:", 1, 29), 1, 28);
+                    form.add(checkBoxFields[14], 2, 28);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 29);
+                    form.add(labelANDTooltipMaker("Not Spun by Love Slap:", 1, 30), 1, 29);
+                    form.add(checkBoxFields[15], 2, 29);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 30);
+                    form.add(labelANDTooltipMaker("Disable Damage Stars:", 1, 31), 1, 30);
+                    form.add(checkBoxFields[16], 2, 30);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 31);
+                    form.add(labelANDTooltipMaker("Disable All Part Visibility:", 1, 32), 1, 31);
+                    form.add(checkBoxFields[17], 2, 31);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 32);
+                    form.add(labelANDTooltipMaker("Disable HP Gauge:", 1, 33), 1, 32);
+                    form.add(checkBoxFields[18], 2, 32);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 33);
+                    form.add(labelANDTooltipMaker("Look Camera:", 1, 34), 1, 33);
+                    form.add(checkBoxFields[19], 2, 33);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 34);
+                    form.add(labelANDTooltipMaker("Is Non-Combatant:", 1, 35), 1, 34);
+                    form.add(checkBoxFields[20], 2, 34);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 35);
+                    form.add(labelANDTooltipMaker("No Shadow:", 1, 36), 1, 35);
+                    form.add(checkBoxFields[21], 2, 35);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 36);
+                    form.add(labelANDTooltipMaker("Disable Damage:", 1, 37), 1, 36);
+                    form.add(checkBoxFields[22], 2, 36);
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+                else if(kindList.getSelectionModel().getSelectedItem() instanceof BattleUnitKindPart)
+                {
+                    BattleUnitKindPart selected = (BattleUnitKindPart) kindList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+                    
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 0);
+                    form.add(labelANDTooltipMaker("Main Body Part:", 2, 1), 1, 0);
+                    form.add(checkBoxFields[0], 2, 0);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 1);
+                    form.add(labelANDTooltipMaker("Secondary Body Part:", 2, 2), 1, 1);
+                    form.add(checkBoxFields[1], 2, 1);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 2);
+                    form.add(labelANDTooltipMaker("Bombable Body Part:", 2, 3), 1, 2);
+                    form.add(checkBoxFields[2], 2, 2);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 3);
+                    form.add(labelANDTooltipMaker("Guard Body Part:", 2, 4), 1, 3);
+                    form.add(checkBoxFields[3], 2, 3);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 4);
+                    form.add(labelANDTooltipMaker("Not Bombable Body Part:", 2, 5), 1, 4);
+                    form.add(checkBoxFields[4], 2, 4);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 5);
+                    form.add(labelANDTooltipMaker("In Hole:", 2, 6), 1, 5);
+                    form.add(checkBoxFields[5], 2, 5);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 6);
+                    form.add(labelANDTooltipMaker("Weak to Attack FX R:", 2, 7), 1, 6);
+                    form.add(checkBoxFields[6], 2, 6);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 7);
+                    form.add(labelANDTooltipMaker("Weak to Ice Power:", 2, 8), 1, 7);
+                    form.add(checkBoxFields[7], 2, 7);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 8);
+                    form.add(labelANDTooltipMaker("Is Winged:", 2, 9), 1, 8);
+                    form.add(checkBoxFields[8], 2, 8);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 9);
+                    form.add(labelANDTooltipMaker("Is Shelled:", 2, 10), 1, 9);
+                    form.add(checkBoxFields[9], 2, 9);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 10);
+                    form.add(labelANDTooltipMaker("Is Bomb Flippable:", 2, 11), 1, 10);
+                    form.add(checkBoxFields[10], 2, 10);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 11);
+                    form.add(labelANDTooltipMaker("Is Clonelike:", 2, 12), 1, 11);
+                    form.add(checkBoxFields[12], 2, 11);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 12);
+                    form.add(labelANDTooltipMaker("Disable Flat Paper Layering:", 2, 13), 1, 12);
+                    form.add(checkBoxFields[13], 2, 12);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 13);
+                    form.add(labelANDTooltipMaker("Never Targetable:", 2, 14), 1, 13);
+                    form.add(checkBoxFields[14], 2, 13);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 14);
+                    form.add(labelANDTooltipMaker("Ignore Map Object Offset:", 2, 15), 1, 14);
+                    form.add(checkBoxFields[15], 2, 14);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 15);
+                    form.add(labelANDTooltipMaker("Ignore Only Target Select and Preferred Parts:", 2, 16), 1, 15);
+                    form.add(checkBoxFields[16], 2, 15);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 16);
+                    form.add(labelANDTooltipMaker("Cannot be Tattled:", 2, 17), 1, 16);
+                    form.add(checkBoxFields[17], 2, 16);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 17);
+                    form.add(labelANDTooltipMaker("Jump-like Attacks Cannot Target:", 2, 18), 1, 17);
+                    form.add(checkBoxFields[18], 2, 17);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 18);
+                    form.add(labelANDTooltipMaker("Hammer-like Attacks Cannot Target:", 2, 19), 1, 18);
+                    form.add(checkBoxFields[19], 2, 18);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 19);
+                    form.add(labelANDTooltipMaker("Shell Toss-like Attacks Cannot Target:", 2, 20), 1, 19);
+                    form.add(checkBoxFields[20], 2, 19);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 20);
+                    form.add(labelANDTooltipMaker("Prevent Health Decrease:", 2, 21), 1, 20);
+                    form.add(checkBoxFields[21], 2, 20);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 21);
+                    form.add(labelANDTooltipMaker("Disable Part Visibility:", 2, 22), 1, 21);
+                    form.add(checkBoxFields[22], 2, 21);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 22);
+                    form.add(labelANDTooltipMaker("Is Custom Type:", 2, 23), 1, 22);
+                    form.add(checkBoxFields[23], 2, 22);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 23);
+                    form.add(labelANDTooltipMaker("Blur On:", 2, 24), 1, 23);
+                    form.add(checkBoxFields[24], 2, 23);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 24);
+                    form.add(labelANDTooltipMaker("Scale Independence:", 2, 25), 1, 24);
+                    form.add(checkBoxFields[25], 2, 24);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 25);
+                    form.add(labelANDTooltipMaker("Independence:", 2, 26), 1, 25);
+                    form.add(checkBoxFields[26], 2, 25);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 26);
+                    form.add(labelANDTooltipMaker("Is Immune to Damage and Status:", 2, 27), 1, 26);
+                    form.add(checkBoxFields[27], 2, 26);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 27);
+                    form.add(labelANDTooltipMaker("Is Immune to OHKO:", 2, 28), 1, 27);
+                    form.add(checkBoxFields[28], 2, 27);
+                    form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 28);
+                    form.add(labelANDTooltipMaker("Is Immune to Status:", 2, 29), 1, 28);
+                    form.add(checkBoxFields[29], 2, 28);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 29);
+                    form.add(labelANDTooltipMaker("Is Top Spiky:", 2, 30), 1, 29);
+                    form.add(checkBoxFields[30], 2, 29);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 30);
+                    form.add(labelANDTooltipMaker("Is Preemptive Front Spiky:", 2, 31), 1, 30);
+                    form.add(checkBoxFields[31], 2, 30);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 31);
+                    form.add(labelANDTooltipMaker("Is Front Spiky:", 2, 32), 1, 31);
+                    form.add(checkBoxFields[32], 2, 31);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 32);
+                    form.add(labelANDTooltipMaker("Is Fiery:", 2, 33), 1, 32);
+                    form.add(checkBoxFields[33], 2, 32);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 33);
+                    form.add(labelANDTooltipMaker("Has a Fiery Status:", 2, 34), 1, 33);
+                    form.add(checkBoxFields[34], 2, 33);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 34);
+                    form.add(labelANDTooltipMaker("Is Icy:", 2, 35), 1, 34);
+                    form.add(checkBoxFields[35], 2, 34);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 35);
+                    form.add(labelANDTooltipMaker("Has an Icy Status:", 2, 36), 1, 35);
+                    form.add(checkBoxFields[36], 2, 35);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 36);
+                    form.add(labelANDTooltipMaker("Is Poisonous:", 2, 37), 1, 36);
+                    form.add(checkBoxFields[37], 2, 36);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 37);
+                    form.add(labelANDTooltipMaker("Has a Poison Status:", 2, 38), 1, 37);
+                    form.add(checkBoxFields[38], 2, 37);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 38);
+                    form.add(labelANDTooltipMaker("Is Electric:", 2, 39), 1, 38);
+                    form.add(checkBoxFields[39], 2, 38);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 39);
+                    form.add(labelANDTooltipMaker("Has an Electric Status:", 2, 40), 1, 39);
+                    form.add(checkBoxFields[40], 2, 39);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 40);
+                    form.add(labelANDTooltipMaker("Is Explosive:", 2, 41), 1, 40);
+                    form.add(checkBoxFields[41], 2, 40);
+                    form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 41);
+                    form.add(labelANDTooltipMaker("Is Volatile Explosive:", 2, 42), 1, 41);
+                    form.add(checkBoxFields[42], 2, 41);
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+                else if(kindList.getSelectionModel().getSelectedItem() instanceof HealthUpgrades)
+                {
+                    HealthUpgrades selected = (HealthUpgrades) kindList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+
+                    String namecheck = unitSelector.getSelectionModel().getSelectedItem().name;
+                    if(namecheck.equals("Goombella") || namecheck.equals("Koops") || namecheck.equals("Flurrie") || namecheck.equals("Yoshi") ||
+                        namecheck.equals("Vivian") || namecheck.equals("Bobbery") || namecheck.equals("Ms. Mowz"))
+                    {
+                        form.add(fieldImageViewCreator(images.get("partnerlvl1Custom")), 0, 0);
+                        form.add(labelANDTooltipMaker("Level 1 HP:", 3, 7), 1, 0);
+                        form.add(textFields[0], 2, 0);
+                        form.add(fieldImageViewCreator(images.get("lvl3Move")), 0, 1);
+                        form.add(labelANDTooltipMaker("Level 2 HP:", 3, 8), 1, 1);
+                        form.add(textFields[1], 2, 1);
+                        form.add(fieldImageViewCreator(images.get("lvl4Move")), 0, 2);
+                        form.add(labelANDTooltipMaker("Level 3 HP:", 3, 9), 1, 2);
+                        form.add(textFields[2], 2, 2);
+                    }
+                    else
+                    {
+                        form.add(fieldImageViewCreator(images.get("heart")), 0, 0);
+                        form.add(labelANDTooltipMaker("Starting HP:", 3, 1), 1, 0);
+                        form.add(textFields[0], 2, 0);
+                        form.add(fieldImageViewCreator(images.get("flower")), 0, 1);
+                        form.add(labelANDTooltipMaker("Starting FP:", 3, 2), 1, 1);
+                        form.add(textFields[1], 2, 1);
+                        form.add(fieldImageViewCreator(images.get("BPEmblemCustom")), 0, 2);
+                        form.add(labelANDTooltipMaker("Starting BP:", 3, 3), 1, 2);
+                        form.add(textFields[2], 2, 2);
+                        form.add(fieldImageViewCreator(images.get("HPUpgrade")), 0, 3);
+                        form.add(labelANDTooltipMaker("Upgrade HP:", 3, 4), 1, 3);
+                        form.add(textFields[3], 2, 3);
+                        form.add(fieldImageViewCreator(images.get("FPUpgrade")), 0, 4);
+                        form.add(labelANDTooltipMaker("Upgrade FP:", 3, 5), 1, 4);
+                        form.add(textFields[4], 2, 4);
+                        form.add(fieldImageViewCreator(images.get("BPUpgrade")), 0, 5);
+                        form.add(labelANDTooltipMaker("Upgrade BP:", 3, 6), 1, 5);
+                        form.add(textFields[5], 2, 5);
+                    }
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+            });  
+            defenseList.setOnMouseClicked(e2 -> 
+            {
+                centerMenu.getChildren().clear();
+                form.getChildren().clear();
+                kindList.getSelectionModel().clearSelection();
+                weaponList.getSelectionModel().clearSelection();
+
+                upperBox.getChildren().clear();
+                upperBox.getChildren().addAll(unitSelector, saveChangesButton);
+
+                upperBox2.getChildren().clear();
+                upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
+
+                if(defenseList.getSelectionModel().getSelectedItem() instanceof BattleUnitDefense)
+                {
+                    BattleUnitDefense selected = (BattleUnitDefense) defenseList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+                    
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 0);
+                    form.add(labelANDTooltipMaker("Normal Defense:", 4, 1), 1, 0);
+                    form.add(textFields[0], 2, 0);
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 1);
+                    form.add(labelANDTooltipMaker("Fire Defense:", 4, 2), 1, 1);
+                    form.add(textFields[1], 2, 1);
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 2);
+                    form.add(labelANDTooltipMaker("Ice Defense:", 4, 3), 1, 2);
+                    form.add(textFields[2], 2, 2);
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 3);
+                    form.add(labelANDTooltipMaker("Explosion Defense:", 4, 4), 1, 3);
+                    form.add(textFields[3], 2, 3);
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 4);
+                    form.add(labelANDTooltipMaker("Electric Defense:", 4, 5), 1, 4);
+                    form.add(textFields[4], 2, 4);
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+                else if(defenseList.getSelectionModel().getSelectedItem() instanceof BattleUnitDefenseAttr)
+                {
+                    comboBoxFields[0].getItems().clear();
+                    comboBoxFields[1].getItems().clear();
+                    comboBoxFields[2].getItems().clear();
+                    comboBoxFields[3].getItems().clear();
+                    comboBoxFields[4].getItems().clear();
+
+                    comboBoxFields[0].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+                    comboBoxFields[1].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+                    comboBoxFields[2].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+                    comboBoxFields[3].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+                    comboBoxFields[4].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+
+                    BattleUnitDefenseAttr selected = (BattleUnitDefenseAttr) defenseList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+                    
+                    form.add(fieldImageViewCreator(images.get("spikeShieldCustom")), 0, 0);
+                    form.add(labelANDTooltipMaker("Normal Attribute Defense:", 5, 1), 1, 0);
+                    form.add(comboBoxFields[0], 2, 0);
+                    form.add(fieldImageViewCreator(images.get("fireShieldCustom")), 0, 1);
+                    form.add(labelANDTooltipMaker("Fire Attribute Defense:", 5, 2), 1, 1);
+                    form.add(comboBoxFields[1], 2, 1);
+                    form.add(fieldImageViewCreator(images.get("iceShieldCustom")), 0, 2);
+                    form.add(labelANDTooltipMaker("Ice Attribute Defense:", 5, 3), 1, 2);
+                    form.add(comboBoxFields[2], 2, 2);
+                    form.add(fieldImageViewCreator(images.get("burstShieldCustom")), 0, 3);
+                    form.add(labelANDTooltipMaker("Explosion Attribute Defense:", 5, 4), 1, 3);
+                    form.add(comboBoxFields[3], 2, 3);
+                    form.add(fieldImageViewCreator(images.get("zapShieldCustom")), 0, 4);
+                    form.add(labelANDTooltipMaker("Electric Attribute Defense:", 5, 5), 1, 4);
+                    form.add(comboBoxFields[4], 2, 4);
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+                else if(defenseList.getSelectionModel().getSelectedItem() instanceof StatusVulnerability)
+                {
+                    centerMenu.getChildren().clear();
+                    form.getChildren().clear();
+                    kindList.getSelectionModel().clearSelection();
+                    weaponList.getSelectionModel().clearSelection();
+
+                    upperBox.getChildren().clear();
+                    upperBox.getChildren().addAll(unitSelector, saveChangesButton);
+
+                    upperBox2.getChildren().clear();
+                    upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
+
+                    StatusVulnerability selected = (StatusVulnerability) defenseList.getSelectionModel().getSelectedItem();
+
+                    if (selected != null) loadStructFields(selected);
+
+                    saveChangesButton.setText("Save Struct Changes");
+
+                    form.setVgap(5);
+                    form.setHgap(10);
+                    form.setPadding(new Insets(10));
+
+                    form.add(fieldImageViewCreator(images.get("sleepStatus")), 0, 0);
+                    form.add(labelANDTooltipMaker("Sleep Susceptibility:", 6, 1), 1, 0);
+                    form.add(textFields[0], 2, 0);
+                    form.add(fieldImageViewCreator(images.get("stopStatus")), 0, 1);
+                    form.add(labelANDTooltipMaker("Stop Susceptibility:", 6, 2), 1, 1);
+                    form.add(textFields[1], 2, 1);
+                    form.add(fieldImageViewCreator(images.get("dizzyStatus")), 0, 2);
+                    form.add(labelANDTooltipMaker("Dizzy Susceptibility:", 6, 3), 1, 2);
+                    form.add(textFields[2], 2, 2);
+                    form.add(fieldImageViewCreator(images.get("poisonStatus")), 0, 3);
+                    form.add(labelANDTooltipMaker("Poison Susceptibility:", 6, 4), 1, 3);
+                    form.add(textFields[3], 2, 3);
+                    form.add(fieldImageViewCreator(images.get("confuseStatus")), 0, 4);
+                    form.add(labelANDTooltipMaker("Confuse Susceptibility:", 6, 5), 1, 4);
+                    form.add(textFields[4], 2, 4);
+                    form.add(fieldImageViewCreator(images.get("electricStatus")), 0, 5);
+                    form.add(labelANDTooltipMaker("Electric Susceptibility:", 6, 6), 1, 5);
+                    form.add(textFields[5], 2, 5);
+                    form.add(fieldImageViewCreator(images.get("burnStatus")), 0, 6);
+                    form.add(labelANDTooltipMaker("Burn Susceptibility:", 6, 7), 1, 6);
+                    form.add(textFields[6], 2, 6);
+                    form.add(fieldImageViewCreator(images.get("freezeStatus")), 0, 7);
+                    form.add(labelANDTooltipMaker("Freeze Susceptibility:", 6, 8), 1, 7);
+                    form.add(textFields[7], 2, 7);
+                    form.add(fieldImageViewCreator(images.get("hugeStatus")), 0, 8);
+                    form.add(labelANDTooltipMaker("Huge Susceptibility:", 6, 9), 1, 8);
+                    form.add(textFields[8], 2, 8);
+                    form.add(fieldImageViewCreator(images.get("tinyStatus")), 0, 9);
+                    form.add(labelANDTooltipMaker("Tiny Susceptibility:", 6, 10), 1, 9);
+                    form.add(textFields[9], 2, 9);
+                    form.add(fieldImageViewCreator(images.get("attackUpStatus")), 0, 10);
+                    form.add(labelANDTooltipMaker("Attack Up Susceptibility:", 6, 11), 1, 10);
+                    form.add(textFields[10], 2, 10);
+                    form.add(fieldImageViewCreator(images.get("attackDownStatus")), 0, 11);
+                    form.add(labelANDTooltipMaker("Attack Down Susceptibility:", 6, 12), 1, 11);
+                    form.add(textFields[11], 2, 11);
+                    form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 12);
+                    form.add(labelANDTooltipMaker("Defense Up Susceptibility:", 6, 13), 1, 12);
+                    form.add(textFields[12], 2, 12);
+                    form.add(fieldImageViewCreator(images.get("defenseDownStatus")), 0, 13);
+                    form.add(labelANDTooltipMaker("Defense Down Susceptibility:", 6, 14), 1, 13);
+                    form.add(textFields[13], 2, 13);
+                    form.add(fieldImageViewCreator(images.get("allergicStatus")), 0, 14);
+                    form.add(labelANDTooltipMaker("Allergic Susceptibility:", 6, 15), 1, 14);
+                    form.add(textFields[14], 2, 14);
+                    form.add(fieldImageViewCreator(images.get("frightMask")), 0, 15);
+                    form.add(labelANDTooltipMaker("Fright Susceptibility:", 6, 16), 1, 15);
+                    form.add(textFields[15], 2, 15);
+                    form.add(fieldImageViewCreator(images.get("flurriePartnerSwitch")), 0, 16);
+                    form.add(labelANDTooltipMaker("Gale Force Susceptibility:", 6, 17), 1, 16);
+                    form.add(textFields[16], 2, 16);
+                    form.add(fieldImageViewCreator(images.get("fastStatus")), 0, 17);
+                    form.add(labelANDTooltipMaker("Fast Susceptibility:", 6, 18), 1, 17);
+                    form.add(textFields[17], 2, 17);
+                    form.add(fieldImageViewCreator(images.get("slowStatus")), 0, 18);
+                    form.add(labelANDTooltipMaker("Slow Susceptibility:", 6, 19), 1, 18);
+                    form.add(textFields[18], 2, 18);
+                    form.add(fieldImageViewCreator(images.get("dodgyStatus")), 0, 19);
+                    form.add(labelANDTooltipMaker("Dodgy Susceptibility:", 6, 20), 1, 19);
+                    form.add(textFields[19], 2, 19);
+                    form.add(fieldImageViewCreator(images.get("invisibleStatus")), 0, 20);
+                    form.add(labelANDTooltipMaker("Invisible Susceptibility:", 6, 21), 1, 20);
+                    form.add(textFields[20], 2, 20);
+                    form.add(fieldImageViewCreator(images.get("garnetStar")), 0, 21);
+                    form.add(labelANDTooltipMaker("OHKO Susceptibility:", 6, 22), 1, 21);
+                    form.add(textFields[21], 2, 21);
+
+                    centerMenu.getChildren().add(form);
+                    ScrollPane centerScroll = new ScrollPane();
+                    centerScroll.setContent(centerMenu);
+                    borderPane.setCenter(centerScroll);
+                }
+            });
+            weaponList.setOnMouseClicked(e2 -> 
+            {
+                centerMenu.getChildren().clear();
+                form.getChildren().clear();
+                kindList.getSelectionModel().clearSelection();
+                defenseList.getSelectionModel().clearSelection();
+
+                upperBox.getChildren().clear();
+                upperBox.getChildren().addAll(unitSelector, saveChangesButton);
+
+                upperBox2.getChildren().clear();
+                upperBox2.getChildren().addAll(saveStructPresetButton, loadStructPresetButton);
+
+                comboBoxFields[0].getItems().clear();
+                comboBoxFields[1].getItems().clear();
+                comboBoxFields[2].getItems().clear();
+                comboBoxFields[3].getItems().clear();
+                comboBoxFields[4].getItems().clear();
+                comboBoxFields[5].getItems().clear();
+
+                comboBoxFields[0].getItems().addAll("Unsuperguardable", "Superguardable with Recoil", "Superguardable without Recoil");
+                comboBoxFields[1].getItems().addAll("None", "Get Jump Power", "Get Hammer Power", "Get Default Power", "Get Badge Stacked Jump Power", "Get Tornado Power", "Get Badge Stacked Hammer Power", "Get Art Attack Power", "Get Supernova Power", "Get Earth Tremor Power", "Get Poison Shroom Power", "Get Partner Power", "Get Partner Action Command Power");
+                comboBoxFields[2].getItems().addAll("Normal", "Fire", "Ice", "Explosive", "Electric");
+                comboBoxFields[3].getItems().addAll("None", "Gulp Knocked onto Ground 1", "Gulp Knocked onto Ground 2", "Gulp Knocked into next Target", "Remove Segment", "Short Time Squashed", "Medium Time Squashed", "Long Time Squashed", "Inked", "Super Hammer Knocked Back", "Ultra Hammer Knocked Back", "Ultra Hammer Finisher", "Confusion Effect", "Love Slap Spin 1", "Love Slap Spin 2", "Love Slap Quick Spin 1", "Love Slap Quick Spin 2", "Blown Away", "Play Additional Ending Hurt Animation");
+                comboBoxFields[4].getItems().addAll("Extremely Easy", "Very Easy", "Easy", "Normal", "Difficult", "Very Difficult", "Extremely Difficult");
+                comboBoxFields[5].getItems().addAll("None", "Jump Script", "Spin Jump Script", "Spring Jump Script", "First Strike Super Hammer Script", "Hammer Script", "Super Hammer Script", "Multibounce Script", "Power Jump Script", "Mega Jump Script", "Power Bounce Script", "Tornado Jump Script", "Shrink Stomp Script", "Sleepy Stomp Script", "Soft Stomp Script", "Power Smash Script", "Quake Hammer Script", "Mega Quake Script", "Hammer Throw Script", "Piercing Blow Script", "Fire Drive Script", "Ice Smash Script", "Charge Script", "Charge P Script", "Super Charge Script", "Super Charge P Script", "Clock Out Script", "Art Attack Script", "Supernova Script", "Sweet Treat Script", "Sweat Feast Script", "Earth Tremor Script", "Power Lift Script", "Showstopper Script", "Item Heal Script", "Pow Block Script", "Fire Flower Script", "Thunder Rage Script", "Thunder Bolt Script", "Shooting Star Script", "Ice Storm Script", "Earth Quake Script", "Boo's Sheet Script", "Volt Shroom Script", "Repel Cape Script", "Ruin Powder Script", "Sleepy Sheep Script", "Stopwatch Script", "Dizzy Dial Script", "Power Punch Script", "Courage Shell Script", "HP Drain Script", "Trade Off Script", "Mini Mr. Mini Script", "Mr. Softener Script", "Tasty Tonic Script", "Slow Shroom Script", "Gradual Syrup Script", "Point Swap Script", "Fright Mask Script", "Mystery Script", "Spite Pouch Script", "Koopa Curse Script", "Item Heal and Status Script", "Thrown Item Script", "Poison Shroom Script", "Trial Stew Script", "Body Slam Script", "Gale Force Script", "Lip Lock Script", "Dodgy Fog Script", "Ground Pound Script", "Gulp Script", "Mini Egg Script", "Stampede Script", "Love Slap Script", "Tease Script", "Kiss Thief Script", "Smooch Script", "Bomb First Strike Script", "Bomb Script", "Bomb Squad Script", "Hold Fast Script", "Bob-ombast Script", "Shade Fist Script", "Veil Script", "Fiery Jinx Script", "Infatuate Script", "Shell Toss First Strike Script", "Shell Toss Script", "Power Shell Script", "Shell Shield Script", "Shell Slam Script", "Headbonk Script", "Tattle Script", "Multibonk Script", "Rally Wink Script");
+
+                comboBoxFields[1].setDisable(true);
+                comboBoxFields[5].setDisable(true);
+                if(fileSelector.getSelectionModel().getSelectedItem().getName().equals("main.dol") || fileSelector.getSelectionModel().getSelectedItem().getName().equals("Start.dol"))
+                {
+                    comboBoxFields[1].setDisable(false);
+                    comboBoxFields[5].setDisable(false);
+                }
+
+                BattleWeapon selected = weaponList.getSelectionModel().getSelectedItem();
+
+                if (selected != null) loadStructFields(selected);
+
+                saveChangesButton.setText("Save Struct Changes");
+
+                form.setVgap(5);
+                form.setHgap(10);
+                form.setPadding(new Insets(10));
+
+                form.add(fieldImageViewCreator(images.get("appealAction")), 0, 0);
+                form.add(labelANDTooltipMaker("Accuracy:", 7, 1), 1, 0);
+                form.add(textFields[0], 2, 0);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 1);
+                form.add(labelANDTooltipMaker("FP Cost:", 7, 2), 1, 1);
+                form.add(textFields[1], 2, 1);
+                form.add(fieldImageViewCreator(images.get("SPOrb1")), 0, 2);
+                form.add(labelANDTooltipMaker("SP Cost:", 7, 3), 1, 2);
+                form.add(textFields[2], 2, 2);
+                form.add(fieldImageViewCreator(images.get("superCharge")), 0, 3);
+                form.add(labelANDTooltipMaker("Superguard State:", 7, 4), 1, 3);
+                form.add(comboBoxFields[0], 2, 3);
+                form.add(fieldImageViewCreator(images.get("audienceStar")), 0, 4);
+                form.add(labelANDTooltipMaker("Stylish Multiplier:", 7, 5), 1, 4);
+                form.add(textFields[3], 2, 4);
+                form.add(fieldImageViewCreator(images.get("shineSprite")), 0, 5);
+                form.add(labelANDTooltipMaker("Increase Bingo Slot Chance:", 7, 6), 1, 5);
+                form.add(textFields[4], 2, 5);
+                form.add(fieldImageViewCreator(images.get("routingSlip")), 0, 6);
+                form.add(labelANDTooltipMaker("Base Damage Function:", 7, 7), 1, 6);
+                form.add(comboBoxFields[1], 2, 6);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 7);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 1:", 7, 8), 1, 7);
+                form.add(textFields[5], 2, 7);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 8);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 2:", 7, 9), 1, 8);
+                form.add(textFields[6], 2, 8);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 9);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 3:", 7, 10), 1, 9);
+                form.add(textFields[7], 2, 9);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 10);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 4:", 7, 11), 1, 10);
+                form.add(textFields[8], 2, 10);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 11);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 5:", 7, 12), 1, 11);
+                form.add(textFields[9], 2, 11);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 12);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 6:", 7, 13), 1, 12);
+                form.add(textFields[10], 2, 12);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 13);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 7:", 7, 14), 1, 13);
+                form.add(textFields[11], 2, 13);
+                form.add(fieldImageViewCreator(images.get("hammer")), 0, 14);
+                form.add(labelANDTooltipMaker("Base Damage Parameter 8:", 7, 15), 1, 14);
+                form.add(textFields[12], 2, 14);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 15);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 1:", 7, 16), 1, 15);
+                form.add(textFields[13], 2, 15);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 16);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 2:", 7, 17), 1, 16);
+                form.add(textFields[14], 2, 16);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 17);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 3:", 7, 18), 1, 17);
+                form.add(textFields[15], 2, 17);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 18);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 4:", 7, 19), 1, 18);
+                form.add(textFields[16], 2, 18);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 19);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 5:", 7, 20), 1, 19);
+                form.add(textFields[17], 2, 19);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 20);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 6:", 7, 21), 1, 20);
+                form.add(textFields[18], 2, 20);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 21);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 7:", 7, 22), 1, 21);
+                form.add(textFields[19], 2, 21);
+                form.add(fieldImageViewCreator(images.get("flower")), 0, 22);
+                form.add(labelANDTooltipMaker("Base FP Damage Parameter 8:", 7, 23), 1, 22);
+                form.add(textFields[20], 2, 22);
+                form.add(fieldImageViewCreator(images.get("zapTap")), 0, 23);
+                form.add(labelANDTooltipMaker("Element:", 7, 24), 1, 23);
+                form.add(comboBoxFields[2], 2, 23);
+                form.add(fieldImageViewCreator(images.get("tacticsFlag")), 0, 24);
+                form.add(labelANDTooltipMaker("Damage Pattern:", 7, 25), 1, 24);
+                form.add(comboBoxFields[3], 2, 24);
+                form.add(fieldImageViewCreator(images.get("actionCommandStar")), 0, 25);
+                form.add(labelANDTooltipMaker("Action Command Difficulty:", 7, 26), 1, 25);
+                form.add(comboBoxFields[4], 2, 25);
+                form.add(fieldImageViewCreator(images.get("sleepStatus")), 0, 26);
+                form.add(labelANDTooltipMaker("Sleep Chance:", 7, 27), 1, 26);
+                form.add(textFields[21], 2, 26);
+                form.add(fieldImageViewCreator(images.get("sleepStatus")), 0, 27);
+                form.add(labelANDTooltipMaker("Sleep Time:", 7, 28), 1, 27);
+                form.add(textFields[22], 2, 27);
+                form.add(fieldImageViewCreator(images.get("stopStatus")), 0, 28);
+                form.add(labelANDTooltipMaker("Stop Chance:", 7, 29), 1, 28);
+                form.add(textFields[23], 2, 28);
+                form.add(fieldImageViewCreator(images.get("stopStatus")), 0, 29);
+                form.add(labelANDTooltipMaker("Stop Time:", 7, 30), 1, 29);
+                form.add(textFields[24], 2, 29);
+                form.add(fieldImageViewCreator(images.get("dizzyStatus")), 0, 30);
+                form.add(labelANDTooltipMaker("Dizzy Chance:", 7, 31), 1, 30);
+                form.add(textFields[25], 2, 30);
+                form.add(fieldImageViewCreator(images.get("dizzyStatus")), 0, 31);
+                form.add(labelANDTooltipMaker("Dizzy Time:", 7, 32), 1, 31);
+                form.add(textFields[26], 2, 31);
+                form.add(fieldImageViewCreator(images.get("poisonStatus")), 0, 32);
+                form.add(labelANDTooltipMaker("Poison Chance:", 7, 33), 1, 32);
+                form.add(textFields[27], 2, 32);
+                form.add(fieldImageViewCreator(images.get("poisonStatus")), 0, 33);
+                form.add(labelANDTooltipMaker("Poison Time:", 7, 34), 1, 33);
+                form.add(textFields[28], 2, 33);
+                form.add(fieldImageViewCreator(images.get("poisonStatus")), 0, 34);
+                form.add(labelANDTooltipMaker("Poison Strength:", 7, 35), 1, 34);
+                form.add(textFields[29], 2, 34);
+                form.add(fieldImageViewCreator(images.get("confuseStatus")), 0, 35);
+                form.add(labelANDTooltipMaker("Confuse Chance:", 7, 36), 1, 35);
+                form.add(textFields[30], 2, 35);
+                form.add(fieldImageViewCreator(images.get("confuseStatus")), 0, 36);
+                form.add(labelANDTooltipMaker("Confuse Time:", 7, 37), 1, 36);
+                form.add(textFields[31], 2, 36);
+                form.add(fieldImageViewCreator(images.get("electricStatus")), 0, 37);
+                form.add(labelANDTooltipMaker("Electric Chance:", 7, 38), 1, 37);
+                form.add(textFields[32], 2, 37);
+                form.add(fieldImageViewCreator(images.get("electricStatus")), 0, 38);
+                form.add(labelANDTooltipMaker("Electric Time:", 7, 39), 1, 38);
+                form.add(textFields[33], 2, 38);
+                form.add(fieldImageViewCreator(images.get("dodgyStatus")), 0, 39);
+                form.add(labelANDTooltipMaker("Dodgy Chance:", 7, 40), 1, 39);
+                form.add(textFields[34], 2, 39);
+                form.add(fieldImageViewCreator(images.get("dodgyStatus")), 0, 40);
+                form.add(labelANDTooltipMaker("Dodgy Time:", 7, 41), 1, 40);
+                form.add(textFields[35], 2, 40);
+                form.add(fieldImageViewCreator(images.get("burnStatus")), 0, 41);
+                form.add(labelANDTooltipMaker("Burn Chance:", 7, 42), 1, 41);
+                form.add(textFields[36], 2, 41);
+                form.add(fieldImageViewCreator(images.get("burnStatus")), 0, 42);
+                form.add(labelANDTooltipMaker("Burn Time:", 7, 43), 1, 42);
+                form.add(textFields[37], 2, 42);
+                form.add(fieldImageViewCreator(images.get("freezeStatus")), 0, 43);
+                form.add(labelANDTooltipMaker("Freeze Chance:", 7, 44), 1, 43);
+                form.add(textFields[38], 2, 43);
+                form.add(fieldImageViewCreator(images.get("freezeStatus")), 0, 44);
+                form.add(labelANDTooltipMaker("Freeze Time:", 7, 45), 1, 44);
+                form.add(textFields[39], 2, 44);
+                form.add(fieldImageViewCreator(images.get("hugeStatus")), 0, 45);
+                form.add(labelANDTooltipMaker("Size Change Chance:", 7, 46), 1, 45);
+                form.add(textFields[40], 2, 45);
+                form.add(fieldImageViewCreator(images.get("hugeStatus")), 0, 46);
+                form.add(labelANDTooltipMaker("Size Change Time:", 7, 47), 1, 46);
+                form.add(textFields[41], 2, 46);
+                form.add(fieldImageViewCreator(images.get("hugeStatus")), 0, 47);
+                form.add(labelANDTooltipMaker("Size Change Strength:", 7, 48), 1, 47);
+                form.add(textFields[42], 2, 47);
+                form.add(fieldImageViewCreator(images.get("attackDownStatus")), 0, 48);
+                form.add(labelANDTooltipMaker("Atk Change Chance:", 7, 49), 1, 48);
+                form.add(textFields[43], 2, 48);
+                form.add(fieldImageViewCreator(images.get("attackDownStatus")), 0, 49);
+                form.add(labelANDTooltipMaker("Atk Change Time:", 7, 50), 1, 49);
+                form.add(textFields[44], 2, 49);
+                form.add(fieldImageViewCreator(images.get("attackDownStatus")), 0, 50);
+                form.add(labelANDTooltipMaker("Atk Change Strength:", 7, 51), 1, 50);
+                form.add(textFields[45], 2, 50);
+                form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 51);
+                form.add(labelANDTooltipMaker("Def Change Chance:", 7, 52), 1, 51);
+                form.add(textFields[46], 2, 51);
+                form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 52);
+                form.add(labelANDTooltipMaker("Def Change Time:", 7, 53), 1, 52);
+                form.add(textFields[47], 2, 52);
+                form.add(fieldImageViewCreator(images.get("defenseUpStatus")), 0, 53);
+                form.add(labelANDTooltipMaker("Def Change Strength:", 7, 54), 1, 53);
+                form.add(textFields[48], 2, 53);
+                form.add(fieldImageViewCreator(images.get("allergicStatus")), 0, 54);
+                form.add(labelANDTooltipMaker("Allergic Chance:", 7, 55), 1, 54);
+                form.add(textFields[49], 2, 54);
+                form.add(fieldImageViewCreator(images.get("allergicStatus")), 0, 55);
+                form.add(labelANDTooltipMaker("Allergic Time:", 7, 56), 1, 55);
+                form.add(textFields[50], 2, 55);
+                form.add(fieldImageViewCreator(images.get("garnetStar")), 0, 56);
+                form.add(labelANDTooltipMaker("OHKO Chance:", 7, 57), 1, 56);
+                form.add(textFields[51], 2, 56);
+                form.add(fieldImageViewCreator(images.get("charge")), 0, 57);
+                form.add(labelANDTooltipMaker("Charge Strength:", 7, 58), 1, 57);
+                form.add(textFields[52], 2, 57);
+                form.add(fieldImageViewCreator(images.get("fastStatus")), 0, 58);
+                form.add(labelANDTooltipMaker("Fast Chance:", 7, 59), 1, 58);
+                form.add(textFields[53], 2, 58);
+                form.add(fieldImageViewCreator(images.get("fastStatus")), 0, 59);
+                form.add(labelANDTooltipMaker("Fast Time:", 7, 60), 1, 59);
+                form.add(textFields[54], 2, 59);
+                form.add(fieldImageViewCreator(images.get("slowStatus")), 0, 60);
+                form.add(labelANDTooltipMaker("Slow Chance:", 7, 61), 1, 60);
+                form.add(textFields[55], 2, 60);
+                form.add(fieldImageViewCreator(images.get("slowStatus")), 0, 61);
+                form.add(labelANDTooltipMaker("Slow Time:", 7, 62), 1, 61);
+                form.add(textFields[56], 2, 61);
+                form.add(fieldImageViewCreator(images.get("frightMask")), 0, 62);
+                form.add(labelANDTooltipMaker("Fright Chance:", 7, 63), 1, 62);
+                form.add(textFields[57], 2, 62);
+                form.add(fieldImageViewCreator(images.get("flurriePartnerSwitch")), 0, 63);
+                form.add(labelANDTooltipMaker("Gale Force Chance:", 7, 64), 1, 63);
+                form.add(textFields[58], 2, 63);
+                form.add(fieldImageViewCreator(images.get("paybackStatus")), 0, 64);
+                form.add(labelANDTooltipMaker("Payback Time:", 7, 65), 1, 64);
+                form.add(textFields[59], 2, 64);
+                form.add(fieldImageViewCreator(images.get("bobberyPartnerSwitch")), 0, 65);
+                form.add(labelANDTooltipMaker("Hold Fast Time:", 7, 66), 1, 65);
+                form.add(textFields[60], 2, 65);
+                form.add(fieldImageViewCreator(images.get("invisibleStatus")), 0, 66);
+                form.add(labelANDTooltipMaker("Invisible Chance:", 7, 67), 1, 66);
+                form.add(textFields[61], 2, 66);
+                form.add(fieldImageViewCreator(images.get("invisibleStatus")), 0, 67);
+                form.add(labelANDTooltipMaker("Invisible Time:", 7, 68), 1, 67);
+                form.add(textFields[62], 2, 67);
+                form.add(fieldImageViewCreator(images.get("HPRegenStatus")), 0, 68);
+                form.add(labelANDTooltipMaker("HP Regen Time:", 7, 69), 1, 68);
+                form.add(textFields[63], 2, 68);
+                form.add(fieldImageViewCreator(images.get("HPRegenStatus")), 0, 69);
+                form.add(labelANDTooltipMaker("HP Regen Strength:", 7, 70), 1, 69);
+                form.add(textFields[64], 2, 69);
+                form.add(fieldImageViewCreator(images.get("FPRegenStatus")), 0, 70);
+                form.add(labelANDTooltipMaker("FP Regen Time:", 7, 71), 1, 70);
+                form.add(textFields[65], 2, 70);
+                form.add(fieldImageViewCreator(images.get("FPRegenStatus")), 0, 71);
+                form.add(labelANDTooltipMaker("FP Regen Strength:", 7, 72), 1, 71);
+                form.add(textFields[66], 2, 71);
+                form.add(fieldImageViewCreator(images.get("routingSlip")), 0, 72);
+                form.add(labelANDTooltipMaker("Attack Script:", 7, 73), 1, 72);
+                form.add(comboBoxFields[5], 2, 72);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 73);
+                form.add(labelANDTooltipMaker("Stage Background Fall Chance 1:", 7, 74), 1, 73);
+                form.add(textFields[67], 2, 73);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 74);
+                form.add(labelANDTooltipMaker("Stage Background Fall Chance 2:", 7, 75), 1, 74);
+                form.add(textFields[68], 2, 74);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 75);
+                form.add(labelANDTooltipMaker("Stage Background Fall Chance 3:", 7, 76), 1, 75);
+                form.add(textFields[69], 2, 75);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 76);
+                form.add(labelANDTooltipMaker("Stage Background Fall Chance 4:", 7, 77), 1, 76);
+                form.add(textFields[70], 2, 76);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 77);
+                form.add(labelANDTooltipMaker("Stage Nozzle Turn Chance:", 7, 78), 1, 77);
+                form.add(textFields[71], 2, 77);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 78);
+                form.add(labelANDTooltipMaker("Stage Nozzle Fire Chance:", 7, 79), 1, 78);
+                form.add(textFields[72], 2, 78);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 79);
+                form.add(labelANDTooltipMaker("Stage Ceiling Fall Chance:", 7, 80), 1, 79);
+                form.add(textFields[73], 2, 79);
+                form.add(fieldImageViewCreator(images.get("gateHandle")), 0, 80);
+                form.add(labelANDTooltipMaker("Stage Object Fall Chance:", 7, 81), 1, 80);
+                form.add(textFields[74], 2, 80);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 81);
+                form.add(labelANDTooltipMaker("Cannot Target Mario or Shell Shield:", 7, 82), 1, 81);
+                form.add(checkBoxFields[0], 2, 81);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 82);
+                form.add(labelANDTooltipMaker("Cannot Target Partner:", 7, 83), 1, 82);
+                form.add(checkBoxFields[1], 2, 82);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 83);
+                form.add(labelANDTooltipMaker("Cannot Target Enemy:", 7, 84), 1, 83);
+                form.add(checkBoxFields[2], 2, 83);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 84);
+                form.add(labelANDTooltipMaker("Cannot Target Tree or Switch:", 7, 85), 1, 84);
+                form.add(checkBoxFields[3], 2, 84);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 85);
+                form.add(labelANDTooltipMaker("Cannot Target System:", 7, 86), 1, 85);
+                form.add(checkBoxFields[4], 2, 85);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 86);
+                form.add(labelANDTooltipMaker("Cannot Target Opposite Alliance:", 7, 87), 1, 86);
+                form.add(checkBoxFields[5], 2, 86);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 87);
+                form.add(labelANDTooltipMaker("Cannot Target Own Alliance:", 7, 88), 1, 87);
+                form.add(checkBoxFields[6], 2, 87);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 88);
+                form.add(labelANDTooltipMaker("Cannot Target Self:", 7, 89), 1, 88);
+                form.add(checkBoxFields[7], 2, 88);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 89);
+                form.add(labelANDTooltipMaker("Cannot Target Same Species:", 7, 90), 1, 89);
+                form.add(checkBoxFields[8], 2, 89);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 90);
+                form.add(labelANDTooltipMaker("Only Target Self:", 7, 91), 1, 90);
+                form.add(checkBoxFields[9], 2, 90);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 91);
+                form.add(labelANDTooltipMaker("Only Target Mario:", 7, 92), 1, 91);
+                form.add(checkBoxFields[10], 2, 91);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 92);
+                form.add(labelANDTooltipMaker("Only Target Tree or Switch:", 7, 93), 1, 92);
+                form.add(checkBoxFields[11], 2, 92);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 93);
+                form.add(labelANDTooltipMaker("Only Target Preferred Parts:", 7, 94), 1, 93);
+                form.add(checkBoxFields[12], 2, 93);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 94);
+                form.add(labelANDTooltipMaker("Only Target Select Parts:", 7, 95), 1, 94);
+                form.add(checkBoxFields[13], 2, 94);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 95);
+                form.add(labelANDTooltipMaker("Single Target:", 7, 96), 1, 95);
+                form.add(checkBoxFields[14], 2, 95);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 96);
+                form.add(labelANDTooltipMaker("Multiple Target:", 7, 97), 1, 96);
+                form.add(checkBoxFields[15], 2, 96);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 97);
+                form.add(labelANDTooltipMaker("Cannot Target Anything:", 7, 98), 1, 97);
+                form.add(checkBoxFields[16], 2, 97);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 98);
+                form.add(labelANDTooltipMaker("Is Tattle-like:", 7, 99), 1, 98);
+                form.add(checkBoxFields[17], 2, 98);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 99);
+                form.add(labelANDTooltipMaker("Cannot Target Floating 1:", 7, 100), 1, 99);
+                form.add(checkBoxFields[18], 2, 99);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 100);
+                form.add(labelANDTooltipMaker("Cannot Target Ceiling:", 7, 101), 1, 100);
+                form.add(checkBoxFields[19], 2, 100);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 101);
+                form.add(labelANDTooltipMaker("Cannot Target Floating 2:", 7, 102), 1, 101);
+                form.add(checkBoxFields[20], 2, 101);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 102);
+                form.add(labelANDTooltipMaker("Cannot Target Grounded:", 7, 103), 1, 102);
+                form.add(checkBoxFields[21], 2, 102);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 103);
+                form.add(labelANDTooltipMaker("Is Jump-like:", 7, 104), 1, 103);
+                form.add(checkBoxFields[22], 2, 103);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 104);
+                form.add(labelANDTooltipMaker("Is Hammer-like:", 7, 105), 1, 104);
+                form.add(checkBoxFields[23], 2, 104);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 105);
+                form.add(labelANDTooltipMaker("Is Shell Toss-like:", 7, 106), 1, 105);
+                form.add(checkBoxFields[24], 2, 105);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 106);
+                form.add(labelANDTooltipMaker("Cannot Target Grounded Variant:", 7, 107), 1, 106);
+                form.add(checkBoxFields[25], 2, 106);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 107);
+                form.add(labelANDTooltipMaker("Has Recoil Damage:", 7, 108), 1, 107);
+                form.add(checkBoxFields[26], 2, 107);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 108);
+                form.add(labelANDTooltipMaker("Can Only Target Frontmost:", 7, 109), 1, 108);
+                form.add(checkBoxFields[27], 2, 108);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 109);
+                form.add(labelANDTooltipMaker("Cannot Target Shell Shield:", 7, 110), 1, 109);
+                form.add(checkBoxFields[28], 2, 109);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 110);
+                form.add(labelANDTooltipMaker("Cannot Target Custom Type:", 7, 111), 1, 110);
+                form.add(checkBoxFields[29], 2, 110);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 111);
+                form.add(labelANDTooltipMaker("Target Same Alliance Direction:", 7, 112), 1, 111);
+                form.add(checkBoxFields[30], 2, 111);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 112);
+                form.add(labelANDTooltipMaker("Target Opposite Alliance Direction:", 7, 113), 1, 112);
+                form.add(checkBoxFields[31], 2, 112);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 113);
+                form.add(labelANDTooltipMaker("Badge Can Affect Power:", 7, 114), 1, 113);
+                form.add(checkBoxFields[32], 2, 113);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 114);
+                form.add(labelANDTooltipMaker("Status Can Affect Power:", 7, 115), 1, 114);
+                form.add(checkBoxFields[33], 2, 114);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 115);
+                form.add(labelANDTooltipMaker("Is Chargeable:", 7, 116), 1, 115);
+                form.add(checkBoxFields[34], 2, 115);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 116);
+                form.add(labelANDTooltipMaker("Cannot Miss:", 7, 117), 1, 116);
+                form.add(checkBoxFields[35], 2, 116);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 117);
+                form.add(labelANDTooltipMaker("Has Diminishing Damage by Hit:", 7, 118), 1, 117);
+                form.add(checkBoxFields[36], 2, 117);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 118);
+                form.add(labelANDTooltipMaker("Has Diminishing Damage by Target:", 7, 119), 1, 118);
+                form.add(checkBoxFields[37], 2, 118);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 119);
+                form.add(labelANDTooltipMaker("Pierces Defense:", 7, 120), 1, 119);
+                form.add(checkBoxFields[38], 2, 119);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 120);
+                form.add(labelANDTooltipMaker("Can Break Ice:", 7, 121), 1, 120);
+                form.add(checkBoxFields[39], 2, 120);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 121);
+                form.add(labelANDTooltipMaker("Ingore Target Status Vulnerability:", 7, 122), 1, 121);
+                form.add(checkBoxFields[40], 2, 121);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 122);
+                form.add(labelANDTooltipMaker("Unknown SPF Flag 0x200:", 7, 123), 1, 122);
+                form.add(checkBoxFields[41], 2, 122);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 123);
+                form.add(labelANDTooltipMaker("Change Element to Fire if Target Burned:", 7, 124), 1, 123);
+                form.add(checkBoxFields[42], 2, 123);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 124);
+                form.add(labelANDTooltipMaker("Play Active FX Sound:", 7, 125), 1, 124);
+                form.add(checkBoxFields[43], 2, 124);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 125);
+                form.add(labelANDTooltipMaker("Flips Shell Enemies:", 7, 126), 1, 125);
+                form.add(checkBoxFields[44], 2, 125);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 126);
+                form.add(labelANDTooltipMaker("Flips Bomb-Flippable Enemies:", 7, 127), 1, 126);
+                form.add(checkBoxFields[45], 2, 126);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 127);
+                form.add(labelANDTooltipMaker("Grounds Winged Enemies:", 7, 128), 1, 127);
+                form.add(checkBoxFields[46], 2, 127);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 128);
+                form.add(labelANDTooltipMaker("Unknown SPF Flag 0x8000:", 7, 129), 1, 128);
+                form.add(checkBoxFields[47], 2, 128);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 129);
+                form.add(labelANDTooltipMaker("Can be Used when Confused:", 7, 130), 1, 129);
+                form.add(checkBoxFields[48], 2, 129);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 130);
+                form.add(labelANDTooltipMaker("Is Unguardable:", 7, 131), 1, 130);
+                form.add(checkBoxFields[49], 2, 130);
+                form.add(fieldImageViewCreator(images.get("diminishingStarsCustom")), 0, 131);
+                form.add(labelANDTooltipMaker("Can hit Clonelike:", 7, 132), 1, 131);
+                form.add(checkBoxFields[50], 2, 131);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 132);
+                form.add(labelANDTooltipMaker("Ignore Electric Resistance:", 7, 133), 1, 132);
+                form.add(checkBoxFields[51], 2, 132);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 133);
+                form.add(labelANDTooltipMaker("Ignore Top Spiky Resistance:", 7, 134), 1, 133);
+                form.add(checkBoxFields[52], 2, 133);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 134);
+                form.add(labelANDTooltipMaker("Ignore Pre-emptive Front Spiky Resistance:", 7, 135), 1, 134);
+                form.add(checkBoxFields[53], 2, 134);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 135);
+                form.add(labelANDTooltipMaker("Ignore Front Spiky Resistance:", 7, 136), 1, 135);
+                form.add(checkBoxFields[54], 2, 135);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 136);
+                form.add(labelANDTooltipMaker("Ignore Fire Resistance:", 7, 137), 1, 136);
+                form.add(checkBoxFields[55], 2, 136);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 137);
+                form.add(labelANDTooltipMaker("Ignore Ice Resistance:", 7, 138), 1, 137);
+                form.add(checkBoxFields[56], 2, 137);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 138);
+                form.add(labelANDTooltipMaker("Ignore Poison Resistance:", 7, 139), 1, 138);
+                form.add(checkBoxFields[57], 2, 138);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 139);
+                form.add(labelANDTooltipMaker("Ignore Explosive Resistance:", 7, 140), 1, 139);
+                form.add(checkBoxFields[58], 2, 139);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 140);
+                form.add(labelANDTooltipMaker("Ignore Volatile Explosive Resistance:", 7, 141), 1, 140);
+                form.add(checkBoxFields[59], 2, 140);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 141);
+                form.add(labelANDTooltipMaker("Ignore Payback Resistance:", 7, 142), 1, 141);
+                form.add(checkBoxFields[60], 2, 141);
+                form.add(fieldImageViewCreator(images.get("ignoreStatus")), 0, 142);
+                form.add(labelANDTooltipMaker("Ignore Hold Fast Resistance:", 7, 143), 1, 142);
+                form.add(checkBoxFields[61], 2, 142);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 143);
+                form.add(labelANDTooltipMaker("Prefer Targeting Mario:", 7, 144), 1, 143);
+                form.add(checkBoxFields[62], 2, 143);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 144);
+                form.add(labelANDTooltipMaker("Prefer Targeting Partner:", 7, 145), 1, 144);
+                form.add(checkBoxFields[63], 2, 144);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 145);
+                form.add(labelANDTooltipMaker("Prefer Targeting Front:", 7, 146), 1, 145);
+                form.add(checkBoxFields[64], 2, 145);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 146);
+                form.add(labelANDTooltipMaker("Prefer Targeting Back:", 7, 147), 1, 146);
+                form.add(checkBoxFields[65], 2, 146);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 147);
+                form.add(labelANDTooltipMaker("Prefer Targeting Same Alliance:", 7, 148), 1, 147);
+                form.add(checkBoxFields[66], 2, 147);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 148);
+                form.add(labelANDTooltipMaker("Prefer Targeting Opposite Alliance:", 7, 149), 1, 148);
+                form.add(checkBoxFields[67], 2, 148);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 149);
+                form.add(labelANDTooltipMaker("Prefer Targeting Less Healthy:", 7, 150), 1, 149);
+                form.add(checkBoxFields[68], 2, 149);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 150);
+                form.add(labelANDTooltipMaker("Greatly Prefer Targeting Less Healthy:", 7, 151), 1, 150);
+                form.add(checkBoxFields[69], 2, 150);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 151);
+                form.add(labelANDTooltipMaker("Prefer Targeting Lower HP Target:", 7, 152), 1, 151);
+                form.add(checkBoxFields[70], 2, 151);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 152);
+                form.add(labelANDTooltipMaker("Prefer Targeting Higher HP Target:", 7, 153), 1, 152);
+                form.add(checkBoxFields[71], 2, 152);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 153);
+                form.add(labelANDTooltipMaker("Prefer Targeting Target in Peril:", 7, 154), 1, 153);
+                form.add(checkBoxFields[72], 2, 153);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 154);
+                form.add(labelANDTooltipMaker("Unknown TWF Flag 0x2000:", 7, 155), 1, 154);
+                form.add(checkBoxFields[73], 2, 154);
+                form.add(fieldImageViewCreator(images.get("selectCursor")), 0, 155);
+                form.add(labelANDTooltipMaker("Choose Targeting Randomly:", 7, 156), 1, 155);
+                form.add(checkBoxFields[74], 2, 155);
+
+                centerMenu.getChildren().add(form);
+                ScrollPane centerScroll = new ScrollPane();
+                centerScroll.setContent(centerMenu);
+                borderPane.setCenter(centerScroll);
+            });
+        });
+    }
+
+    /**
+     * @Author Jemaroo
      * @Function Loads selected Unit Data into gui lists
      */
     private void loadSelectedUnit(int index) 
@@ -2520,249 +2195,303 @@ public class GUI extends Application
         if (struct instanceof BattleUnitKind) 
         {
             BattleUnitKind b = (BattleUnitKind) struct;
-            HPField.setText(String.valueOf(b.HP));
-            dangerHPField.setText(String.valueOf(b.dangerHP));
-            perilHPField.setText(String.valueOf(b.perilHP));
-            levelField.setText(String.valueOf(b.level));
-            bonusXPField.setText(String.valueOf(b.bonusXP));
-            bonusCoinField.setText(String.valueOf(b.bonusCoin));
-            bonusCoinRateField.setText(String.valueOf(b.bonusCoinRate));
-            baseCoinField.setText(String.valueOf(b.baseCoin));
-            runRateField.setText(String.valueOf(b.runRate));
-            pbCapField.setText(String.valueOf(b.pbCap));
-            swallowChanceField.setText(String.valueOf(b.swallowChance));
-            swallowAttributeSelector.getSelectionModel().select(SAtoIndex(b.swallowAttribute));
-            UltraHammerKnockChanceField.setText(String.valueOf(b.ultraHammerKnockChance));
-            ItemStealParameterField.setText(String.valueOf(b.itemStealParameter));
+            textFields[0].setText(String.valueOf(b.HP));
+            textFields[1].setText(String.valueOf(b.dangerHP));
+            textFields[2].setText(String.valueOf(b.perilHP));
+            textFields[3].setText(String.valueOf(b.level));
+            textFields[4].setText(String.valueOf(b.bonusXP));
+            textFields[5].setText(String.valueOf(b.bonusCoin));
+            textFields[6].setText(String.valueOf(b.bonusCoinRate));
+            textFields[7].setText(String.valueOf(b.baseCoin));
+            textFields[8].setText(String.valueOf(b.runRate));
+            textFields[9].setText(String.valueOf(b.pbCap));
+            textFields[10].setText(String.valueOf(b.swallowChance));
+            comboBoxFields[0].getSelectionModel().select(SAtoIndex(b.swallowAttribute));
+            textFields[11].setText(String.valueOf(b.ultraHammerKnockChance));
+            textFields[12].setText(String.valueOf(b.itemStealParameter));
+            checkBoxFields[0].setSelected(b.MapObj);
+            checkBoxFields[1].setSelected(b.OutOfReach);
+            checkBoxFields[2].setSelected(b.Unquakeable);
+            checkBoxFields[3].setSelected(b.IsInvisible);
+            checkBoxFields[4].setSelected(b.IsVeiled);
+            checkBoxFields[5].setSelected(b.ShellShielded);
+            checkBoxFields[6].setSelected(b.NeverTargetable);
+            checkBoxFields[7].setSelected(b.LimitSwitch);
+            checkBoxFields[8].setSelected(b.DisableZeroGravityFloat);
+            checkBoxFields[9].setSelected(b.DisableZeroGravityImmobility);
+            checkBoxFields[10].setSelected(b.immuneToUltraHammerKnock);
+            checkBoxFields[11].setSelected(b.IsUndead);
+            checkBoxFields[12].setSelected(b.IsCorpse);
+            checkBoxFields[13].setSelected(b.IsLeader);
+            checkBoxFields[14].setSelected(b.CannotTakeActions);
+            checkBoxFields[15].setSelected(b.NotSpunByLoveSlap);
+            checkBoxFields[16].setSelected(b.DisableDamageStars);
+            checkBoxFields[17].setSelected(b.DisableAllPartVisibility);
+            checkBoxFields[18].setSelected(b.DisableHPGauge);
+            checkBoxFields[19].setSelected(b.LookCamera);
+            checkBoxFields[20].setSelected(b.NonCombatant);
+            checkBoxFields[21].setSelected(b.NoShadow);
+            checkBoxFields[22].setSelected(b.DisableDamage);
         } 
         else if (struct instanceof BattleUnitDefense) 
         {
             BattleUnitDefense b = (BattleUnitDefense) struct;
-            NormalField.setText(String.valueOf(b.normal));
-            FireField.setText(String.valueOf(b.fire));
-            IceField.setText(String.valueOf(b.ice));
-            ExplosionField.setText(String.valueOf(b.explosion));
-            ElectricField.setText(String.valueOf(b.electric));
+            textFields[0].setText(String.valueOf(b.normal));
+            textFields[1].setText(String.valueOf(b.fire));
+            textFields[2].setText(String.valueOf(b.ice));
+            textFields[3].setText(String.valueOf(b.explosion));
+            textFields[4].setText(String.valueOf(b.electric));
         }
         else if (struct instanceof BattleUnitDefenseAttr)
         {
             BattleUnitDefenseAttr b = (BattleUnitDefenseAttr) struct;
-            NormalSelector.getSelectionModel().select(b.normal);
-            FireSelector.getSelectionModel().select(b.fire);
-            IceSelector.getSelectionModel().select(b.ice);
-            ExplosionSelector.getSelectionModel().select(b.explosion);
-            ElectricSelector.getSelectionModel().select(b.electric);
+            comboBoxFields[0].getSelectionModel().select(b.normal);
+            comboBoxFields[1].getSelectionModel().select(b.fire);
+            comboBoxFields[2].getSelectionModel().select(b.ice);
+            comboBoxFields[3].getSelectionModel().select(b.explosion);
+            comboBoxFields[4].getSelectionModel().select(b.electric);
         }
         else if (struct instanceof StatusVulnerability)
         {
             StatusVulnerability b = (StatusVulnerability) struct;
-            SleepField.setText(String.valueOf(b.sleep));
-            StopField.setText(String.valueOf(b.stop));
-            DizzyField.setText(String.valueOf(b.dizzy));
-            PoisonField.setText(String.valueOf(b.poison));
-            ConfuseField.setText(String.valueOf(b.confuse));
-            ElectricField.setText(String.valueOf(b.electric));
-            BurnField.setText(String.valueOf(b.burn));
-            FreezeField.setText(String.valueOf(b.freeze));
-            HugeField.setText(String.valueOf(b.huge));
-            TinyField.setText(String.valueOf(b.tiny));
-            AttackUpField.setText(String.valueOf(b.attack_up));
-            AttackDownField.setText(String.valueOf(b.attack_down));
-            DefenseUpField.setText(String.valueOf(b.defense_up));
-            DefenseDownField.setText(String.valueOf(b.defense_down));
-            AllergicField.setText(String.valueOf(b.allergic));
-            FrightField.setText(String.valueOf(b.fright));
-            GaleForceField.setText(String.valueOf(b.gale_force));
-            FastField.setText(String.valueOf(b.fast));
-            SlowField.setText(String.valueOf(b.slow));
-            DodgyField.setText(String.valueOf(b.dodgy));
-            InvisibleField.setText(String.valueOf(b.invisible));
-            OHKOField.setText(String.valueOf(b.ohko));
+            textFields[0].setText(String.valueOf(b.sleep));
+            textFields[1].setText(String.valueOf(b.stop));
+            textFields[2].setText(String.valueOf(b.dizzy));
+            textFields[3].setText(String.valueOf(b.poison));
+            textFields[4].setText(String.valueOf(b.confuse));
+            textFields[5].setText(String.valueOf(b.electric));
+            textFields[6].setText(String.valueOf(b.burn));
+            textFields[7].setText(String.valueOf(b.freeze));
+            textFields[8].setText(String.valueOf(b.huge));
+            textFields[9].setText(String.valueOf(b.tiny));
+            textFields[10].setText(String.valueOf(b.attack_up));
+            textFields[11].setText(String.valueOf(b.attack_down));
+            textFields[12].setText(String.valueOf(b.defense_up));
+            textFields[13].setText(String.valueOf(b.defense_down));
+            textFields[14].setText(String.valueOf(b.allergic));
+            textFields[15].setText(String.valueOf(b.fright));
+            textFields[16].setText(String.valueOf(b.gale_force));
+            textFields[17].setText(String.valueOf(b.fast));
+            textFields[18].setText(String.valueOf(b.slow));
+            textFields[19].setText(String.valueOf(b.dodgy));
+            textFields[20].setText(String.valueOf(b.invisible));
+            textFields[21].setText(String.valueOf(b.ohko));
         }
         else if (struct instanceof BattleWeapon)
         {
             BattleWeapon b = (BattleWeapon) struct;
-            AccuracyField.setText(String.valueOf(b.accuracy));
-            FPCostField.setText(String.valueOf(b.fp_cost));
-            SPCostField.setText(String.valueOf(b.sp_cost));
-            SuperguardStateSelector.getSelectionModel().select(b.superguard_state);
-            StylishMultiplierField.setText(String.valueOf(b.sylish_multiplier));
-            BingoSlotIncChanceField.setText(String.valueOf(b.bingo_slot_inc_chance));
-            BaseDamage1Field.setText(String.valueOf(b.base_damage1));
-            BaseDamage2Field.setText(String.valueOf(b.base_damage2));
-            BaseDamage3Field.setText(String.valueOf(b.base_damage3));
-            BaseDamage4Field.setText(String.valueOf(b.base_damage4));
-            BaseDamage5Field.setText(String.valueOf(b.base_damage5));
-            BaseDamage6Field.setText(String.valueOf(b.base_damage6));
-            BaseDamage7Field.setText(String.valueOf(b.base_damage7));
-            BaseDamage8Field.setText(String.valueOf(b.base_damage8));
-            BaseFPDamage1Field.setText(String.valueOf(b.base_fpdamage1));
-            BaseFPDamage2Field.setText(String.valueOf(b.base_fpdamage2));
-            BaseFPDamage3Field.setText(String.valueOf(b.base_fpdamage3));
-            BaseFPDamage4Field.setText(String.valueOf(b.base_fpdamage4));
-            BaseFPDamage5Field.setText(String.valueOf(b.base_fpdamage5));
-            BaseFPDamage6Field.setText(String.valueOf(b.base_fpdamage6));
-            BaseFPDamage7Field.setText(String.valueOf(b.base_fpdamage7));
-            BaseFPDamage8Field.setText(String.valueOf(b.base_fpdamage8));
-            TCF1Box.setSelected(b.CannotTargetMarioOrShellShield);
-            TCF2Box.setSelected(b.CannotTargetPartner);
-            TCF3Box.setSelected(b.CannotTargetEnemy);
-            TCF4Box.setSelected(b.CannotTargetOppositeAlliance);
-            TCF5Box.setSelected(b.CannotTargetOwnAlliance);
-            TCF6Box.setSelected(b.CannotTargetSelf);
-            TCF7Box.setSelected(b.CannotTargetSameSpecies);
-            TCF8Box.setSelected(b.OnlyTargetSelf);
-            TCF9Box.setSelected(b.OnlyTargetMario);
-            TCF10Box.setSelected(b.SingleTarget);
-            TCF11Box.setSelected(b.MultipleTarget);
-            TPF1Box.setSelected(b.Tattlelike);
-            TPF2Box.setSelected(b.CannotTargetCeiling);
-            TPF3Box.setSelected(b.CannotTargetFloating);
-            TPF4Box.setSelected(b.CannotTargetGrounded);
-            TPF5Box.setSelected(b.Jumplike);
-            TPF6Box.setSelected(b.Hammerlike);
-            TPF7Box.setSelected(b.ShellTosslike);
-            TPF8Box.setSelected(b.RecoilDamage);
-            TPF9Box.setSelected(b.CanOnlyTargetFrontmost);
-            TPF10Box.setSelected(b.TargetSameAllianceDirection);
-            TPF11Box.setSelected(b.TargetOppositeAllianceDirection);
-            ElementSelector.getSelectionModel().select(b.element);
-            DamagePatternSelector.getSelectionModel().select(DPtoIndex(b.damage_pattern));
-            ACLevelSelector.getSelectionModel().select(b.ac_level);
-            SPF1Box.setSelected(b.BadgeCanAffectPower);
-            SPF2Box.setSelected(b.StatusCanAffectPower);
-            SPF3Box.setSelected(b.IsChargeable);
-            SPF4Box.setSelected(b.CannotMiss);
-            SPF5Box.setSelected(b.DiminishingReturnsByHit);
-            SPF6Box.setSelected(b.DiminishingReturnsByTarget);
-            SPF7Box.setSelected(b.PiercesDefense);
-            SPF8Box.setSelected(b.IgnoreTargetStatusVulnerability);
-            SPF9Box.setSelected(b.IgnitesIfBurned);
-            SPF10Box.setSelected(b.FlipsShellEnemies);
-            SPF11Box.setSelected(b.FlipsBombFlippableEnemies);
-            SPF12Box.setSelected(b.GroundsWingedEnemies);
-            SPF13Box.setSelected(b.CanBeUsedAsConfusedAction);
-            SPF14Box.setSelected(b.Unguardable);
-            CRF1Box.setSelected(b.Electric);
-            CRF2Box.setSelected(b.TopSpiky);
-            CRF3Box.setSelected(b.PreemptiveFrontSpiky);
-            CRF4Box.setSelected(b.FrontSpiky);
-            CRF5Box.setSelected(b.Fiery);
-            CRF6Box.setSelected(b.Icy);
-            CRF7Box.setSelected(b.Poison);
-            CRF8Box.setSelected(b.Explosive);
-            CRF9Box.setSelected(b.VolatileExplosive);
-            CRF10Box.setSelected(b.Payback);
-            CRF11Box.setSelected(b.HoldFast);
-            TWF1Box.setSelected(b.PreferMario);
-            TWF2Box.setSelected(b.PreferPartner);
-            TWF3Box.setSelected(b.PreferFront);
-            TWF4Box.setSelected(b.PreferBack);
-            TWF5Box.setSelected(b.PreferSameAlliance);
-            TWF6Box.setSelected(b.PreferOppositeAlliance);
-            TWF7Box.setSelected(b.PreferLessHealthy);
-            TWF8Box.setSelected(b.GreatlyPreferLessHealthy);
-            TWF9Box.setSelected(b.PreferLowerHP);
-            TWF10Box.setSelected(b.PreferHigherHP);
-            TWF11Box.setSelected(b.PreferInPeril);
-            TWF12Box.setSelected(b.ChooseWeightedRandomly);
-            SleepChanceField.setText(String.valueOf(b.sleep_chance));
-            SleepTimeField.setText(String.valueOf(b.sleep_time));
-            StopChanceField.setText(String.valueOf(b.stop_chance));
-            StopTimeField.setText(String.valueOf(b.stop_time));
-            DizzyChanceField.setText(String.valueOf(b.dizzy_chance));
-            DizzyTimeField.setText(String.valueOf(b.dizzy_time));
-            PoisonChanceField.setText(String.valueOf(b.poison_chance));
-            PoisonTimeField.setText(String.valueOf(b.poison_time));
-            PoisonStrengthField.setText(String.valueOf(b.poison_strength));
-            ConfuseChanceField.setText(String.valueOf(b.confuse_chance));
-            ConfuseTimeField.setText(String.valueOf(b.confuse_time));
-            ElectricChanceField.setText(String.valueOf(b.electric_chance));
-            ElectricTimeField.setText(String.valueOf(b.electric_time));
-            DodgyChanceField.setText(String.valueOf(b.dodgy_chance));
-            DodgyTimeField.setText(String.valueOf(b.dodgy_time));
-            BurnChanceField.setText(String.valueOf(b.burn_chance));
-            BurnTimeField.setText(String.valueOf(b.burn_time));
-            FreezeChanceField.setText(String.valueOf(b.freeze_chance));
-            FreezeTimeField.setText(String.valueOf(b.freeze_time));
-            SizeChangeChanceField.setText(String.valueOf(b.size_change_chance));
-            SizeChangeTimeField.setText(String.valueOf(b.size_change_time));
-            SizeChangeStrengthField.setText(String.valueOf(b.size_change_strength));
-            AtkChangeChanceField.setText(String.valueOf(b.atk_change_chance));
-            AtkChangeTimeField.setText(String.valueOf(b.atk_change_time));
-            AtkChangeStrengthField.setText(String.valueOf(b.atk_change_strength));
-            DefChangeChanceField.setText(String.valueOf(b.def_change_chance));
-            DefChangeTimeField.setText(String.valueOf(b.def_change_time));
-            DefChangeStrengthField.setText(String.valueOf(b.def_change_strength));
-            AllergicChanceField.setText(String.valueOf(b.allergic_chance));
-            AllergicTimeField.setText(String.valueOf(b.allergic_time));
-            OHKOChanceField.setText(String.valueOf(b.ohko_chance));
-            ChargeStrengthField.setText(String.valueOf(b.charge_strength));
-            FastChanceField.setText(String.valueOf(b.fast_chance));
-            FastTimeField.setText(String.valueOf(b.fast_time));
-            SlowChanceField.setText(String.valueOf(b.slow_chance));
-            SlowTimeField.setText(String.valueOf(b.slow_time));
-            FrightChanceField.setText(String.valueOf(b.fright_chance));
-            GaleForceChanceField.setText(String.valueOf(b.gale_force_chance));
-            PaybackTimeField.setText(String.valueOf(b.payback_time));
-            HoldFastTimeField.setText(String.valueOf(b.hold_fast_time));
-            InvisibleChanceField.setText(String.valueOf(b.invisible_chance));
-            InvisibleTimeField.setText(String.valueOf(b.invisible_time));
-            HPRegenTimeField.setText(String.valueOf(b.hp_regen_time));
-            HPRegenStrengthField.setText(String.valueOf(b.hp_regen_strength));
-            FPRegenTimeField.setText(String.valueOf(b.fp_regen_time));
-            FPRegenStrengthField.setText(String.valueOf(b.fp_regen_strength));
-            STGFall1Field.setText(String.valueOf(b.stage_background_fallweight1));
-            STGFall2Field.setText(String.valueOf(b.stage_background_fallweight2));
-            STGFall3Field.setText(String.valueOf(b.stage_background_fallweight3));
-            STGFall4Field.setText(String.valueOf(b.stage_background_fallweight4));
-            STGNozzleTurnField.setText(String.valueOf(b.stage_nozzle_turn_chance));
-            STGNozzleFireField.setText(String.valueOf(b.stage_nozzle_fire_chance));
-            STGCeilingFallField.setText(String.valueOf(b.stage_ceiling_fall_chance));
-            STGObjectFallField.setText(String.valueOf(b.stage_object_fall_chance));
+            textFields[0].setText(String.valueOf(b.accuracy));
+            textFields[1].setText(String.valueOf(b.fp_cost));
+            textFields[2].setText(String.valueOf(b.sp_cost));
+            comboBoxFields[0].getSelectionModel().select(b.superguard_state);
+            textFields[3].setText(String.valueOf(b.sylish_multiplier));
+            textFields[4].setText(String.valueOf(b.bingo_slot_inc_chance));
+            comboBoxFields[1].getSelectionModel().select(BDFNtoIndex(b.base_damage_fn));
+            textFields[5].setText(String.valueOf(b.base_damage1));
+            textFields[6].setText(String.valueOf(b.base_damage2));
+            textFields[7].setText(String.valueOf(b.base_damage3));
+            textFields[8].setText(String.valueOf(b.base_damage4));
+            textFields[9].setText(String.valueOf(b.base_damage5));
+            textFields[10].setText(String.valueOf(b.base_damage6));
+            textFields[11].setText(String.valueOf(b.base_damage7));
+            textFields[12].setText(String.valueOf(b.base_damage8));
+            textFields[13].setText(String.valueOf(b.base_fpdamage1));
+            textFields[14].setText(String.valueOf(b.base_fpdamage2));
+            textFields[15].setText(String.valueOf(b.base_fpdamage3));
+            textFields[16].setText(String.valueOf(b.base_fpdamage4));
+            textFields[17].setText(String.valueOf(b.base_fpdamage5));
+            textFields[18].setText(String.valueOf(b.base_fpdamage6));
+            textFields[19].setText(String.valueOf(b.base_fpdamage7));
+            textFields[20].setText(String.valueOf(b.base_fpdamage8));
+            checkBoxFields[0].setSelected(b.CannotTargetMarioOrShellShield);
+            checkBoxFields[1].setSelected(b.CannotTargetPartner);
+            checkBoxFields[2].setSelected(b.CannotTargetEnemy);
+            checkBoxFields[3].setSelected(b.CannotTargetTreeOrSwitch);
+            checkBoxFields[4].setSelected(b.CannotTargetSystem);
+            checkBoxFields[5].setSelected(b.CannotTargetOppositeAlliance);
+            checkBoxFields[6].setSelected(b.CannotTargetOwnAlliance);
+            checkBoxFields[7].setSelected(b.CannotTargetSelf);
+            checkBoxFields[8].setSelected(b.CannotTargetSameSpecies);
+            checkBoxFields[9].setSelected(b.OnlyTargetSelf);
+            checkBoxFields[10].setSelected(b.OnlyTargetMario);
+            checkBoxFields[11].setSelected(b.OnlyTargetTreeOrSwitch);
+            checkBoxFields[12].setSelected(b.OnlyTargetPreferredParts);
+            checkBoxFields[13].setSelected(b.OnlyTargetSelectParts);
+            checkBoxFields[14].setSelected(b.SingleTarget);
+            checkBoxFields[15].setSelected(b.MultipleTarget);
+            checkBoxFields[16].setSelected(b.CannotTargetAnything);
+            checkBoxFields[17].setSelected(b.Tattlelike);
+            checkBoxFields[18].setSelected(b.CannotTargetFloating2);
+            checkBoxFields[19].setSelected(b.CannotTargetCeiling);
+            checkBoxFields[20].setSelected(b.CannotTargetFloating);
+            checkBoxFields[21].setSelected(b.CannotTargetGrounded);
+            checkBoxFields[22].setSelected(b.Jumplike);
+            checkBoxFields[23].setSelected(b.Hammerlike);
+            checkBoxFields[24].setSelected(b.ShellTosslike);
+            checkBoxFields[25].setSelected(b.CannotTargetGroundedVariant);
+            checkBoxFields[26].setSelected(b.RecoilDamage);
+            checkBoxFields[27].setSelected(b.CanOnlyTargetFrontmost);
+            checkBoxFields[28].setSelected(b.CannotTargetShellShield);
+            checkBoxFields[29].setSelected(b.CannotTargetCustom);
+            checkBoxFields[30].setSelected(b.TargetSameAllianceDirection);
+            checkBoxFields[31].setSelected(b.TargetOppositeAllianceDirection);
+            comboBoxFields[2].getSelectionModel().select(b.element);
+            comboBoxFields[3].getSelectionModel().select(DPtoIndex(b.damage_pattern));
+            comboBoxFields[4].getSelectionModel().select(b.ac_level);
+            checkBoxFields[32].setSelected(b.BadgeCanAffectPower);
+            checkBoxFields[33].setSelected(b.StatusCanAffectPower);
+            checkBoxFields[34].setSelected(b.IsChargeable);
+            checkBoxFields[35].setSelected(b.CannotMiss);
+            checkBoxFields[36].setSelected(b.DiminishingReturnsByHit);
+            checkBoxFields[37].setSelected(b.DiminishingReturnsByTarget);
+            checkBoxFields[38].setSelected(b.PiercesDefense);
+            checkBoxFields[39].setSelected(b.CanBreakIce);
+            checkBoxFields[40].setSelected(b.IgnoreTargetStatusVulnerability);
+            checkBoxFields[41].setSelected(b.SPFx200);
+            checkBoxFields[42].setSelected(b.IgnitesIfBurned);
+            checkBoxFields[43].setSelected(b.PlayActiveFXSound);
+            checkBoxFields[44].setSelected(b.FlipsShellEnemies);
+            checkBoxFields[45].setSelected(b.FlipsBombFlippableEnemies);
+            checkBoxFields[46].setSelected(b.GroundsWingedEnemies);
+            checkBoxFields[47].setSelected(b.SPFx8000);
+            checkBoxFields[48].setSelected(b.CanBeUsedAsConfusedAction);
+            checkBoxFields[49].setSelected(b.Unguardable);
+            checkBoxFields[50].setSelected(b.CanHitClonelike);
+            checkBoxFields[51].setSelected(b.Electric);
+            checkBoxFields[52].setSelected(b.TopSpiky);
+            checkBoxFields[53].setSelected(b.PreemptiveFrontSpiky);
+            checkBoxFields[54].setSelected(b.FrontSpiky);
+            checkBoxFields[55].setSelected(b.Fiery);
+            checkBoxFields[56].setSelected(b.Icy);
+            checkBoxFields[57].setSelected(b.Poison);
+            checkBoxFields[58].setSelected(b.Explosive);
+            checkBoxFields[59].setSelected(b.VolatileExplosive);
+            checkBoxFields[60].setSelected(b.Payback);
+            checkBoxFields[61].setSelected(b.HoldFast);
+            checkBoxFields[62].setSelected(b.PreferMario);
+            checkBoxFields[63].setSelected(b.PreferPartner);
+            checkBoxFields[64].setSelected(b.PreferFront);
+            checkBoxFields[65].setSelected(b.PreferBack);
+            checkBoxFields[66].setSelected(b.PreferSameAlliance);
+            checkBoxFields[67].setSelected(b.PreferOppositeAlliance);
+            checkBoxFields[68].setSelected(b.PreferLessHealthy);
+            checkBoxFields[69].setSelected(b.GreatlyPreferLessHealthy);
+            checkBoxFields[70].setSelected(b.PreferLowerHP);
+            checkBoxFields[71].setSelected(b.PreferHigherHP);
+            checkBoxFields[72].setSelected(b.PreferInPeril);
+            checkBoxFields[73].setSelected(b.TWFx2000);
+            checkBoxFields[74].setSelected(b.ChooseWeightedRandomly);
+            textFields[21].setText(String.valueOf(b.sleep_chance));
+            textFields[22].setText(String.valueOf(b.sleep_time));
+            textFields[23].setText(String.valueOf(b.stop_chance));
+            textFields[24].setText(String.valueOf(b.stop_time));
+            textFields[25].setText(String.valueOf(b.dizzy_chance));
+            textFields[26].setText(String.valueOf(b.dizzy_time));
+            textFields[27].setText(String.valueOf(b.poison_chance));
+            textFields[28].setText(String.valueOf(b.poison_time));
+            textFields[29].setText(String.valueOf(b.poison_strength));
+            textFields[30].setText(String.valueOf(b.confuse_chance));
+            textFields[31].setText(String.valueOf(b.confuse_time));
+            textFields[32].setText(String.valueOf(b.electric_chance));
+            textFields[33].setText(String.valueOf(b.electric_time));
+            textFields[34].setText(String.valueOf(b.dodgy_chance));
+            textFields[35].setText(String.valueOf(b.dodgy_time));
+            textFields[36].setText(String.valueOf(b.burn_chance));
+            textFields[37].setText(String.valueOf(b.burn_time));
+            textFields[38].setText(String.valueOf(b.freeze_chance));
+            textFields[39].setText(String.valueOf(b.freeze_time));
+            textFields[40].setText(String.valueOf(b.size_change_chance));
+            textFields[41].setText(String.valueOf(b.size_change_time));
+            textFields[42].setText(String.valueOf(b.size_change_strength));
+            textFields[43].setText(String.valueOf(b.atk_change_chance));
+            textFields[44].setText(String.valueOf(b.atk_change_time));
+            textFields[45].setText(String.valueOf(b.atk_change_strength));
+            textFields[46].setText(String.valueOf(b.def_change_chance));
+            textFields[47].setText(String.valueOf(b.def_change_time));
+            textFields[48].setText(String.valueOf(b.def_change_strength));
+            textFields[49].setText(String.valueOf(b.allergic_chance));
+            textFields[50].setText(String.valueOf(b.allergic_time));
+            textFields[51].setText(String.valueOf(b.ohko_chance));
+            textFields[52].setText(String.valueOf(b.charge_strength));
+            textFields[53].setText(String.valueOf(b.fast_chance));
+            textFields[54].setText(String.valueOf(b.fast_time));
+            textFields[55].setText(String.valueOf(b.slow_chance));
+            textFields[56].setText(String.valueOf(b.slow_time));
+            textFields[57].setText(String.valueOf(b.fright_chance));
+            textFields[58].setText(String.valueOf(b.gale_force_chance));
+            textFields[59].setText(String.valueOf(b.payback_time));
+            textFields[60].setText(String.valueOf(b.hold_fast_time));
+            textFields[61].setText(String.valueOf(b.invisible_chance));
+            textFields[62].setText(String.valueOf(b.invisible_time));
+            textFields[63].setText(String.valueOf(b.hp_regen_time));
+            textFields[64].setText(String.valueOf(b.hp_regen_strength));
+            textFields[65].setText(String.valueOf(b.fp_regen_time));
+            textFields[66].setText(String.valueOf(b.fp_regen_strength));
+            comboBoxFields[5].getSelectionModel().select(AStoIndex(b.attack_evt));
+            textFields[67].setText(String.valueOf(b.stage_background_fallweight1));
+            textFields[68].setText(String.valueOf(b.stage_background_fallweight2));
+            textFields[69].setText(String.valueOf(b.stage_background_fallweight3));
+            textFields[70].setText(String.valueOf(b.stage_background_fallweight4));
+            textFields[71].setText(String.valueOf(b.stage_nozzle_turn_chance));
+            textFields[72].setText(String.valueOf(b.stage_nozzle_fire_chance));
+            textFields[73].setText(String.valueOf(b.stage_ceiling_fall_chance));
+            textFields[74].setText(String.valueOf(b.stage_object_fall_chance));
         }
         else if (struct instanceof BattleUnitKindPart)
         {
             BattleUnitKindPart b = (BattleUnitKindPart) struct;
-            PAF1Box.setSelected(b.MostPreferredSelectTarget);
-            PAF2Box.setSelected(b.PreferredSelectTarget);
-            PAF3Box.setSelected(b.SelectTarget);
-            PAF4Box.setSelected(b.WeakToAttackFxR);
-            PAF5Box.setSelected(b.WeakToIcePower);
-            PAF6Box.setSelected(b.IsWinged);
-            PAF7Box.setSelected(b.IsShelled);
-            PAF8Box.setSelected(b.IsBombFlippable);
-            PAF9Box.setSelected(b.NeverTargetable);
-            PAF10Box.setSelected(b.Untattleable);
-            PAF11Box.setSelected(b.JumplikeCannotTarget);
-            PAF12Box.setSelected(b.HammerlikeCannotTarget);
-            PAF13Box.setSelected(b.ShellTosslikeCannotTarget);
-            PAF14Box.setSelected(b.IsImmuneToDamageOrStatus);
-            PAF15Box.setSelected(b.IsImmuneToOHKO);
-            PAF16Box.setSelected(b.IsImmuneToStatus);
-            PCAF1Box.setSelected(b.TopSpiky);
-            PCAF2Box.setSelected(b.PreemptiveFrontSpiky);
-            PCAF3Box.setSelected(b.FrontSpiky);
-            PCAF4Box.setSelected(b.Fiery);
-            PCAF5Box.setSelected(b.FieryStatus);
-            PCAF6Box.setSelected(b.Icy);
-            PCAF7Box.setSelected(b.IcyStatus);
-            PCAF8Box.setSelected(b.Poison);
-            PCAF9Box.setSelected(b.PoisonStatus);
-            PCAF10Box.setSelected(b.Electric);
-            PCAF11Box.setSelected(b.ElectricStatus);
-            PCAF12Box.setSelected(b.Explosive);
-            PCAF13Box.setSelected(b.VolatileExplosive);
+            checkBoxFields[0].setSelected(b.MainBodyPart);
+            checkBoxFields[1].setSelected(b.SecondaryBodyPart);
+            checkBoxFields[2].setSelected(b.BombableBodyPart);
+            checkBoxFields[3].setSelected(b.GuardBodyPart);
+            checkBoxFields[4].setSelected(b.NotBombableBodyPart);
+            checkBoxFields[5].setSelected(b.InHole);
+            checkBoxFields[6].setSelected(b.WeakToAttackFxR);
+            checkBoxFields[7].setSelected(b.WeakToIcePower);
+            checkBoxFields[8].setSelected(b.IsWinged);
+            checkBoxFields[9].setSelected(b.IsShelled);
+            checkBoxFields[10].setSelected(b.IsBombFlippable);
+            checkBoxFields[11].setSelected(b.IsClonelike);
+            checkBoxFields[12].setSelected(b.DisableFlatPaperLayering);
+            checkBoxFields[13].setSelected(b.NeverTargetable);
+            checkBoxFields[14].setSelected(b.IgnoreMapObjectOffset);
+            checkBoxFields[15].setSelected(b.IgnoreOnlyTargetSelectAndPreferredParts);
+            checkBoxFields[16].setSelected(b.Untattleable);
+            checkBoxFields[17].setSelected(b.JumplikeCannotTarget);
+            checkBoxFields[18].setSelected(b.HammerlikeCannotTarget);
+            checkBoxFields[19].setSelected(b.ShellTosslikeCannotTarget);
+            checkBoxFields[20].setSelected(b.PreventHealthDecrease);
+            checkBoxFields[21].setSelected(b.DisablePartVisibility);
+            checkBoxFields[22].setSelected(b.ImmuneToCustom);
+            checkBoxFields[23].setSelected(b.BlurOn);
+            checkBoxFields[24].setSelected(b.ScaleIndependence);
+            checkBoxFields[25].setSelected(b.Independence);
+            checkBoxFields[26].setSelected(b.IsImmuneToDamageOrStatus);
+            checkBoxFields[27].setSelected(b.IsImmuneToOHKO);
+            checkBoxFields[28].setSelected(b.IsImmuneToStatus);
+            checkBoxFields[29].setSelected(b.TopSpiky);
+            checkBoxFields[30].setSelected(b.PreemptiveFrontSpiky);
+            checkBoxFields[31].setSelected(b.FrontSpiky);
+            checkBoxFields[32].setSelected(b.Fiery);
+            checkBoxFields[33].setSelected(b.FieryStatus);
+            checkBoxFields[34].setSelected(b.Icy);
+            checkBoxFields[35].setSelected(b.IcyStatus);
+            checkBoxFields[36].setSelected(b.Poison);
+            checkBoxFields[37].setSelected(b.PoisonStatus);
+            checkBoxFields[38].setSelected(b.Electric);
+            checkBoxFields[39].setSelected(b.ElectricStatus);
+            checkBoxFields[40].setSelected(b.Explosive);
+            checkBoxFields[41].setSelected(b.VolatileExplosive);
         }
         else if (struct instanceof HealthUpgrades)
         {
             HealthUpgrades b = (HealthUpgrades) struct;
-            startHPField.setText(String.valueOf(b.startHP));
-            startFPField.setText(String.valueOf(b.startFP));
-            startBPField.setText(String.valueOf(b.startBP));
-            upgradeHPField.setText(String.valueOf(b.upgradeHP));
-            upgradeFPField.setText(String.valueOf(b.upgradeFP));
-            upgradeBPField.setText(String.valueOf(b.upgradeBP));
+            textFields[0].setText(String.valueOf(b.startHP));
+            textFields[1].setText(String.valueOf(b.startFP));
+            textFields[2].setText(String.valueOf(b.startBP));
+            textFields[3].setText(String.valueOf(b.upgradeHP));
+            textFields[4].setText(String.valueOf(b.upgradeFP));
+            textFields[5].setText(String.valueOf(b.upgradeBP));
         }
     }
 
@@ -2788,243 +2517,297 @@ public class GUI extends Application
 
         if (selected instanceof BattleUnitKind b) 
         {
-            b.HP = Integer.parseInt(HPField.getText());
-            b.dangerHP = Integer.parseInt(dangerHPField.getText());
-            b.perilHP = Integer.parseInt(perilHPField.getText());
-            b.level = Integer.parseInt(levelField.getText());
-            b.bonusXP = Integer.parseInt(bonusXPField.getText());
-            b.bonusCoin = Integer.parseInt(bonusCoinField.getText());
-            b.bonusCoinRate = Integer.parseInt(bonusCoinRateField.getText());
-            b.baseCoin = Integer.parseInt(baseCoinField.getText());
-            b.runRate = Integer.parseInt(runRateField.getText());
-            b.pbCap = Integer.parseInt(pbCapField.getText());
-            b.swallowChance = Integer.parseInt(swallowChanceField.getText());
-            b.swallowAttribute = IndexToSA(swallowAttributeSelector.getSelectionModel().getSelectedIndex());
-            b.ultraHammerKnockChance = Integer.parseInt(UltraHammerKnockChanceField.getText());
-            b.itemStealParameter = Integer.parseInt(ItemStealParameterField.getText());
+            b.HP = Integer.parseInt(textFields[0].getText());
+            b.dangerHP = Integer.parseInt(textFields[1].getText());
+            b.perilHP = Integer.parseInt(textFields[2].getText());
+            b.level = Integer.parseInt(textFields[3].getText());
+            b.bonusXP = Integer.parseInt(textFields[4].getText());
+            b.bonusCoin = Integer.parseInt(textFields[5].getText());
+            b.bonusCoinRate = Integer.parseInt(textFields[6].getText());
+            b.baseCoin = Integer.parseInt(textFields[7].getText());
+            b.runRate = Integer.parseInt(textFields[8].getText());
+            b.pbCap = Integer.parseInt(textFields[9].getText());
+            b.swallowChance = Integer.parseInt(textFields[10].getText());
+            b.swallowAttribute = IndexToSA(comboBoxFields[0].getSelectionModel().getSelectedIndex());
+            b.ultraHammerKnockChance = Integer.parseInt(textFields[11].getText());
+            b.itemStealParameter = Integer.parseInt(textFields[12].getText());
+            b.MapObj = checkBoxFields[0].isSelected();
+            b.OutOfReach = checkBoxFields[1].isSelected();
+            b.Unquakeable = checkBoxFields[2].isSelected();
+            b.IsInvisible = checkBoxFields[3].isSelected();
+            b.IsVeiled = checkBoxFields[4].isSelected();
+            b.ShellShielded = checkBoxFields[5].isSelected();
+            b.NeverTargetable = checkBoxFields[6].isSelected();
+            b.LimitSwitch = checkBoxFields[7].isSelected();
+            b.DisableZeroGravityFloat = checkBoxFields[8].isSelected();
+            b.DisableZeroGravityImmobility = checkBoxFields[9].isSelected();
+            b.immuneToUltraHammerKnock = checkBoxFields[10].isSelected();
+            b.IsUndead = checkBoxFields[11].isSelected();
+            b.IsCorpse = checkBoxFields[12].isSelected();
+            b.IsLeader = checkBoxFields[13].isSelected();
+            b.CannotTakeActions = checkBoxFields[14].isSelected();
+            b.NotSpunByLoveSlap = checkBoxFields[15].isSelected();
+            b.DisableDamageStars = checkBoxFields[16].isSelected();
+            b.DisableAllPartVisibility = checkBoxFields[17].isSelected();
+            b.DisableHPGauge = checkBoxFields[18].isSelected();
+            b.LookCamera = checkBoxFields[19].isSelected();
+            b.NonCombatant = checkBoxFields[20].isSelected();
+            b.NoShadow = checkBoxFields[21].isSelected();
+            b.DisableDamage = checkBoxFields[22].isSelected();
         } 
         else if (selected instanceof BattleUnitDefense b) 
         {
-            b.normal = Integer.parseInt(NormalField.getText());
-            b.fire = Integer.parseInt(FireField.getText());
-            b.ice = Integer.parseInt(IceField.getText());
-            b.explosion = Integer.parseInt(ExplosionField.getText());
-            b.electric = Integer.parseInt(ElectricField.getText());
+            b.normal = Integer.parseInt(textFields[0].getText());
+            b.fire = Integer.parseInt(textFields[1].getText());
+            b.ice = Integer.parseInt(textFields[2].getText());
+            b.explosion = Integer.parseInt(textFields[3].getText());
+            b.electric = Integer.parseInt(textFields[4].getText());
         }
         else if (selected instanceof BattleUnitDefenseAttr b)
         {
-            b.normal = NormalSelector.getSelectionModel().getSelectedIndex();
-            b.fire = FireSelector.getSelectionModel().getSelectedIndex();
-            b.ice = IceSelector.getSelectionModel().getSelectedIndex();
-            b.explosion = ExplosionSelector.getSelectionModel().getSelectedIndex();
-            b.electric = ElectricSelector.getSelectionModel().getSelectedIndex();
+            b.normal = comboBoxFields[0].getSelectionModel().getSelectedIndex();
+            b.fire = comboBoxFields[1].getSelectionModel().getSelectedIndex();
+            b.ice = comboBoxFields[2].getSelectionModel().getSelectedIndex();
+            b.explosion = comboBoxFields[3].getSelectionModel().getSelectedIndex();
+            b.electric = comboBoxFields[4].getSelectionModel().getSelectedIndex();
         }
         else if (selected instanceof StatusVulnerability b)
         {
-            b.sleep = Integer.parseInt(SleepField.getText());
-            b.stop = Integer.parseInt(StopField.getText());
-            b.dizzy = Integer.parseInt(DizzyField.getText());
-            b.poison = Integer.parseInt(PoisonField.getText());
-            b.confuse = Integer.parseInt(ConfuseField.getText());
-            b.electric = Integer.parseInt(ElectricField.getText());
-            b.burn = Integer.parseInt(BurnField.getText());
-            b.freeze = Integer.parseInt(FreezeField.getText());
-            b.huge = Integer.parseInt(HugeField.getText());
-            b.tiny = Integer.parseInt(TinyField.getText());
-            b.attack_up = Integer.parseInt(AttackUpField.getText());
-            b.attack_down = Integer.parseInt(AttackDownField.getText());
-            b.defense_up = Integer.parseInt(DefenseUpField.getText());
-            b.defense_down = Integer.parseInt(DefenseDownField.getText());
-            b.allergic = Integer.parseInt(AllergicField.getText());
-            b.fright = Integer.parseInt(FrightField.getText());
-            b.gale_force = Integer.parseInt(GaleForceField.getText());
-            b.fast = Integer.parseInt(FastField.getText());
-            b.slow = Integer.parseInt(SlowField.getText());
-            b.dodgy = Integer.parseInt(DodgyField.getText());
-            b.invisible = Integer.parseInt(InvisibleField.getText());
-            b.ohko = Integer.parseInt(OHKOField.getText());
+            b.sleep = Integer.parseInt(textFields[0].getText());
+            b.stop = Integer.parseInt(textFields[1].getText());
+            b.dizzy = Integer.parseInt(textFields[2].getText());
+            b.poison = Integer.parseInt(textFields[3].getText());
+            b.confuse = Integer.parseInt(textFields[4].getText());
+            b.electric = Integer.parseInt(textFields[5].getText());
+            b.burn = Integer.parseInt(textFields[6].getText());
+            b.freeze = Integer.parseInt(textFields[7].getText());
+            b.huge = Integer.parseInt(textFields[8].getText());
+            b.tiny = Integer.parseInt(textFields[9].getText());
+            b.attack_up = Integer.parseInt(textFields[10].getText());
+            b.attack_down = Integer.parseInt(textFields[11].getText());
+            b.defense_up = Integer.parseInt(textFields[12].getText());
+            b.defense_down = Integer.parseInt(textFields[13].getText());
+            b.allergic = Integer.parseInt(textFields[14].getText());
+            b.fright = Integer.parseInt(textFields[15].getText());
+            b.gale_force = Integer.parseInt(textFields[16].getText());
+            b.fast = Integer.parseInt(textFields[17].getText());
+            b.slow = Integer.parseInt(textFields[18].getText());
+            b.dodgy = Integer.parseInt(textFields[19].getText());
+            b.invisible = Integer.parseInt(textFields[20].getText());
+            b.ohko = Integer.parseInt(textFields[21].getText());
         }
         else if (selected instanceof BattleWeapon b)
         {
-            b.accuracy = Integer.parseInt(AccuracyField.getText());
-            b.fp_cost = Integer.parseInt(FPCostField.getText());
-            b.sp_cost = Integer.parseInt(SPCostField.getText());
-            b.superguard_state = SuperguardStateSelector.getSelectionModel().getSelectedIndex();
-            b.sylish_multiplier = Integer.parseInt(StylishMultiplierField.getText());
-            b.bingo_slot_inc_chance = Integer.parseInt(BingoSlotIncChanceField.getText());
-            b.base_damage1 = Integer.parseInt(BaseDamage1Field.getText());
-            b.base_damage2 = Integer.parseInt(BaseDamage2Field.getText());
-            b.base_damage3 = Integer.parseInt(BaseDamage3Field.getText());
-            b.base_damage4 = Integer.parseInt(BaseDamage4Field.getText());
-            b.base_damage5 = Integer.parseInt(BaseDamage5Field.getText());
-            b.base_damage6 = Integer.parseInt(BaseDamage6Field.getText());
-            b.base_damage7 = Integer.parseInt(BaseDamage7Field.getText());
-            b.base_damage8 = Integer.parseInt(BaseDamage8Field.getText());
-            b.base_fpdamage1 = Integer.parseInt(BaseFPDamage1Field.getText());
-            b.base_fpdamage2 = Integer.parseInt(BaseFPDamage2Field.getText());
-            b.base_fpdamage3 = Integer.parseInt(BaseFPDamage3Field.getText());
-            b.base_fpdamage4 = Integer.parseInt(BaseFPDamage4Field.getText());
-            b.base_fpdamage5 = Integer.parseInt(BaseFPDamage5Field.getText());
-            b.base_fpdamage6 = Integer.parseInt(BaseFPDamage6Field.getText());
-            b.base_fpdamage7 = Integer.parseInt(BaseFPDamage7Field.getText());
-            b.base_fpdamage8 = Integer.parseInt(BaseFPDamage8Field.getText());
-            b.CannotTargetMarioOrShellShield = TCF1Box.isSelected();
-            b.CannotTargetPartner = TCF2Box.isSelected();
-            b.CannotTargetEnemy = TCF3Box.isSelected();
-            b.CannotTargetOppositeAlliance = TCF4Box.isSelected();
-            b.CannotTargetOwnAlliance = TCF5Box.isSelected();
-            b.CannotTargetSelf = TCF6Box.isSelected();
-            b.CannotTargetSameSpecies = TCF7Box.isSelected();
-            b.OnlyTargetSelf = TCF8Box.isSelected();
-            b.OnlyTargetMario = TCF9Box.isSelected();
-            b.SingleTarget = TCF10Box.isSelected();
-            b.MultipleTarget = TCF11Box.isSelected();
-            b.Tattlelike = TPF1Box.isSelected();
-            b.CannotTargetCeiling = TPF2Box.isSelected();
-            b.CannotTargetFloating = TPF3Box.isSelected();
-            b.CannotTargetGrounded = TPF4Box.isSelected();
-            b.Jumplike = TPF5Box.isSelected();
-            b.Hammerlike = TPF6Box.isSelected();
-            b.ShellTosslike = TPF7Box.isSelected();
-            b.RecoilDamage = TPF8Box.isSelected();
-            b.CanOnlyTargetFrontmost = TPF9Box.isSelected();
-            b.TargetSameAllianceDirection = TPF10Box.isSelected();
-            b.TargetOppositeAllianceDirection = TPF11Box.isSelected();
-            b.element = ElementSelector.getSelectionModel().getSelectedIndex();
-            b.damage_pattern = IndexToDP(DamagePatternSelector.getSelectionModel().getSelectedIndex());
-            b.ac_level = ACLevelSelector.getSelectionModel().getSelectedIndex();
-            b.BadgeCanAffectPower = SPF1Box.isSelected();
-            b.StatusCanAffectPower = SPF2Box.isSelected();
-            b.IsChargeable = SPF3Box.isSelected();
-            b.CannotMiss = SPF4Box.isSelected();
-            b.DiminishingReturnsByHit = SPF5Box.isSelected();
-            b.DiminishingReturnsByTarget = SPF6Box.isSelected();
-            b.PiercesDefense = SPF7Box.isSelected();
-            b.IgnoreTargetStatusVulnerability = SPF8Box.isSelected();
-            b.IgnitesIfBurned = SPF9Box.isSelected();
-            b.FlipsShellEnemies = SPF10Box.isSelected();
-            b.FlipsBombFlippableEnemies = SPF11Box.isSelected();
-            b.GroundsWingedEnemies = SPF12Box.isSelected();
-            b.CanBeUsedAsConfusedAction = SPF13Box.isSelected();
-            b.Unguardable = SPF14Box.isSelected();
-            b.Electric = CRF1Box.isSelected();
-            b.TopSpiky = CRF2Box.isSelected();
-            b.PreemptiveFrontSpiky = CRF3Box.isSelected();
-            b.FrontSpiky = CRF4Box.isSelected();
-            b.Fiery = CRF5Box.isSelected();
-            b.Icy = CRF6Box.isSelected();
-            b.Poison = CRF7Box.isSelected();
-            b.Explosive = CRF8Box.isSelected();
-            b.VolatileExplosive = CRF9Box.isSelected();
-            b.Payback = CRF10Box.isSelected();
-            b.HoldFast = CRF11Box.isSelected();
-            b.PreferMario = TWF1Box.isSelected();
-            b.PreferPartner = TWF2Box.isSelected();
-            b.PreferFront = TWF3Box.isSelected();
-            b.PreferBack = TWF4Box.isSelected();
-            b.PreferSameAlliance = TWF5Box.isSelected();
-            b.PreferOppositeAlliance = TWF6Box.isSelected();
-            b.PreferLessHealthy = TWF7Box.isSelected();
-            b.GreatlyPreferLessHealthy = TWF8Box.isSelected();
-            b.PreferLowerHP = TWF9Box.isSelected();
-            b.PreferHigherHP = TWF10Box.isSelected();
-            b.PreferInPeril = TWF11Box.isSelected();
-            b.ChooseWeightedRandomly = TWF12Box.isSelected();
-            b.sleep_chance = Integer.parseInt(SleepChanceField.getText());
-            b.sleep_time = Integer.parseInt(SleepTimeField.getText());
-            b.stop_chance = Integer.parseInt(StopChanceField.getText());
-            b.stop_time = Integer.parseInt(StopTimeField.getText());
-            b.dizzy_chance = Integer.parseInt(DizzyChanceField.getText());
-            b.dizzy_time = Integer.parseInt(DizzyTimeField.getText());
-            b.poison_chance = Integer.parseInt(PoisonChanceField.getText());
-            b.poison_time = Integer.parseInt(PoisonTimeField.getText());
-            b.poison_strength = Integer.parseInt(PoisonStrengthField.getText());
-            b.confuse_chance = Integer.parseInt(ConfuseChanceField.getText());
-            b.confuse_time = Integer.parseInt(ConfuseTimeField.getText());
-            b.electric_chance = Integer.parseInt(ElectricChanceField.getText());
-            b.electric_time = Integer.parseInt(ElectricTimeField.getText());
-            b.dodgy_chance = Integer.parseInt(DodgyChanceField.getText());
-            b.dodgy_time = Integer.parseInt(DodgyTimeField.getText());
-            b.burn_chance = Integer.parseInt(BurnChanceField.getText());
-            b.burn_time = Integer.parseInt(BurnTimeField.getText());
-            b.freeze_chance = Integer.parseInt(FreezeChanceField.getText());
-            b.freeze_time = Integer.parseInt(FreezeTimeField.getText());
-            b.size_change_chance = Integer.parseInt(SizeChangeChanceField.getText());
-            b.size_change_time = Integer.parseInt(SizeChangeTimeField.getText());
-            b.size_change_strength = Integer.parseInt(SizeChangeStrengthField.getText());
-            b.atk_change_chance = Integer.parseInt(AtkChangeChanceField.getText());
-            b.atk_change_time = Integer.parseInt(AtkChangeTimeField.getText());
-            b.atk_change_strength = Integer.parseInt(AtkChangeStrengthField.getText());
-            b.def_change_chance = Integer.parseInt(DefChangeChanceField.getText());
-            b.def_change_time = Integer.parseInt(DefChangeTimeField.getText());
-            b.def_change_strength = Integer.parseInt(DefChangeStrengthField.getText());
-            b.allergic_chance = Integer.parseInt(AllergicChanceField.getText());
-            b.allergic_time = Integer.parseInt(AllergicTimeField.getText());
-            b.ohko_chance = Integer.parseInt(OHKOChanceField.getText());
-            b.charge_strength = Integer.parseInt(ChargeStrengthField.getText());
-            b.fast_chance = Integer.parseInt(FastChanceField.getText());
-            b.fast_time = Integer.parseInt(FastTimeField.getText());
-            b.slow_chance = Integer.parseInt(SlowChanceField.getText());
-            b.slow_time = Integer.parseInt(SlowTimeField.getText());
-            b.fright_chance = Integer.parseInt(FrightChanceField.getText());
-            b.gale_force_chance = Integer.parseInt(GaleForceChanceField.getText());
-            b.payback_time = Integer.parseInt(PaybackTimeField.getText());
-            b.hold_fast_time = Integer.parseInt(HoldFastTimeField.getText());
-            b.invisible_chance = Integer.parseInt(InvisibleChanceField.getText());
-            b.invisible_time = Integer.parseInt(InvisibleTimeField.getText());
-            b.hp_regen_time = Integer.parseInt(HPRegenTimeField.getText());
-            b.hp_regen_strength = Integer.parseInt(HPRegenStrengthField.getText());
-            b.fp_regen_time = Integer.parseInt(FPRegenTimeField.getText());
-            b.fp_regen_strength = Integer.parseInt(FPRegenStrengthField.getText());
-            b.stage_background_fallweight1 = Integer.parseInt(STGFall1Field.getText());
-            b.stage_background_fallweight2 = Integer.parseInt(STGFall2Field.getText());
-            b.stage_background_fallweight3 = Integer.parseInt(STGFall3Field.getText());
-            b.stage_background_fallweight4 = Integer.parseInt(STGFall4Field.getText());
-            b.stage_nozzle_turn_chance = Integer.parseInt(STGNozzleTurnField.getText());
-            b.stage_nozzle_fire_chance = Integer.parseInt(STGNozzleFireField.getText());
-            b.stage_ceiling_fall_chance = Integer.parseInt(STGCeilingFallField.getText());
-            b.stage_object_fall_chance = Integer.parseInt(STGObjectFallField.getText());
+            b.accuracy = Integer.parseInt(textFields[0].getText());
+            b.fp_cost = Integer.parseInt(textFields[1].getText());
+            b.sp_cost = Integer.parseInt(textFields[2].getText());
+            b.superguard_state = comboBoxFields[0].getSelectionModel().getSelectedIndex();
+            b.sylish_multiplier = Integer.parseInt(textFields[3].getText());
+            b.bingo_slot_inc_chance = Integer.parseInt(textFields[4].getText());
+            b.base_damage_fn = IndexToBDFN(comboBoxFields[1].getSelectionModel().getSelectedIndex());
+            b.base_damage1 = Integer.parseInt(textFields[5].getText());
+            b.base_damage2 = Integer.parseInt(textFields[6].getText());
+            b.base_damage3 = Integer.parseInt(textFields[7].getText());
+            b.base_damage4 = Integer.parseInt(textFields[8].getText());
+            b.base_damage5 = Integer.parseInt(textFields[9].getText());
+            b.base_damage6 = Integer.parseInt(textFields[10].getText());
+            b.base_damage7 = Integer.parseInt(textFields[11].getText());
+            b.base_damage8 = Integer.parseInt(textFields[12].getText());
+            b.base_fpdamage1 = Integer.parseInt(textFields[13].getText());
+            b.base_fpdamage2 = Integer.parseInt(textFields[14].getText());
+            b.base_fpdamage3 = Integer.parseInt(textFields[15].getText());
+            b.base_fpdamage4 = Integer.parseInt(textFields[16].getText());
+            b.base_fpdamage5 = Integer.parseInt(textFields[17].getText());
+            b.base_fpdamage6 = Integer.parseInt(textFields[18].getText());
+            b.base_fpdamage7 = Integer.parseInt(textFields[19].getText());
+            b.base_fpdamage8 = Integer.parseInt(textFields[20].getText());
+            b.CannotTargetMarioOrShellShield = checkBoxFields[0].isSelected();
+            b.CannotTargetPartner = checkBoxFields[1].isSelected();
+            b.CannotTargetEnemy = checkBoxFields[2].isSelected();
+            b.CannotTargetTreeOrSwitch = checkBoxFields[3].isSelected();
+            b.CannotTargetSystem = checkBoxFields[4].isSelected();
+            b.CannotTargetOppositeAlliance = checkBoxFields[5].isSelected();
+            b.CannotTargetOwnAlliance = checkBoxFields[6].isSelected();
+            b.CannotTargetSelf = checkBoxFields[7].isSelected();
+            b.CannotTargetSameSpecies = checkBoxFields[8].isSelected();
+            b.OnlyTargetSelf = checkBoxFields[9].isSelected();
+            b.OnlyTargetMario = checkBoxFields[10].isSelected();
+            b.OnlyTargetTreeOrSwitch = checkBoxFields[11].isSelected();
+            b.OnlyTargetPreferredParts = checkBoxFields[12].isSelected();
+            b.OnlyTargetSelectParts = checkBoxFields[13].isSelected();
+            b.SingleTarget = checkBoxFields[14].isSelected();
+            b.MultipleTarget = checkBoxFields[15].isSelected();
+            b.CannotTargetAnything = checkBoxFields[16].isSelected();
+            b.Tattlelike = checkBoxFields[17].isSelected();
+            b.CannotTargetFloating2 = checkBoxFields[18].isSelected();
+            b.CannotTargetCeiling = checkBoxFields[19].isSelected();
+            b.CannotTargetFloating = checkBoxFields[20].isSelected();
+            b.CannotTargetGrounded = checkBoxFields[21].isSelected();
+            b.Jumplike = checkBoxFields[22].isSelected();
+            b.Hammerlike = checkBoxFields[23].isSelected();
+            b.ShellTosslike = checkBoxFields[24].isSelected();
+            b.CannotTargetGroundedVariant = checkBoxFields[25].isSelected();
+            b.RecoilDamage = checkBoxFields[26].isSelected();
+            b.CanOnlyTargetFrontmost = checkBoxFields[27].isSelected();
+            b.CannotTargetShellShield = checkBoxFields[28].isSelected();
+            b.CannotTargetCustom = checkBoxFields[29].isSelected();
+            b.TargetSameAllianceDirection = checkBoxFields[30].isSelected();
+            b.TargetOppositeAllianceDirection = checkBoxFields[31].isSelected();
+            b.element = comboBoxFields[2].getSelectionModel().getSelectedIndex();
+            b.damage_pattern = IndexToDP(comboBoxFields[3].getSelectionModel().getSelectedIndex());
+            b.ac_level = comboBoxFields[4].getSelectionModel().getSelectedIndex();
+            b.BadgeCanAffectPower = checkBoxFields[32].isSelected();
+            b.StatusCanAffectPower = checkBoxFields[33].isSelected();
+            b.IsChargeable = checkBoxFields[34].isSelected();
+            b.CannotMiss = checkBoxFields[35].isSelected();
+            b.DiminishingReturnsByHit = checkBoxFields[36].isSelected();
+            b.DiminishingReturnsByTarget = checkBoxFields[37].isSelected();
+            b.PiercesDefense = checkBoxFields[38].isSelected();
+            b.CanBreakIce = checkBoxFields[39].isSelected();
+            b.IgnoreTargetStatusVulnerability = checkBoxFields[40].isSelected();
+            b.SPFx200 = checkBoxFields[41].isSelected();
+            b.IgnitesIfBurned = checkBoxFields[42].isSelected();
+            b.PlayActiveFXSound = checkBoxFields[43].isSelected();
+            b.FlipsShellEnemies = checkBoxFields[44].isSelected();
+            b.FlipsBombFlippableEnemies = checkBoxFields[45].isSelected();
+            b.GroundsWingedEnemies = checkBoxFields[46].isSelected();
+            b.SPFx8000 = checkBoxFields[47].isSelected();
+            b.CanBeUsedAsConfusedAction = checkBoxFields[48].isSelected();
+            b.Unguardable = checkBoxFields[49].isSelected();
+            b.CanHitClonelike = checkBoxFields[50].isSelected();
+            b.Electric = checkBoxFields[51].isSelected();
+            b.TopSpiky = checkBoxFields[52].isSelected();
+            b.PreemptiveFrontSpiky = checkBoxFields[53].isSelected();
+            b.FrontSpiky = checkBoxFields[54].isSelected();
+            b.Fiery = checkBoxFields[55].isSelected();
+            b.Icy = checkBoxFields[56].isSelected();
+            b.Poison = checkBoxFields[57].isSelected();
+            b.Explosive = checkBoxFields[58].isSelected();
+            b.VolatileExplosive = checkBoxFields[59].isSelected();
+            b.Payback = checkBoxFields[60].isSelected();
+            b.HoldFast = checkBoxFields[61].isSelected();
+            b.PreferMario = checkBoxFields[62].isSelected();
+            b.PreferPartner = checkBoxFields[63].isSelected();
+            b.PreferFront = checkBoxFields[64].isSelected();
+            b.PreferBack = checkBoxFields[65].isSelected();
+            b.PreferSameAlliance = checkBoxFields[66].isSelected();
+            b.PreferOppositeAlliance = checkBoxFields[67].isSelected();
+            b.PreferLessHealthy = checkBoxFields[68].isSelected();
+            b.GreatlyPreferLessHealthy = checkBoxFields[69].isSelected();
+            b.PreferLowerHP = checkBoxFields[70].isSelected();
+            b.PreferHigherHP = checkBoxFields[71].isSelected();
+            b.PreferInPeril = checkBoxFields[72].isSelected();
+            b.TWFx2000 = checkBoxFields[73].isSelected();
+            b.ChooseWeightedRandomly = checkBoxFields[74].isSelected();
+            b.sleep_chance = Integer.parseInt(textFields[21].getText());
+            b.sleep_time = Integer.parseInt(textFields[22].getText());
+            b.stop_chance = Integer.parseInt(textFields[23].getText());
+            b.stop_time = Integer.parseInt(textFields[24].getText());
+            b.dizzy_chance = Integer.parseInt(textFields[25].getText());
+            b.dizzy_time = Integer.parseInt(textFields[26].getText());
+            b.poison_chance = Integer.parseInt(textFields[27].getText());
+            b.poison_time = Integer.parseInt(textFields[28].getText());
+            b.poison_strength = Integer.parseInt(textFields[29].getText());
+            b.confuse_chance = Integer.parseInt(textFields[30].getText());
+            b.confuse_time = Integer.parseInt(textFields[31].getText());
+            b.electric_chance = Integer.parseInt(textFields[32].getText());
+            b.electric_time = Integer.parseInt(textFields[33].getText());
+            b.dodgy_chance = Integer.parseInt(textFields[34].getText());
+            b.dodgy_time = Integer.parseInt(textFields[35].getText());
+            b.burn_chance = Integer.parseInt(textFields[36].getText());
+            b.burn_time = Integer.parseInt(textFields[37].getText());
+            b.freeze_chance = Integer.parseInt(textFields[38].getText());
+            b.freeze_time = Integer.parseInt(textFields[39].getText());
+            b.size_change_chance = Integer.parseInt(textFields[40].getText());
+            b.size_change_time = Integer.parseInt(textFields[41].getText());
+            b.size_change_strength = Integer.parseInt(textFields[42].getText());
+            b.atk_change_chance = Integer.parseInt(textFields[43].getText());
+            b.atk_change_time = Integer.parseInt(textFields[44].getText());
+            b.atk_change_strength = Integer.parseInt(textFields[45].getText());
+            b.def_change_chance = Integer.parseInt(textFields[46].getText());
+            b.def_change_time = Integer.parseInt(textFields[47].getText());
+            b.def_change_strength = Integer.parseInt(textFields[48].getText());
+            b.allergic_chance = Integer.parseInt(textFields[49].getText());
+            b.allergic_time = Integer.parseInt(textFields[50].getText());
+            b.ohko_chance = Integer.parseInt(textFields[51].getText());
+            b.charge_strength = Integer.parseInt(textFields[52].getText());
+            b.fast_chance = Integer.parseInt(textFields[53].getText());
+            b.fast_time = Integer.parseInt(textFields[54].getText());
+            b.slow_chance = Integer.parseInt(textFields[55].getText());
+            b.slow_time = Integer.parseInt(textFields[56].getText());
+            b.fright_chance = Integer.parseInt(textFields[57].getText());
+            b.gale_force_chance = Integer.parseInt(textFields[58].getText());
+            b.payback_time = Integer.parseInt(textFields[59].getText());
+            b.hold_fast_time = Integer.parseInt(textFields[60].getText());
+            b.invisible_chance = Integer.parseInt(textFields[61].getText());
+            b.invisible_time = Integer.parseInt(textFields[62].getText());
+            b.hp_regen_time = Integer.parseInt(textFields[63].getText());
+            b.hp_regen_strength = Integer.parseInt(textFields[64].getText());
+            b.fp_regen_time = Integer.parseInt(textFields[65].getText());
+            b.fp_regen_strength = Integer.parseInt(textFields[66].getText());
+            b.attack_evt = IndexToAS(comboBoxFields[5].getSelectionModel().getSelectedIndex());
+            b.stage_background_fallweight1 = Integer.parseInt(textFields[67].getText());
+            b.stage_background_fallweight2 = Integer.parseInt(textFields[68].getText());
+            b.stage_background_fallweight3 = Integer.parseInt(textFields[69].getText());
+            b.stage_background_fallweight4 = Integer.parseInt(textFields[70].getText());
+            b.stage_nozzle_turn_chance = Integer.parseInt(textFields[71].getText());
+            b.stage_nozzle_fire_chance = Integer.parseInt(textFields[72].getText());
+            b.stage_ceiling_fall_chance = Integer.parseInt(textFields[73].getText());
+            b.stage_object_fall_chance = Integer.parseInt(textFields[74].getText());
         }
         else if (selected instanceof BattleUnitKindPart b)
         {
-            b.MostPreferredSelectTarget = PAF1Box.isSelected();
-            b.PreferredSelectTarget = PAF2Box.isSelected();
-            b.SelectTarget = PAF3Box.isSelected();
-            b.WeakToAttackFxR = PAF4Box.isSelected();
-            b.WeakToIcePower = PAF5Box.isSelected();
-            b.IsWinged = PAF6Box.isSelected();
-            b.IsShelled = PAF7Box.isSelected();
-            b.IsBombFlippable = PAF8Box.isSelected();
-            b.NeverTargetable = PAF9Box.isSelected();
-            b.Untattleable = PAF10Box.isSelected();
-            b.JumplikeCannotTarget = PAF11Box.isSelected();
-            b.HammerlikeCannotTarget = PAF12Box.isSelected();
-            b.ShellTosslikeCannotTarget = PAF13Box.isSelected();
-            b.IsImmuneToDamageOrStatus = PAF14Box.isSelected();
-            b.IsImmuneToOHKO = PAF15Box.isSelected();
-            b.IsImmuneToStatus = PAF16Box.isSelected();
-            b.TopSpiky = PCAF1Box.isSelected();
-            b.PreemptiveFrontSpiky = PCAF2Box.isSelected();
-            b.FrontSpiky = PCAF3Box.isSelected();
-            b.Fiery = PCAF4Box.isSelected();
-            b.FieryStatus = PCAF5Box.isSelected();
-            b.Icy = PCAF6Box.isSelected();
-            b.IcyStatus = PCAF7Box.isSelected();
-            b.Poison = PCAF8Box.isSelected();
-            b.PoisonStatus = PCAF9Box.isSelected();
-            b.Electric = PCAF10Box.isSelected();
-            b.ElectricStatus = PCAF11Box.isSelected();
-            b.Explosive = PCAF12Box.isSelected();
-            b.VolatileExplosive = PCAF13Box.isSelected();
+            b.MainBodyPart = checkBoxFields[0].isSelected();
+            b.SecondaryBodyPart = checkBoxFields[1].isSelected();
+            b.BombableBodyPart = checkBoxFields[2].isSelected();
+            b.GuardBodyPart = checkBoxFields[3].isSelected();
+            b.NotBombableBodyPart = checkBoxFields[4].isSelected();
+            b.InHole = checkBoxFields[5].isSelected();
+            b.WeakToAttackFxR = checkBoxFields[6].isSelected();
+            b.WeakToIcePower = checkBoxFields[7].isSelected();
+            b.IsWinged = checkBoxFields[8].isSelected();
+            b.IsShelled = checkBoxFields[9].isSelected();
+            b.IsBombFlippable = checkBoxFields[10].isSelected();
+            b.IsClonelike = checkBoxFields[11].isSelected();
+            b.DisableFlatPaperLayering = checkBoxFields[12].isSelected();
+            b.NeverTargetable = checkBoxFields[13].isSelected();
+            b.IgnoreMapObjectOffset = checkBoxFields[14].isSelected();
+            b.IgnoreOnlyTargetSelectAndPreferredParts = checkBoxFields[15].isSelected();
+            b.Untattleable = checkBoxFields[16].isSelected();
+            b.JumplikeCannotTarget = checkBoxFields[17].isSelected();
+            b.HammerlikeCannotTarget = checkBoxFields[18].isSelected();
+            b.ShellTosslikeCannotTarget = checkBoxFields[19].isSelected();
+            b.PreventHealthDecrease = checkBoxFields[20].isSelected();
+            b.DisablePartVisibility = checkBoxFields[21].isSelected();
+            b.ImmuneToCustom = checkBoxFields[22].isSelected();
+            b.BlurOn = checkBoxFields[23].isSelected();
+            b.ScaleIndependence = checkBoxFields[24].isSelected();
+            b.Independence = checkBoxFields[25].isSelected();
+            b.IsImmuneToDamageOrStatus = checkBoxFields[26].isSelected();
+            b.IsImmuneToOHKO = checkBoxFields[27].isSelected();
+            b.IsImmuneToStatus = checkBoxFields[28].isSelected();
+            b.TopSpiky = checkBoxFields[29].isSelected();
+            b.PreemptiveFrontSpiky = checkBoxFields[30].isSelected();
+            b.FrontSpiky = checkBoxFields[31].isSelected();
+            b.Fiery = checkBoxFields[32].isSelected();
+            b.FieryStatus = checkBoxFields[33].isSelected();
+            b.Icy = checkBoxFields[34].isSelected();
+            b.IcyStatus = checkBoxFields[35].isSelected();
+            b.Poison = checkBoxFields[36].isSelected();
+            b.PoisonStatus = checkBoxFields[37].isSelected();
+            b.Electric = checkBoxFields[38].isSelected();
+            b.ElectricStatus = checkBoxFields[39].isSelected();
+            b.Explosive = checkBoxFields[40].isSelected();
+            b.VolatileExplosive = checkBoxFields[41].isSelected();
         }
         else if (selected instanceof HealthUpgrades b)
         {
-            b.startHP = Integer.parseInt(startHPField.getText());
-            b.startFP = Integer.parseInt(startFPField.getText());
-            b.startBP = Integer.parseInt(startBPField.getText());
-            b.upgradeHP = Integer.parseInt(upgradeHPField.getText());
-            b.upgradeFP = Integer.parseInt(upgradeFPField.getText());
-            b.upgradeBP = Integer.parseInt(upgradeBPField.getText());
+            b.startHP = Integer.parseInt(textFields[0].getText());
+            b.startFP = Integer.parseInt(textFields[1].getText());
+            b.startBP = Integer.parseInt(textFields[2].getText());
+            b.upgradeHP = Integer.parseInt(textFields[3].getText());
+            b.upgradeFP = Integer.parseInt(textFields[4].getText());
+            b.upgradeBP = Integer.parseInt(textFields[5].getText());
         }
     }
 
@@ -3051,6 +2834,29 @@ public class GUI extends Application
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).swallowAttribute = b.swallowAttribute;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).ultraHammerKnockChance = b.ultraHammerKnockChance;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).itemStealParameter = b.itemStealParameter;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).MapObj = b.MapObj;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).OutOfReach = b.OutOfReach;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).Unquakeable = b.Unquakeable;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).IsInvisible = b.IsInvisible;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).IsVeiled = b.IsVeiled;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).ShellShielded = b.ShellShielded;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).NeverTargetable = b.NeverTargetable;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).LimitSwitch = b.LimitSwitch;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableZeroGravityFloat = b.DisableZeroGravityFloat;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableZeroGravityImmobility = b.DisableZeroGravityImmobility;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).immuneToUltraHammerKnock = b.immuneToUltraHammerKnock;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).IsUndead = b.IsUndead;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).IsCorpse = b.IsCorpse;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).IsLeader = b.IsLeader;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).CannotTakeActions = b.CannotTakeActions;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).NotSpunByLoveSlap = b.NotSpunByLoveSlap;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableDamageStars = b.DisableDamageStars;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableAllPartVisibility = b.DisableAllPartVisibility;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableHPGauge = b.DisableHPGauge;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).LookCamera = b.LookCamera;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).NonCombatant = b.NonCombatant;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).NoShadow = b.NoShadow;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.get(kindList.getSelectionModel().getSelectedIndex()).DisableDamage = b.DisableDamage;
         } 
         else if (preset instanceof BattleUnitDefense b) 
         {
@@ -3101,6 +2907,7 @@ public class GUI extends Application
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).superguard_state = b.superguard_state;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).sylish_multiplier = b.sylish_multiplier;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).bingo_slot_inc_chance = b.bingo_slot_inc_chance;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).base_damage_fn = b.base_damage_fn;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).base_damage1 = b.base_damage1;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).base_damage2 = b.base_damage2;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).base_damage3 = b.base_damage3;
@@ -3225,6 +3032,7 @@ public class GUI extends Application
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).hp_regen_strength = b.hp_regen_strength;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).fp_regen_time = b.fp_regen_time;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).fp_regen_strength = b.fp_regen_strength;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).attack_evt = b.attack_evt;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).stage_background_fallweight1 = b.stage_background_fallweight1;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).stage_background_fallweight2 = b.stage_background_fallweight2;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleWeaponData.get(weaponList.getSelectionModel().getSelectedIndex()).stage_background_fallweight3 = b.stage_background_fallweight3;
@@ -3236,9 +3044,9 @@ public class GUI extends Application
         }
         else if (preset instanceof BattleUnitKindPart b)
         {
-            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).MostPreferredSelectTarget = b.MostPreferredSelectTarget;
-            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).PreferredSelectTarget = b.PreferredSelectTarget;
-            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).SelectTarget = b.SelectTarget;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).MainBodyPart = b.MainBodyPart;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).SecondaryBodyPart = b.SecondaryBodyPart;
+            units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).BombableBodyPart = b.BombableBodyPart;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).WeakToAttackFxR = b.WeakToAttackFxR;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).WeakToIcePower = b.WeakToIcePower;
             units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindPartData.get((kindList.getSelectionModel().getSelectedIndex() - units.get(unitSelector.getSelectionModel().getSelectedIndex()).BattleUnitKindData.size())).IsWinged = b.IsWinged;
@@ -3277,11 +3085,15 @@ public class GUI extends Application
         }
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Creates a popup window to ask for a valid .bup file
+     */
     public void showGiveValidFileWindow()
     {
         Stage errorBox = new Stage();
         errorBox.setTitle("Error");
-        errorBox.getIcons().add(unitImage);
+        errorBox.getIcons().add(images.get("unit"));
 
         VBox errorMenu = new VBox();
         Text message = new Text("Please Give a Valid .bup File for the Given Type You're Trying to Replace.");
@@ -3301,11 +3113,15 @@ public class GUI extends Application
         errorBox.show();
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Creates a popup window to share that preset was successfully imported
+     */
     public void showPresetSuccessWindow()
     {
         Stage successBox = new Stage();
         successBox.setTitle("Success");
-        successBox.getIcons().add(unitImage);
+        successBox.getIcons().add(images.get("unit"));
 
         VBox successMenu = new VBox();
         Text message = new Text("Successfully Imported!");
@@ -3325,11 +3141,15 @@ public class GUI extends Application
         successBox.show();
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Creates a popup window to ask to select a file before hitting this option
+     */
     public void showOpenFileWindow()
     {
         Stage errorBox = new Stage();
         errorBox.setTitle("Error");
-        errorBox.getIcons().add(unitImage);
+        errorBox.getIcons().add(images.get("unit"));
 
         VBox errorMenu = new VBox();
         Text message = new Text("Unable to Proceed, Please Select a File Before Selecting this Option");
@@ -3445,309 +3265,467 @@ public class GUI extends Application
         }
     }
 
-    public void setRed0TextFieldFormats()
+    /**
+     * @Author Jemaroo
+     * @Function Turns the value of a Base Damage fn into it's index
+     */
+    public static int BDFNtoIndex(long BDFN)
     {
-        HPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {HPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {HPField.setStyle("-fx-text-fill: black;");}});
-        dangerHPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {dangerHPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {dangerHPField.setStyle("-fx-text-fill: black;");}});
-        perilHPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {perilHPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {perilHPField.setStyle("-fx-text-fill: black;");}});
-        levelField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {levelField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {levelField.setStyle("-fx-text-fill: black;");}});
-        bonusXPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {bonusXPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {bonusXPField.setStyle("-fx-text-fill: black;");}});
-        bonusCoinField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {bonusCoinField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {bonusCoinField.setStyle("-fx-text-fill: black;");}});
-        bonusCoinRateField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {bonusCoinRateField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {bonusCoinRateField.setStyle("-fx-text-fill: black;");}});
-        baseCoinField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {baseCoinField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {baseCoinField.setStyle("-fx-text-fill: black;");}});
-        runRateField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {runRateField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {runRateField.setStyle("-fx-text-fill: black;");}});
-        pbCapField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {pbCapField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {pbCapField.setStyle("-fx-text-fill: black;");}});
-        swallowChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {swallowChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {swallowChanceField.setStyle("-fx-text-fill: black;");}});
-        UltraHammerKnockChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {UltraHammerKnockChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {UltraHammerKnockChanceField.setStyle("-fx-text-fill: black;");}});
-        ItemStealParameterField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ItemStealParameterField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ItemStealParameterField.setStyle("-fx-text-fill: black;");}});
-        NormalField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {NormalField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {NormalField.setStyle("-fx-text-fill: black;");}});
-        FireField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FireField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FireField.setStyle("-fx-text-fill: black;");}});
-        IceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {IceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {IceField.setStyle("-fx-text-fill: black;");}});
-        ExplosionField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ExplosionField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ExplosionField.setStyle("-fx-text-fill: black;");}});
-        ElectricField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ElectricField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ElectricField.setStyle("-fx-text-fill: black;");}});
-        SleepField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SleepField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SleepField.setStyle("-fx-text-fill: black;");}});
-        StopField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {StopField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {StopField.setStyle("-fx-text-fill: black;");}});
-        DizzyField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DizzyField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DizzyField.setStyle("-fx-text-fill: black;");}});
-        PoisonField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {PoisonField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {PoisonField.setStyle("-fx-text-fill: black;");}});
-        ConfuseField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ConfuseField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ConfuseField.setStyle("-fx-text-fill: black;");}});
-        BurnField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BurnField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BurnField.setStyle("-fx-text-fill: black;");}});
-        FreezeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FreezeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FreezeField.setStyle("-fx-text-fill: black;");}});
-        HugeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {HugeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {HugeField.setStyle("-fx-text-fill: black;");}});
-        TinyField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {TinyField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {TinyField.setStyle("-fx-text-fill: black;");}});
-        AttackUpField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AttackUpField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AttackUpField.setStyle("-fx-text-fill: black;");}});
-        AttackDownField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AttackDownField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AttackDownField.setStyle("-fx-text-fill: black;");}});
-        DefenseUpField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DefenseUpField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DefenseUpField.setStyle("-fx-text-fill: black;");}});
-        DefenseDownField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DefenseDownField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DefenseDownField.setStyle("-fx-text-fill: black;");}});
-        AllergicField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AllergicField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AllergicField.setStyle("-fx-text-fill: black;");}});
-        FrightField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FrightField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FrightField.setStyle("-fx-text-fill: black;");}});
-        GaleForceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {GaleForceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {GaleForceField.setStyle("-fx-text-fill: black;");}});
-        FastField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FastField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FastField.setStyle("-fx-text-fill: black;");}});
-        SlowField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SlowField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SlowField.setStyle("-fx-text-fill: black;");}});
-        DodgyField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DodgyField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DodgyField.setStyle("-fx-text-fill: black;");}});
-        InvisibleField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {InvisibleField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {InvisibleField.setStyle("-fx-text-fill: black;");}});
-        OHKOField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {OHKOField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {OHKOField.setStyle("-fx-text-fill: black;");}});
-        AccuracyField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AccuracyField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AccuracyField.setStyle("-fx-text-fill: black;");}});
-        FPCostField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FPCostField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FPCostField.setStyle("-fx-text-fill: black;");}});
-        SPCostField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SPCostField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SPCostField.setStyle("-fx-text-fill: black;");}});
-        StylishMultiplierField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {StylishMultiplierField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {StylishMultiplierField.setStyle("-fx-text-fill: black;");}});
-        BingoSlotIncChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BingoSlotIncChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BingoSlotIncChanceField.setStyle("-fx-text-fill: black;");}});
-        BaseDamage1Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage1Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage1Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage2Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage2Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage2Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage3Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage3Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage3Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage4Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage4Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage4Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage5Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage5Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage5Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage6Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage6Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage6Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage7Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage7Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage7Field.setStyle("-fx-text-fill: black;");}});
-        BaseDamage8Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseDamage8Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseDamage8Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage1Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage1Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage1Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage2Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage2Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage2Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage3Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage3Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage3Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage4Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage4Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage4Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage5Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage5Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage5Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage6Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage6Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage6Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage7Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage7Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage7Field.setStyle("-fx-text-fill: black;");}});
-        BaseFPDamage8Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BaseFPDamage8Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BaseFPDamage8Field.setStyle("-fx-text-fill: black;");}});
-        SleepChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SleepChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SleepChanceField.setStyle("-fx-text-fill: black;");}});
-        SleepTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SleepTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SleepTimeField.setStyle("-fx-text-fill: black;");}});
-        StopChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {StopChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {StopChanceField.setStyle("-fx-text-fill: black;");}});
-        StopTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {StopTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {StopTimeField.setStyle("-fx-text-fill: black;");}});
-        DizzyChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DizzyChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DizzyChanceField.setStyle("-fx-text-fill: black;");}});
-        DizzyTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DizzyTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DizzyTimeField.setStyle("-fx-text-fill: black;");}});
-        PoisonChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {PoisonChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {PoisonChanceField.setStyle("-fx-text-fill: black;");}});
-        PoisonTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {PoisonTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {PoisonTimeField.setStyle("-fx-text-fill: black;");}});
-        PoisonStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {PoisonStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {PoisonStrengthField.setStyle("-fx-text-fill: black;");}});
-        ConfuseChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ConfuseChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ConfuseChanceField.setStyle("-fx-text-fill: black;");}});
-        ConfuseTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ConfuseTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ConfuseTimeField.setStyle("-fx-text-fill: black;");}});
-        ElectricChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ElectricChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ElectricChanceField.setStyle("-fx-text-fill: black;");}});
-        ElectricTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ElectricTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ElectricTimeField.setStyle("-fx-text-fill: black;");}});
-        DodgyChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DodgyChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DodgyChanceField.setStyle("-fx-text-fill: black;");}});
-        DodgyTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DodgyTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DodgyTimeField.setStyle("-fx-text-fill: black;");}});
-        BurnChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BurnChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BurnChanceField.setStyle("-fx-text-fill: black;");}});
-        BurnTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {BurnTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {BurnTimeField.setStyle("-fx-text-fill: black;");}});
-        FreezeChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FreezeChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FreezeChanceField.setStyle("-fx-text-fill: black;");}});
-        FreezeTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FreezeTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FreezeTimeField.setStyle("-fx-text-fill: black;");}});
-        SizeChangeChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SizeChangeChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SizeChangeChanceField.setStyle("-fx-text-fill: black;");}});
-        SizeChangeTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SizeChangeTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SizeChangeTimeField.setStyle("-fx-text-fill: black;");}});
-        SizeChangeStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SizeChangeStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SizeChangeStrengthField.setStyle("-fx-text-fill: black;");}});
-        AtkChangeChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AtkChangeChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AtkChangeChanceField.setStyle("-fx-text-fill: black;");}});
-        AtkChangeTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AtkChangeTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AtkChangeTimeField.setStyle("-fx-text-fill: black;");}});
-        AtkChangeStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AtkChangeStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AtkChangeStrengthField.setStyle("-fx-text-fill: black;");}});
-        DefChangeChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DefChangeChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DefChangeChanceField.setStyle("-fx-text-fill: black;");}});
-        DefChangeTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DefChangeTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DefChangeTimeField.setStyle("-fx-text-fill: black;");}});
-        DefChangeStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {DefChangeStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {DefChangeStrengthField.setStyle("-fx-text-fill: black;");}});
-        AllergicChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AllergicChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AllergicChanceField.setStyle("-fx-text-fill: black;");}});
-        AllergicTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {AllergicTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {AllergicTimeField.setStyle("-fx-text-fill: black;");}});
-        OHKOChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {OHKOChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {OHKOChanceField.setStyle("-fx-text-fill: black;");}});
-        ChargeStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {ChargeStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {ChargeStrengthField.setStyle("-fx-text-fill: black;");}});
-        FastChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FastChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FastChanceField.setStyle("-fx-text-fill: black;");}});
-        FastTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FastTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FastTimeField.setStyle("-fx-text-fill: black;");}});
-        SlowChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SlowChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SlowChanceField.setStyle("-fx-text-fill: black;");}});
-        SlowTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {SlowTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {SlowTimeField.setStyle("-fx-text-fill: black;");}});
-        FrightChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FrightChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FrightChanceField.setStyle("-fx-text-fill: black;");}});
-        GaleForceChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {GaleForceChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {GaleForceChanceField.setStyle("-fx-text-fill: black;");}});
-        PaybackTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {PaybackTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {PaybackTimeField.setStyle("-fx-text-fill: black;");}});
-        HoldFastTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {HoldFastTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {HoldFastTimeField.setStyle("-fx-text-fill: black;");}});
-        InvisibleChanceField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {InvisibleChanceField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {InvisibleChanceField.setStyle("-fx-text-fill: black;");}});
-        InvisibleTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {InvisibleTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {InvisibleTimeField.setStyle("-fx-text-fill: black;");}});
-        HPRegenTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {HPRegenTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {HPRegenTimeField.setStyle("-fx-text-fill: black;");}});
-        HPRegenStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {HPRegenStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {HPRegenStrengthField.setStyle("-fx-text-fill: black;");}});
-        FPRegenTimeField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FPRegenTimeField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FPRegenTimeField.setStyle("-fx-text-fill: black;");}});
-        FPRegenStrengthField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {FPRegenStrengthField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {FPRegenStrengthField.setStyle("-fx-text-fill: black;");}});
-        STGFall1Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGFall1Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGFall1Field.setStyle("-fx-text-fill: black;");}});
-        STGFall2Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGFall2Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGFall2Field.setStyle("-fx-text-fill: black;");}});
-        STGFall3Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGFall3Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGFall3Field.setStyle("-fx-text-fill: black;");}});
-        STGFall4Field.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGFall4Field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGFall4Field.setStyle("-fx-text-fill: black;");}});
-        STGNozzleTurnField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGNozzleTurnField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGNozzleTurnField.setStyle("-fx-text-fill: black;");}});
-        STGNozzleFireField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGNozzleFireField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGNozzleFireField.setStyle("-fx-text-fill: black;");}});
-        STGCeilingFallField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGCeilingFallField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGCeilingFallField.setStyle("-fx-text-fill: black;");}});
-        STGObjectFallField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {STGObjectFallField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {STGObjectFallField.setStyle("-fx-text-fill: black;");}});
-        startHPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {startHPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {startHPField.setStyle("-fx-text-fill: black;");}});
-        startFPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {startFPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {startFPField.setStyle("-fx-text-fill: black;");}});
-        startBPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {startBPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {startBPField.setStyle("-fx-text-fill: black;");}});
-        upgradeHPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {upgradeHPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {upgradeHPField.setStyle("-fx-text-fill: black;");}});
-        upgradeFPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {upgradeFPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {upgradeFPField.setStyle("-fx-text-fill: black;");}});
-        upgradeBPField.textProperty().addListener((obs, oldText, newText) -> { if ("0".equals(newText)) {upgradeBPField.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");} else {upgradeBPField.setStyle("-fx-text-fill: black;");}});
+        if(BDFN == 2149096624L) return 1;
+        if(BDFN == 2149096504L) return 2;
+        if(BDFN == 2149096752L) return 3;
+        if(BDFN == 2149096436L) return 4;
+        if(BDFN == 2149095976L) return 5;
+        if(BDFN == 2149096368L) return 6;
+        if(BDFN == 2149788844L) return 7;
+        if(BDFN == 2149801084L) return 8;
+        if(BDFN == 2149879880L) return 9;
+        if(BDFN == 2149096096L) return 10;
+        if(BDFN == 2149096272L) return 11;
+        if(BDFN == 2149096156L) return 12;
+        return 0;
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Turns the value of a index into it's Base Damage fn
+     */
+    public static long IndexToBDFN(int index)
+    {
+        if(index == 1) return 2149096624L;
+        if(index == 2) return 2149096504L;
+        if(index == 3) return 2149096752L;
+        if(index == 4) return 2149096436L;
+        if(index == 5) return 2149095976L;
+        if(index == 6) return 2149096368L;
+        if(index == 7) return 2149788844L;
+        if(index == 8) return 2149801084L;
+        if(index == 9) return 2149879880L;
+        if(index == 10) return 2149096096L;
+        if(index == 11) return 2149096272L;
+        if(index == 12) return 2149096156L;
+        return 0L;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Turns the value of a Attack Script into it's index
+     */
+    public static int AStoIndex(long AS)
+    {
+        if(AS == 2150980848L) return 1;
+        if(AS == 2150984700L) return 2;
+        if(AS == 2150989540L) return 3;
+        if(AS == 2151021624L) return 4;
+        if(AS == 2151771200L) return 5;
+        if(AS == 2151017384L) return 6;
+        if(AS == 2151008952L) return 7;
+        if(AS == 2151771096L) return 8;
+        if(AS == 2151771124L) return 9;
+        if(AS == 2151005592L) return 10;
+        if(AS == 2150998876L) return 11;
+        if(AS == 2151771152L) return 12;
+        if(AS == 2151771168L) return 13;
+        if(AS == 2151771184L) return 14;
+        if(AS == 2151771228L) return 15;
+        if(AS == 2151021700L) return 16;
+        if(AS == 2151025080L) return 17;
+        if(AS == 2151027840L) return 18;
+        if(AS == 2151771284L) return 19;
+        if(AS == 2151030656L) return 20;
+        if(AS == 2151771256L) return 21;
+        if(AS == 2151771312L) return 22;
+        if(AS == 2151771340L) return 23;
+        if(AS == 2151771368L) return 24;
+        if(AS == 2151771396L) return 25;
+        if(AS == 2151366176L) return 26;
+        if(AS == 2151371896L) return 27;
+        if(AS == 2151373376L) return 28;
+        if(AS == 2151800328L) return 29;
+        if(AS == 2151800356L) return 30;
+        if(AS == 2151380272L) return 31;
+        if(AS == 2151383104L) return 32;
+        if(AS == 2151384456L) return 33;
+        if(AS == 2151042348L) return 34;
+        if(AS == 2151046152L) return 35;
+        if(AS == 2151048784L) return 36;
+        if(AS == 2151771704L) return 37;
+        if(AS == 2151771732L) return 38;
+        if(AS == 2151052500L) return 39;
+        if(AS == 2151052808L) return 40;
+        if(AS == 2151054240L) return 41;
+        if(AS == 2151055800L) return 42;
+        if(AS == 2151056988L) return 43;
+        if(AS == 2151057288L) return 44;
+        if(AS == 2151771760L) return 45;
+        if(AS == 2151057728L) return 46;
+        if(AS == 2151058856L) return 47;
+        if(AS == 2151059392L) return 48;
+        if(AS == 2151771788L) return 49;
+        if(AS == 2151771816L) return 50;
+        if(AS == 2151060108L) return 51;
+        if(AS == 2151061424L) return 52;
+        if(AS == 2151771844L) return 53;
+        if(AS == 2151771872L) return 54;
+        if(AS == 2151771900L) return 55;
+        if(AS == 2151063188L) return 56;
+        if(AS == 2151063488L) return 57;
+        if(AS == 2151063736L) return 58;
+        if(AS == 2151064556L) return 59;
+        if(AS == 2151065416L) return 60;
+        if(AS == 2151771928L) return 61;
+        if(AS == 2151771956L) return 62;
+        if(AS == 2151066876L) return 63;
+        if(AS == 2151071508L) return 64;
+        if(AS == 2151074004L) return 65;
+        if(AS == 2151074540L) return 66;
+        if(AS == 2151126228L) return 67;
+        if(AS == 2151129028L) return 68;
+        if(AS == 2151131108L) return 69;
+        if(AS == 2151134608L) return 70;
+        if(AS == 2151141776L) return 71;
+        if(AS == 2151145876L) return 72;
+        if(AS == 2151149876L) return 73;
+        if(AS == 2151155720L) return 74;
+        if(AS == 2151162032L) return 75;
+        if(AS == 2151168392L) return 76;
+        if(AS == 2151176472L) return 77;
+        if(AS == 2151180316L) return 78;
+        if(AS == 2151186208L) return 79;
+        if(AS == 2151187492L) return 80;
+        if(AS == 2151196812L) return 81;
+        if(AS == 2151195844L) return 82;
+        if(AS == 2151191372L) return 83;
+        if(AS == 2151203296L) return 84;
+        if(AS == 2151205620L) return 85;
+        if(AS == 2151207340L) return 86;
+        if(AS == 2151209132L) return 87;
+        if(AS == 2151218728L) return 88;
+        if(AS == 2151219672L) return 89;
+        if(AS == 2151222888L) return 90;
+        if(AS == 2151225696L) return 91;
+        if(AS == 2151229048L) return 92;
+        if(AS == 2151236008L) return 93;
+        if(AS == 2151239408L) return 94;
+        if(AS == 2151240996L) return 95;
+        if(AS == 2151245308L) return 96;
+        return 0;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Turns the value of a index into it's Attack Script
+     */
+    public static long IndexToAS(int index)
+    {
+        if(index == 1) return 2150980848L;
+        if(index == 2) return 2150984700L;
+        if(index == 3) return 2150989540L;
+        if(index == 4) return 2151021624L;
+        if(index == 5) return 2151771200L;
+        if(index == 6) return 2151017384L;
+        if(index == 7) return 2151008952L;
+        if(index == 8) return 2151771096L;
+        if(index == 9) return 2151771124L;
+        if(index == 10) return 2151005592L;
+        if(index == 11) return 2150998876L;
+        if(index == 12) return 2151771152L;
+        if(index == 13) return 2151771168L;
+        if(index == 14) return 2151771184L;
+        if(index == 15) return 2151771228L;
+        if(index == 16) return 2151021700L;
+        if(index == 17) return 2151025080L;
+        if(index == 18) return 2151027840L;
+        if(index == 19) return 2151771284L;
+        if(index == 20) return 2151030656L;
+        if(index == 21) return 2151771256L;
+        if(index == 22) return 2151771312L;
+        if(index == 23) return 2151771340L;
+        if(index == 24) return 2151771368L;
+        if(index == 25) return 2151771396L;
+        if(index == 26) return 2151366176L;
+        if(index == 27) return 2151371896L;
+        if(index == 28) return 2151373376L;
+        if(index == 29) return 2151800328L;
+        if(index == 30) return 2151800356L;
+        if(index == 31) return 2151380272L;
+        if(index == 32) return 2151383104L;
+        if(index == 33) return 2151384456L;
+        if(index == 34) return 2151042348L;
+        if(index == 35) return 2151046152L;
+        if(index == 36) return 2151048784L;
+        if(index == 37) return 2151771704L;
+        if(index == 38) return 2151771732L;
+        if(index == 39) return 2151052500L;
+        if(index == 40) return 2151052808L;
+        if(index == 41) return 2151054240L;
+        if(index == 42) return 2151055800L;
+        if(index == 43) return 2151056988L;
+        if(index == 44) return 2151057288L;
+        if(index == 45) return 2151771760L;
+        if(index == 46) return 2151057728L;
+        if(index == 47) return 2151058856L;
+        if(index == 48) return 2151059392L;
+        if(index == 49) return 2151771788L;
+        if(index == 50) return 2151771816L;
+        if(index == 51) return 2151060108L;
+        if(index == 52) return 2151061424L;
+        if(index == 53) return 2151771844L;
+        if(index == 54) return 2151771872L;
+        if(index == 55) return 2151771900L;
+        if(index == 56) return 2151063188L;
+        if(index == 57) return 2151063488L;
+        if(index == 58) return 2151063736L;
+        if(index == 59) return 2151064556L;
+        if(index == 60) return 2151065416L;
+        if(index == 61) return 2151771928L;
+        if(index == 62) return 2151771956L;
+        if(index == 63) return 2151066876L;
+        if(index == 64) return 2151071508L;
+        if(index == 65) return 2151074004L;
+        if(index == 66) return 2151074540L;
+        if(index == 67) return 2151126228L;
+        if(index == 68) return 2151129028L;
+        if(index == 69) return 2151131108L;
+        if(index == 70) return 2151134608L;
+        if(index == 71) return 2151141776L;
+        if(index == 72) return 2151145876L;
+        if(index == 73) return 2151149876L;
+        if(index == 74) return 2151155720L;
+        if(index == 75) return 2151162032L;
+        if(index == 76) return 2151168392L;
+        if(index == 77) return 2151176472L;
+        if(index == 78) return 2151180316L;
+        if(index == 79) return 2151186208L;
+        if(index == 80) return 2151187492L;
+        if(index == 81) return 2151196812L;
+        if(index == 82) return 2151195844L;
+        if(index == 83) return 2151191372L;
+        if(index == 84) return 2151203296L;
+        if(index == 85) return 2151205620L;
+        if(index == 86) return 2151207340L;
+        if(index == 87) return 2151209132L;
+        if(index == 88) return 2151218728L;
+        if(index == 89) return 2151219672L;
+        if(index == 90) return 2151222888L;
+        if(index == 91) return 2151225696L;
+        if(index == 92) return 2151229048L;
+        if(index == 93) return 2151236008L;
+        if(index == 94) return 2151239408L;
+        if(index == 95) return 2151240996L;
+        if(index == 96) return 2151245308L;
+        return 0L;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Adds listeners to all text fields to set the text color to red if 0
+     */
+    public void setRed0TextFieldFormats()
+    {
+        for(TextField field : textFields)
+        {
+            field.textProperty().addListener((obs, oldText, newText) -> 
+            { 
+                if ("0".equals(newText)) 
+                {
+                    field.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                } 
+                else 
+                {
+                    field.setStyle("-fx-text-fill: black;");
+                }
+            });
+        }
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Creates an imageview of an unit from the name of an image from the hashmap
+     */
     public ImageView unitImageSelector(String name)
     {
-        ImageView retIV = new ImageView(unknownImage);
+        ImageView retIV = new ImageView(images.get("unknown"));
         retIV.setFitHeight(20); retIV.setFitWidth(20);
 
         switch (name) 
         {
-            case "Goomba": retIV.setImage(unitGoombaImage); return retIV;
-            case "Paragoomba": retIV.setImage(unitParagoombaImage); return retIV;
-            case "Spiky Goomba": retIV.setImage(unitSpikyGoombaImage); return retIV;
-            case "Hyper Goomba": retIV.setImage(unitHyperGoombaImage); return retIV;
-            case "Hyper Paragoomba": retIV.setImage(unitHyperParagoombaImage); return retIV;
-            case "Hyper Spiky Goomba": retIV.setImage(unitHyperSpikyGoombaImage); return retIV;
-            case "Gloomba": retIV.setImage(unitGloombaImage); return retIV;
-            case "Paragloomba": retIV.setImage(unitParagloombaImage); return retIV;
-            case "Spiky Gloomba": retIV.setImage(unitSpikyGloombaImage); return retIV;
-            case "Koopa Troopa": retIV.setImage(unitKoopaTroopaImage); return retIV;
-            case "Paratroopa": retIV.setImage(unitParatroopaImage); return retIV;
-            case "KP Koopa": retIV.setImage(unitKPKoopaImage); return retIV;
-            case "KP Paratroopa": retIV.setImage(unitKPParatroopaImage); return retIV;
-            case "Shady Koopa": retIV.setImage(unitShadyKoopaImage); return retIV;
-            case "Shady Paratroopa": retIV.setImage(unitShadyParatroopaImage); return retIV;
-            case "Dark Koopa": retIV.setImage(unitDarkKoopaImage); return retIV;
-            case "Dark Paratroopa": retIV.setImage(unitDarkParatroopaImage); return retIV;
-            case "Koopatrol": retIV.setImage(unitKoopatrolImage); return retIV;
-            case "Dark Koopatrol": retIV.setImage(unitDarkKoopatrolImage); return retIV;
-            case "Dull Bones": retIV.setImage(unitDullBonesImage); return retIV;
-            case "Red Bones": retIV.setImage(unitRedBonesImage); return retIV;
-            case "Dry Bones": retIV.setImage(unitDryBonesImage); return retIV;
-            case "Dark Bones": retIV.setImage(unitDarkBonesImage); return retIV;
-            case "Hammer Bro": retIV.setImage(unitHammerBroImage); return retIV;
-            case "Boomerang Bro": retIV.setImage(unitBoomerangBroImage); return retIV;
-            case "Fire Bro": retIV.setImage(unitFireBroImage); return retIV;
-            case "Lakitu": retIV.setImage(unitLakituImage); return retIV;
-            case "Dark Lakitu": retIV.setImage(unitDarkLakituImage); return retIV;
-            case "Spiny": retIV.setImage(unitSpinyImage); return retIV;
-            case "Sky Blue Spiny": retIV.setImage(unitSkyBlueSpinyImage); return retIV;
-            case "Buzzy Beetle": retIV.setImage(unitBuzzyBeetleImage); return retIV;
-            case "Spiky Buzzy": retIV.setImage(unitSpikyBuzzyImage); return retIV;
-            case "Parabuzzy": retIV.setImage(unitParabuzzyImage); return retIV;
-            case "Spiky Parabuzzy": retIV.setImage(unitSpikyParabuzzyImage); return retIV;
-            case "Red Spiky Buzzy": retIV.setImage(unitRedSpikyBuzzyImage); return retIV;
-            case "Magikoopa": retIV.setImage(unitMagikoopaImage); return retIV;
-            case "Red Magikoopa": retIV.setImage(unitRedMagikoopaImage); return retIV;
-            case "White Magikoopa": retIV.setImage(unitWhiteMagikoopaImage); return retIV;
-            case "Green Magikoopa": retIV.setImage(unitGreenMagikoopaImage); return retIV;
-            case "Kammy Koopa": retIV.setImage(unitKammyKoopaImage); return retIV;
-            case "Bowser": retIV.setImage(unitBowserImage); return retIV;
-            case "Gus": retIV.setImage(unitGusImage); return retIV;
-            case "Dark Craw": retIV.setImage(unitDarkCrawImage); return retIV;
-            case "Bandit": retIV.setImage(unitBanditImage); return retIV;
-            case "Big Bandit": retIV.setImage(unitBigBanditImage); return retIV;
-            case "Badge Bandit": retIV.setImage(unitBadgeBanditImage); return retIV;
-            case "Spinia": retIV.setImage(unitSpiniaImage); return retIV;
-            case "Spania": retIV.setImage(unitSpaniaImage); return retIV;
-            case "Spunia": retIV.setImage(unitSpuniaImage); return retIV;
+            case "Goomba": retIV.setImage(images.get("unitGoomba")); return retIV;
+            case "Paragoomba": retIV.setImage(images.get("unitParagoomba")); return retIV;
+            case "Spiky Goomba": retIV.setImage(images.get("unitSpikyGoomba")); return retIV;
+            case "Hyper Goomba": retIV.setImage(images.get("unitHyperGoomba")); return retIV;
+            case "Hyper Paragoomba": retIV.setImage(images.get("unitHyperParagoomba")); return retIV;
+            case "Hyper Spiky Goomba": retIV.setImage(images.get("unitHyperSpikyGoomba")); return retIV;
+            case "Gloomba": retIV.setImage(images.get("unitGloomba")); return retIV;
+            case "Paragloomba": retIV.setImage(images.get("unitParagloomba")); return retIV;
+            case "Spiky Gloomba": retIV.setImage(images.get("unitSpikyGloomba")); return retIV;
+            case "Koopa Troopa": retIV.setImage(images.get("unitKoopaTroopa")); return retIV;
+            case "Paratroopa": retIV.setImage(images.get("unitParatroopa")); return retIV;
+            case "KP Koopa": retIV.setImage(images.get("unitKPKoopa")); return retIV;
+            case "KP Paratroopa": retIV.setImage(images.get("unitKPParatroopa")); return retIV;
+            case "Shady Koopa": retIV.setImage(images.get("unitShadyKoopa")); return retIV;
+            case "Shady Paratroopa": retIV.setImage(images.get("unitShadyParatroopa")); return retIV;
+            case "Dark Koopa": retIV.setImage(images.get("unitDarkKoopa")); return retIV;
+            case "Dark Paratroopa": retIV.setImage(images.get("unitDarkParatroopa")); return retIV;
+            case "Koopatrol": retIV.setImage(images.get("unitKoopatrol")); return retIV;
+            case "Dark Koopatrol": retIV.setImage(images.get("unitDarkKoopatrol")); return retIV;
+            case "Dull Bones": retIV.setImage(images.get("unitDullBones")); return retIV;
+            case "Red Bones": retIV.setImage(images.get("unitRedBones")); return retIV;
+            case "Dry Bones": retIV.setImage(images.get("unitDryBones")); return retIV;
+            case "Dark Bones": retIV.setImage(images.get("unitDarkBones")); return retIV;
+            case "Hammer Bro": retIV.setImage(images.get("unitHammerBro")); return retIV;
+            case "Boomerang Bro": retIV.setImage(images.get("unitBoomerangBro")); return retIV;
+            case "Fire Bro": retIV.setImage(images.get("unitFireBro")); return retIV;
+            case "Lakitu": retIV.setImage(images.get("unitLakitu")); return retIV;
+            case "Dark Lakitu": retIV.setImage(images.get("unitDarkLakitu")); return retIV;
+            case "Spiny": retIV.setImage(images.get("unitSpiny")); return retIV;
+            case "Sky Blue Spiny": retIV.setImage(images.get("unitSkyBlueSpiny")); return retIV;
+            case "Buzzy Beetle": retIV.setImage(images.get("unitBuzzyBeetle")); return retIV;
+            case "Spiky Buzzy": retIV.setImage(images.get("unitSpikyBuzzy")); return retIV;
+            case "Parabuzzy": retIV.setImage(images.get("unitParabuzzy")); return retIV;
+            case "Spiky Parabuzzy": retIV.setImage(images.get("unitSpikyParabuzzy")); return retIV;
+            case "Red Spiky Buzzy": retIV.setImage(images.get("unitRedSpikyBuzzy")); return retIV;
+            case "Magikoopa": retIV.setImage(images.get("unitMagikoopa")); return retIV;
+            case "Red Magikoopa": retIV.setImage(images.get("unitRedMagikoopa")); return retIV;
+            case "White Magikoopa": retIV.setImage(images.get("unitWhiteMagikoopa")); return retIV;
+            case "Green Magikoopa": retIV.setImage(images.get("unitGreenMagikoopa")); return retIV;
+            case "Kammy Koopa": retIV.setImage(images.get("unitKammyKoopa")); return retIV;
+            case "Bowser": retIV.setImage(images.get("unitBowser")); return retIV;
+            case "Gus": retIV.setImage(images.get("unitGus")); return retIV;
+            case "Dark Craw": retIV.setImage(images.get("unitDarkCraw")); return retIV;
+            case "Bandit": retIV.setImage(images.get("unitBandit")); return retIV;
+            case "Big Bandit": retIV.setImage(images.get("unitBigBandit")); return retIV;
+            case "Badge Bandit": retIV.setImage(images.get("unitBadgeBandit")); return retIV;
+            case "Spinia": retIV.setImage(images.get("unitSpinia")); return retIV;
+            case "Spania": retIV.setImage(images.get("unitSpania")); return retIV;
+            case "Spunia": retIV.setImage(images.get("unitSpunia")); return retIV;
             case "Fuzzy":
-            case "Fuzzy Horde": retIV.setImage(unitFuzzyImage); return retIV;
-            case "Gold Fuzzy": retIV.setImage(unitGoldFuzzyImage); return retIV;
-            case "Green Fuzzy": retIV.setImage(unitGreenFuzzyImage); return retIV;
-            case "Flower Fuzzy": retIV.setImage(unitFlowerFuzzyImage); return retIV;
-            case "Pokey": retIV.setImage(unitPokeyImage); return retIV;
-            case "Poison Pokey": retIV.setImage(unitPoisonPokeyImage); return retIV;
-            case "Pale Piranha": retIV.setImage(unitPalePiranhaImage); return retIV;
-            case "Putrid Piranha": retIV.setImage(unitPutridPiranhaImage); return retIV;
-            case "Frost Piranha": retIV.setImage(unitFrostPiranhaImage); return retIV;
-            case "Piranha Plant": retIV.setImage(unitPiranhaPlantImage); return retIV;
-            case "Crazee Dayzee": retIV.setImage(unitCrazeeDayzeeImage); return retIV;
-            case "Amazy Dayzee": retIV.setImage(unitAmazyDayzeeImage); return retIV;
-            case "Pider": retIV.setImage(unitPiderImage); return retIV;
-            case "Arantula": retIV.setImage(unitArantulaImage); return retIV;
-            case "Swooper": retIV.setImage(unitSwooperImage); return retIV;
-            case "Swoopula": retIV.setImage(unitSwoopulaImage); return retIV;
-            case "Swampire": retIV.setImage(unitSwampireImage); return retIV;
-            case "Dark Puff": retIV.setImage(unitDarkPuffImage); return retIV;
-            case "Ruff Puff": retIV.setImage(unitRuffPuffImage); return retIV;
-            case "Ice Puff": retIV.setImage(unitIcePuffImage); return retIV;
-            case "Poison Puff": retIV.setImage(unitPoisonPuffImage); return retIV;
-            case "Boo": retIV.setImage(unitBooImage); return retIV;
-            case "Atomic Boo": retIV.setImage(unitAtomicBooImage); return retIV;
-            case "Dark Boo": retIV.setImage(unitDarkBooImage); return retIV;
-            case "Ember": retIV.setImage(unitEmberImage); return retIV;
-            case "Lava Bubble": retIV.setImage(unitLavaBubbleImage); return retIV;
-            case "Phantom Ember": retIV.setImage(unitPhantomEmberImage); return retIV;
-            case "Bald Cleft": retIV.setImage(unitBaldCleftImage); return retIV;
-            case "Hyper Bald Cleft": retIV.setImage(unitHyperBaldCleftImage); return retIV;
-            case "Cleft": retIV.setImage(unitCleftImage); return retIV;
-            case "Iron Cleft 1": retIV.setImage(unitIronCleft1Image); return retIV;
-            case "Iron Cleft 2": retIV.setImage(unitIronCleft2Image); return retIV;
-            case "Hyper Cleft": retIV.setImage(unitHyperCleftImage); return retIV;
-            case "Moon Cleft": retIV.setImage(unitMoonCleftImage); return retIV;
-            case "Bristle": retIV.setImage(unitBristleImage); return retIV;
-            case "Dark Bristle": retIV.setImage(unitDarkBristleImage); return retIV;
-            case "Bob-omb": retIV.setImage(unitBobombImage); return retIV;
-            case "Bulky Bob-omb": retIV.setImage(unitBulkyBobombImage); return retIV;
-            case "Bob-ulk": retIV.setImage(unitBobulkImage); return retIV;
-            case "Chain-Chomp": retIV.setImage(unitChainChompImage); return retIV;
-            case "Red Chomp": retIV.setImage(unitRedChompImage); return retIV;
-            case "Bill Blaster": retIV.setImage(unitBillBlasterImage); return retIV;
-            case "Bullet Bill": retIV.setImage(unitBulletBillImage); return retIV;
-            case "Bombshell Bill Blaster": retIV.setImage(unitBombshellBillBlasterImage); return retIV;
-            case "Bombshell Bill": retIV.setImage(unitBombshellBillImage); return retIV;
-            case "Dark Wizzerd": retIV.setImage(unitDarkWizzerdImage); return retIV;
-            case "Wizzerd": retIV.setImage(unitWizzerdImage); return retIV;
-            case "Elite Wizzerd": retIV.setImage(unitEliteWizzerdImage); return retIV;
+            case "Fuzzy Horde": retIV.setImage(images.get("unitFuzzy")); return retIV;
+            case "Gold Fuzzy": retIV.setImage(images.get("unitGoldFuzzy")); return retIV;
+            case "Green Fuzzy": retIV.setImage(images.get("unitGreenFuzzy")); return retIV;
+            case "Flower Fuzzy": retIV.setImage(images.get("unitFlowerFuzzy")); return retIV;
+            case "Pokey": retIV.setImage(images.get("unitPokey")); return retIV;
+            case "Poison Pokey": retIV.setImage(images.get("unitPoisonPokey")); return retIV;
+            case "Pale Piranha": retIV.setImage(images.get("unitPalePiranha")); return retIV;
+            case "Putrid Piranha": retIV.setImage(images.get("unitPutridPiranha")); return retIV;
+            case "Frost Piranha": retIV.setImage(images.get("unitFrostPiranha")); return retIV;
+            case "Piranha Plant": retIV.setImage(images.get("unitPiranhaPlant")); return retIV;
+            case "Crazee Dayzee": retIV.setImage(images.get("unitCrazeeDayzee")); return retIV;
+            case "Amazy Dayzee": retIV.setImage(images.get("unitAmazyDayzee")); return retIV;
+            case "Pider": retIV.setImage(images.get("unitPider")); return retIV;
+            case "Arantula": retIV.setImage(images.get("unitArantula")); return retIV;
+            case "Swooper": retIV.setImage(images.get("unitSwooper")); return retIV;
+            case "Swoopula": retIV.setImage(images.get("unitSwoopula")); return retIV;
+            case "Swampire": retIV.setImage(images.get("unitSwampire")); return retIV;
+            case "Dark Puff": retIV.setImage(images.get("unitDarkPuff")); return retIV;
+            case "Ruff Puff": retIV.setImage(images.get("unitRuffPuff")); return retIV;
+            case "Ice Puff": retIV.setImage(images.get("unitIcePuff")); return retIV;
+            case "Poison Puff": retIV.setImage(images.get("unitPoisonPuff")); return retIV;
+            case "Boo": retIV.setImage(images.get("unitBoo")); return retIV;
+            case "Atomic Boo": retIV.setImage(images.get("unitAtomicBoo")); return retIV;
+            case "Dark Boo": retIV.setImage(images.get("unitDarkBoo")); return retIV;
+            case "Ember": retIV.setImage(images.get("unitEmber")); return retIV;
+            case "Lava Bubble": retIV.setImage(images.get("unitLavaBubble")); return retIV;
+            case "Phantom Ember": retIV.setImage(images.get("unitPhantomEmber")); return retIV;
+            case "Bald Cleft": retIV.setImage(images.get("unitBaldCleft")); return retIV;
+            case "Hyper Bald Cleft": retIV.setImage(images.get("unitHyperBaldCleft")); return retIV;
+            case "Cleft": retIV.setImage(images.get("unitCleft")); return retIV;
+            case "Iron Cleft 1": retIV.setImage(images.get("unitIronCleft1")); return retIV;
+            case "Iron Cleft 2": retIV.setImage(images.get("unitIronCleft2")); return retIV;
+            case "Hyper Cleft": retIV.setImage(images.get("unitHyperCleft")); return retIV;
+            case "Moon Cleft": retIV.setImage(images.get("unitMoonCleft")); return retIV;
+            case "Bristle": retIV.setImage(images.get("unitBristle")); return retIV;
+            case "Dark Bristle": retIV.setImage(images.get("unitDarkBristle")); return retIV;
+            case "Bob-omb": retIV.setImage(images.get("unitBobomb")); return retIV;
+            case "Bulky Bob-omb": retIV.setImage(images.get("unitBulkyBobomb")); return retIV;
+            case "Bob-ulk": retIV.setImage(images.get("unitBobulk")); return retIV;
+            case "Chain-Chomp": retIV.setImage(images.get("unitChainChomp")); return retIV;
+            case "Red Chomp": retIV.setImage(images.get("unitRedChomp")); return retIV;
+            case "Bill Blaster": retIV.setImage(images.get("unitBillBlaster")); return retIV;
+            case "Bullet Bill": retIV.setImage(images.get("unitBulletBill")); return retIV;
+            case "Bombshell Bill Blaster": retIV.setImage(images.get("unitBombshellBillBlaster")); return retIV;
+            case "Bombshell Bill": retIV.setImage(images.get("unitBombshellBill")); return retIV;
+            case "Dark Wizzerd": retIV.setImage(images.get("unitDarkWizzerd")); return retIV;
+            case "Wizzerd": retIV.setImage(images.get("unitWizzerd")); return retIV;
+            case "Elite Wizzerd": retIV.setImage(images.get("unitEliteWizzerd")); return retIV;
             case "Blooper":
             case "Blooper Right Tentacle":
-            case "Blooper Left Tentacle": retIV.setImage(unitBlooperImage); return retIV;
-            case "Hooktail": retIV.setImage(unitHooktailImage); return retIV;
-            case "Gloomtail": retIV.setImage(unitGloomtailImage); return retIV;
-            case "Bonetail": retIV.setImage(unitBonetailImage); return retIV;
-            case "Rawk Hawk": retIV.setImage(unitRawkHawkImage); return retIV;
-            case "Macho Grubba": retIV.setImage(unitMachoGrubbaImage); return retIV;
-            case "Doopliss": retIV.setImage(unitDooplissImage); return retIV;
-            case "Doopliss Mario": retIV.setImage(unitDooplissMarioImage); return retIV;
-            case "Cortez": retIV.setImage(unitCortezImage); return retIV;
-            case "Bone Pile": retIV.setImage(unitCortezBonePileImage); return retIV;
-            case "Cortez Hook": retIV.setImage(unitCortezHookImage); return retIV;
-            case "Cortez Rapier": retIV.setImage(unitCortezRapierImage); return retIV;
-            case "Cortez Saber": retIV.setImage(unitCortezSaberImage); return retIV;
-            case "Cortez Sword": retIV.setImage(unitCortezSwordImage); return retIV;
+            case "Blooper Left Tentacle": retIV.setImage(images.get("unitBlooper")); return retIV;
+            case "Hooktail": retIV.setImage(images.get("unitHooktail")); return retIV;
+            case "Gloomtail": retIV.setImage(images.get("unitGloomtail")); return retIV;
+            case "Bonetail": retIV.setImage(images.get("unitBonetail")); return retIV;
+            case "Rawk Hawk": retIV.setImage(images.get("unitRawkHawk")); return retIV;
+            case "Macho Grubba": retIV.setImage(images.get("unitMachoGrubba")); return retIV;
+            case "Doopliss": retIV.setImage(images.get("unitDoopliss")); return retIV;
+            case "Doopliss Mario": retIV.setImage(images.get("unitDooplissMario")); return retIV;
+            case "Cortez": retIV.setImage(images.get("unitCortez")); return retIV;
+            case "Bone Pile": retIV.setImage(images.get("unitCortezBonePile")); return retIV;
+            case "Cortez Hook": retIV.setImage(images.get("unitCortezHook")); return retIV;
+            case "Cortez Rapier": retIV.setImage(images.get("unitCortezRapier")); return retIV;
+            case "Cortez Saber": retIV.setImage(images.get("unitCortezSaber")); return retIV;
+            case "Cortez Sword": retIV.setImage(images.get("unitCortezSword")); return retIV;
             case "Smorg":
             case "Smorg Tentacle 1":
             case "Smorg Tentacle 2":
             case "Smorg Tentacle 3":
-            case "Smorg Claw": retIV.setImage(unitSmorgImage); return retIV;
+            case "Smorg Claw": retIV.setImage(images.get("unitSmorg")); return retIV;
             case "X-Naut":
             case "X-Naut Platoon Formation 1":
             case "X-Naut Platoon Formation 2":
-            case "X-Naut Platoon Formation 3": retIV.setImage(unitXNautImage); return retIV;
-            case "X-Naut PHD": retIV.setImage(unitXNautPHDImage); return retIV;
-            case "Elite X-Naut": retIV.setImage(unitEliteXNautImage); return retIV;
-            case "Yux": retIV.setImage(unitYuxImage); return retIV;
-            case "Mini-Yux": retIV.setImage(unitMiniYuxImage); return retIV;
-            case "Z-Yux": retIV.setImage(unitZYuxImage); return retIV;
-            case "Mini-Z-Yux": retIV.setImage(unitMiniZYuxImage); return retIV;
-            case "X-Yux": retIV.setImage(unitXYuxImage); return retIV;
-            case "Mini-X-Yux": retIV.setImage(unitMiniXYuxImage); return retIV;
-            case "Grodus X": retIV.setImage(unitGrodusXImage); return retIV;
+            case "X-Naut Platoon Formation 3": retIV.setImage(images.get("unitXNaut")); return retIV;
+            case "X-Naut PHD": retIV.setImage(images.get("unitXNautPHD")); return retIV;
+            case "Elite X-Naut": retIV.setImage(images.get("unitEliteXNaut")); return retIV;
+            case "Yux": retIV.setImage(images.get("unitYux")); return retIV;
+            case "Mini-Yux": retIV.setImage(images.get("unitMiniYux")); return retIV;
+            case "Z-Yux": retIV.setImage(images.get("unitZYux")); return retIV;
+            case "Mini-Z-Yux": retIV.setImage(images.get("unitMiniZYux")); return retIV;
+            case "X-Yux": retIV.setImage(images.get("unitXYux")); return retIV;
+            case "Mini-X-Yux": retIV.setImage(images.get("unitMiniXYux")); return retIV;
+            case "Grodus X": retIV.setImage(images.get("unitGrodusX")); return retIV;
             case "Magnus Von Grapple":
-            case "X-Fist": retIV.setImage(unitMagnusVonGrappleImage); return retIV;
+            case "X-Fist": retIV.setImage(images.get("unitMagnusVonGrapple")); return retIV;
             case "Magnus Von Grapple 2.0":
-            case "X-Punch": retIV.setImage(unitMagnusVonGrapple2Image); return retIV;
-            case "Lord Crump": retIV.setImage(unitLordCrumpImage); return retIV;
-            case "Grodus": retIV.setImage(unitGrodusImage); return retIV;
-            case "Beldam": retIV.setImage(unitBeldamImage); return retIV;
-            case "Marilyn": retIV.setImage(unitMarilynImage); return retIV;
-            case "Shadow Peach": retIV.setImage(unitShadowPeachImage); return retIV;
-            case "Shadow Queen": retIV.setImage(unitShadowQueenImage); return retIV;
-            case "Shadow Hand 1": retIV.setImage(unitShadowHand1Image); return retIV;
-            case "Shadow Hand 2": retIV.setImage(unitShadowHand2Image); return retIV;
-            case "Small Shadow Hands": retIV.setImage(unitSmallShadowHandsImage); return retIV;
-            case "Mario": retIV.setImage(marioHeadCustomImage); return retIV;
-            case "Goombella": retIV.setImage(goombellaPartnerSwitchImage); return retIV;
-            case "Koops": retIV.setImage(koopsPartnerSwitchImage); return retIV;
-            case "Flurrie": retIV.setImage(flurriePartnerSwitchImage); return retIV;
-            case "Yoshi": retIV.setImage(yoshiPartnerSwitchImage); return retIV;
-            case "Vivian": retIV.setImage(vivianPartnerSwitchImage); return retIV;
-            case "Bobbery": retIV.setImage(bobberyPartnerSwitchImage); return retIV;
-            case "Ms. Mowz": retIV.setImage(mowzPartnerSwitchImage); return retIV;
-            case "Bomb Squad Bomb": retIV.setImage(unitBombSquadBombImage); return retIV;
-            case "Shell Shield": retIV.setImage(unitShellShieldImage); return retIV;
-            case "unit_system": retIV.setImage(itemsIconImage); return retIV;
+            case "X-Punch": retIV.setImage(images.get("unitMagnusVonGrapple2")); return retIV;
+            case "Lord Crump": retIV.setImage(images.get("unitLordCrump")); return retIV;
+            case "Grodus": retIV.setImage(images.get("unitGrodus")); return retIV;
+            case "Beldam": retIV.setImage(images.get("unitBeldam")); return retIV;
+            case "Marilyn": retIV.setImage(images.get("unitMarilyn")); return retIV;
+            case "Shadow Peach": retIV.setImage(images.get("unitShadowPeach")); return retIV;
+            case "Shadow Queen": retIV.setImage(images.get("unitShadowQueen")); return retIV;
+            case "Shadow Hand 1": retIV.setImage(images.get("unitShadowHand1")); return retIV;
+            case "Shadow Hand 2": retIV.setImage(images.get("unitShadowHand2")); return retIV;
+            case "Small Shadow Hands": retIV.setImage(images.get("unitSmallShadowHands")); return retIV;
+            case "Mario": retIV.setImage(images.get("marioHeadCustom")); return retIV;
+            case "Goombella": retIV.setImage(images.get("goombellaPartnerSwitch")); return retIV;
+            case "Koops": retIV.setImage(images.get("koopsPartnerSwitch")); return retIV;
+            case "Flurrie": retIV.setImage(images.get("flurriePartnerSwitch")); return retIV;
+            case "Yoshi": retIV.setImage(images.get("yoshiPartnerSwitch")); return retIV;
+            case "Vivian": retIV.setImage(images.get("vivianPartnerSwitch")); return retIV;
+            case "Bobbery": retIV.setImage(images.get("bobberyPartnerSwitch")); return retIV;
+            case "Ms. Mowz": retIV.setImage(images.get("mowzPartnerSwitch")); return retIV;
+            case "Bomb Squad Bomb": retIV.setImage(images.get("unitBombSquadBomb")); return retIV;
+            case "Shell Shield": retIV.setImage(images.get("unitShellShield")); return retIV;
+            case "unit_system": retIV.setImage(images.get("itemsIcon")); return retIV;
             case "unit_npc_christine":
-            case "unit_lecture_christine": retIV.setImage(goombellaPartnerSwitchImage); return retIV;
+            case "unit_lecture_christine": retIV.setImage(images.get("goombellaPartnerSwitch")); return retIV;
             case "unit_lecture_frankli":
             case "unit_lecture_frankli_sac":
-            case "unit_lecture_frankli_kuriboo": retIV.setImage(unitProfessorFranklyImage); return retIV;
-            case "unit_act_atmic_teresa": retIV.setImage(unitAtomicBooImage); return retIV;
-            case "unit_act_clauda": retIV.setImage(flurriePartnerSwitchImage); return retIV;
-            case "unit_act_kinopiko": retIV.setImage(femaleToadCustomImage); return retIV;
-            case "unit_act_kinopio": retIV.setImage(toadCustomImage); return retIV;
-            case "unit_act_mario": retIV.setImage(unitDooplissMarioImage); return retIV;
-            case "unit_act_teresa": retIV.setImage(unitBooImage); return retIV;
+            case "unit_lecture_frankli_kuriboo": retIV.setImage(images.get("unitProfessorFrankly")); return retIV;
+            case "unit_act_atmic_teresa": retIV.setImage(images.get("unitAtomicBoo")); return retIV;
+            case "unit_act_clauda": retIV.setImage(images.get("flurriePartnerSwitch")); return retIV;
+            case "unit_act_kinopiko": retIV.setImage(images.get("femaleToadCustom")); return retIV;
+            case "unit_act_kinopio": retIV.setImage(images.get("toadCustom")); return retIV;
+            case "unit_act_mario": retIV.setImage(images.get("unitDooplissMario")); return retIV;
+            case "unit_act_teresa": retIV.setImage(images.get("unitBoo")); return retIV;
 
             default: return retIV;
         }
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Returns the name of an area based on the file name
+     */
     public String fileNameSelector(String name)
     {
         String retString = name;
@@ -3781,41 +3759,61 @@ public class GUI extends Application
         }
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Creates an imageview of a file Area from the name of an image from the hashmap
+     */
     public ImageView fileImageSelector(String name)
     {
-        ImageView retIV = new ImageView(unknownImage);
+        ImageView retIV = new ImageView(images.get("unknown"));
         retIV.setFitHeight(15); retIV.setFitWidth(15);
 
         switch (name) 
         {
             case "main.dol":
-            case "Start.dol": retIV.setImage(magicalMap2Image); return retIV;
-            case "aji.rel": retIV.setImage(unitXNautImage); return retIV;
-            case "bom.rel": retIV.setImage(fahrOutpostBombCustomImage); return retIV;
-            case "dou.rel": retIV.setImage(unitBillBlasterImage); return retIV;
-            case "eki.rel": retIV.setImage(unitRuffPuffImage); return retIV;
-            case "gon.rel": retIV.setImage(unitHooktailImage); return retIV;
-            case "gor.rel": retIV.setImage(unitProfessorFranklyImage); return retIV;
-            case "gra.rel": retIV.setImage(unitHyperGoombaImage); return retIV;
-            case "hei.rel": retIV.setImage(unitKoopaTroopaImage); return retIV;
-            case "jin.rel": retIV.setImage(unitDooplissImage); return retIV;
-            case "jon.rel": retIV.setImage(unitBonetailImage); return retIV;
-            case "las.rel": retIV.setImage(unitShadowPeachImage); return retIV;
-            case "moo.rel": retIV.setImage(unitMoonCleftImage); return retIV;
-            case "mri.rel": retIV.setImage(puniCustomImage); return retIV;
-            case "muj.rel": retIV.setImage(unitPutridPiranhaImage); return retIV;
-            case "nok.rel": retIV.setImage(koopaCustomImage); return retIV;
-            case "pik.rel": retIV.setImage(unitDarkBooImage); return retIV;
-            case "rsh.rel": retIV.setImage(unitSmorgImage); return retIV;
-            case "tik.rel": retIV.setImage(unitBlooperImage); return retIV;
-            case "tou2.rel": retIV.setImage(unitRawkHawkImage); return retIV;
-            case "win.rel": retIV.setImage(unitPalePiranhaImage); return retIV;
+            case "Start.dol": retIV.setImage(images.get("magicalMap2")); return retIV;
+            case "aji.rel": retIV.setImage(images.get("unitXNaut")); return retIV;
+            case "bom.rel": retIV.setImage(images.get("fahrOutpostBombCustom")); return retIV;
+            case "dou.rel": retIV.setImage(images.get("unitBillBlaster")); return retIV;
+            case "eki.rel": retIV.setImage(images.get("unitRuffPuff")); return retIV;
+            case "gon.rel": retIV.setImage(images.get("unitHooktail")); return retIV;
+            case "gor.rel": retIV.setImage(images.get("unitProfessorFrankly")); return retIV;
+            case "gra.rel": retIV.setImage(images.get("unitHyperGoomba")); return retIV;
+            case "hei.rel": retIV.setImage(images.get("unitKoopaTroopa")); return retIV;
+            case "jin.rel": retIV.setImage(images.get("unitDoopliss")); return retIV;
+            case "jon.rel": retIV.setImage(images.get("unitBonetail")); return retIV;
+            case "las.rel": retIV.setImage(images.get("unitShadowPeach")); return retIV;
+            case "moo.rel": retIV.setImage(images.get("unitMoonCleft")); return retIV;
+            case "mri.rel": retIV.setImage(images.get("puniCustom")); return retIV;
+            case "muj.rel": retIV.setImage(images.get("unitPutridPiranha")); return retIV;
+            case "nok.rel": retIV.setImage(images.get("koopaCustom")); return retIV;
+            case "pik.rel": retIV.setImage(images.get("unitDarkBoo")); return retIV;
+            case "rsh.rel": retIV.setImage(images.get("unitSmorg")); return retIV;
+            case "tik.rel": retIV.setImage(images.get("unitBlooper")); return retIV;
+            case "tou2.rel": retIV.setImage(images.get("unitRawkHawk")); return retIV;
+            case "win.rel": retIV.setImage(images.get("unitPalePiranha")); return retIV;
 
             default: return retIV;
         }
     }
 
-    public ImageView imageViewCreator(Image image)
+    /**
+     * @Author Jemaroo
+     * @Function Creates a 20x20 icon imageView
+     */
+    public ImageView fieldImageViewCreator(Image image)
+    {
+        ImageView retIV = new ImageView(image);
+        retIV.setFitHeight(20); retIV.setFitWidth(20);
+        
+        return retIV;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Creates a 15x15 icon imageView
+     */
+    public ImageView unitImageViewCreator(Image image)
     {
         ImageView retIV = new ImageView(image);
         retIV.setFitHeight(15); retIV.setFitWidth(15);
@@ -3823,36 +3821,40 @@ public class GUI extends Application
         return retIV;
     }
 
+    /**
+     * @Author Jemaroo
+     * @Function Creates an imageview of an attack from the name of an image from the hashmap
+     */
     public ImageView attackNameImageSelector(String name)
     {
-        ImageView retIV = new ImageView(unknownImage);
+        ImageView retIV = new ImageView(images.get("unknown"));
         retIV.setFitHeight(15); retIV.setFitWidth(15);
 
         switch (name) 
         {
-            case "Jump": retIV.setImage(bootsImage); return retIV;
+            case "Jump": retIV.setImage(images.get("boots")); return retIV;
             case "Spin Jump 1":
             case "Spin Jump 2":
-            case "Spin Jump": retIV.setImage(superBootsImage); return retIV;
+            case "Spin Jump": retIV.setImage(images.get("superBoots")); return retIV;
             case "Spring Jump 1":
-            case "Spring Jump 2": retIV.setImage(ultraBootsImage); return retIV;
-            case "Hammer": retIV.setImage(hammerImage); return retIV;
+            case "Spring Jump 2": retIV.setImage(images.get("ultraBoots")); return retIV;
+            case "Hammer": retIV.setImage(images.get("hammer")); return retIV;
             case "First Strike Super Hammer":
             case "Super Hammer 1":
             case "Super Hammer 2":
-            case "Super Hammer": retIV.setImage(superHammerImage); return retIV;
+            case "Super Hammer": retIV.setImage(images.get("superHammer")); return retIV;
             case "First Strike Ultra Hammer":
             case "Ultra Hammer 1":
             case "Ultra Hammer 2":
-            case "Ultra Hammer 3": retIV.setImage(ultraHammerImage); return retIV;
-            case "Sweet Treat": retIV.setImage(magicalMap2Image); return retIV;
-            case "Earth Tremor": retIV.setImage(diamondStarImage); return retIV;
-            case "Clock Out": retIV.setImage(emeraldStarImage); return retIV;
-            case "Power Lift": retIV.setImage(goldStarImage); return retIV;
-            case "Art Attack": retIV.setImage(rubyStarImage); return retIV;
-            case "Sweet Feast": retIV.setImage(sapphireStarImage); return retIV;
-            case "Showstopper": retIV.setImage(garnetStarImage); return retIV;
-            case "Supernova": retIV.setImage(crystalStarImage); return retIV;
+            case "Ultra Hammer 3": retIV.setImage(images.get("ultraHammer")); return retIV;
+            case "Sweet Treat": retIV.setImage(images.get("magicalMap2")); return retIV;
+            case "Earth Tremor": retIV.setImage(images.get("diamondStar")); return retIV;
+            case "Clock Out": retIV.setImage(images.get("emeraldStar")); return retIV;
+            case "Power Lift": retIV.setImage(images.get("goldStar")); return retIV;
+            case "Art Attack": retIV.setImage(images.get("rubyStar")); return retIV;
+            case "Sweet Feast": retIV.setImage(images.get("sapphireStar")); return retIV;
+            case "Showstopper": retIV.setImage(images.get("garnetStar")); return retIV;
+            case "Supernova": retIV.setImage(images.get("crystalStar")); return retIV;
             case "Body Slam":
             case "Ground Pound":
             case "Love Slap 1":
@@ -3866,7 +3868,7 @@ public class GUI extends Application
             case "Shell Toss":
             case "Headbonk":
             case "Shell Toss 1":
-            case "Shell Toss 2": retIV.setImage(lvl1MoveImage); return retIV;
+            case "Shell Toss 2": retIV.setImage(images.get("lvl1Move")); return retIV;
             case "Gale Force":
             case "Gulp 1":
             case "Gulp 2":
@@ -3877,117 +3879,117 @@ public class GUI extends Application
             case "Bomb Squad":
             case "Veil":
             case "Power Shell":
-            case "Tattle": retIV.setImage(lvl2MoveImage); return retIV;
+            case "Tattle": retIV.setImage(images.get("lvl2Move")); return retIV;
             case "Lip Lock":
             case "Mini Egg":
             case "Tease":
             case "Hold Fast":
             case "Fiery Jinx":
             case "Shell Shield":
-            case "Multibonk": retIV.setImage(lvl3MoveImage); return retIV;
+            case "Multibonk": retIV.setImage(images.get("lvl3Move")); return retIV;
             case "Dodgy Fog":
             case "Stampede":
             case "Smooch":
             case "Bob-ombast":
             case "Infatuate":
             case "Shell Slam":
-            case "Rally Wink": retIV.setImage(lvl4MoveImage); return retIV;
-            case "Mushroom": retIV.setImage(mushroomImage); return retIV;
-            case "Life Shroom": retIV.setImage(lifeShroomImage); return retIV;
-            case "Super Shroom": retIV.setImage(superShroomImage); return retIV;
-            case "Ultra Shroom": retIV.setImage(ultraShroomImage); return retIV;
-            case "Dried Shroom": retIV.setImage(driedShroomImage); return retIV;
-            case "Honey Syrup": retIV.setImage(honeySyrupImage); return retIV;
-            case "Maple Syrup": retIV.setImage(mapleSyrupImage); return retIV;
-            case "Jammin' Jelly": retIV.setImage(jamminJellyImage); return retIV;
-            case "Whacka Bump": retIV.setImage(whackaBumpImage); return retIV;
-            case "Pow Block": retIV.setImage(powBlockImage); return retIV;
-            case "Fire Flower": retIV.setImage(fireFlowerImage); return retIV;
-            case "Thunder Bolt": retIV.setImage(thunderBoltImage); return retIV;
-            case "Shooting Star": retIV.setImage(shootingStarImage); return retIV;
-            case "Ice Storm": retIV.setImage(iceStormImage); return retIV;
-            case "Earth Quake": retIV.setImage(earthQuakeImage); return retIV;
-            case "Boo's Sheet": retIV.setImage(boosSheetImage); return retIV;
-            case "Volt Shroom": retIV.setImage(voltShroomImage); return retIV;
-            case "Repel Cape": retIV.setImage(repelCapeImage); return retIV;
-            case "Ruin Powder": retIV.setImage(ruinPowderImage); return retIV;
-            case "Sleepy Sheep": retIV.setImage(sleepySheepImage); return retIV;
-            case "Dizzy Dial": retIV.setImage(dizzyDialImage); return retIV;
-            case "Power Punch": retIV.setImage(powerPunchImage); return retIV;
-            case "Courage Shell": retIV.setImage(courageShellImage); return retIV;
-            case "HP Drain": retIV.setImage(HPDrain1Image); return retIV;
-            case "Trade Off": retIV.setImage(tradeOffImage); return retIV;
-            case "Mini Mr. Mini": retIV.setImage(miniMrMiniImage); return retIV;
-            case "Mr. Softener": retIV.setImage(mrsoftenerImage); return retIV;
-            case "Tasty Tonic": retIV.setImage(tastyTonicImage); return retIV;
-            case "Slow Shroom": retIV.setImage(slowShroomImage); return retIV;
-            case "Gradual Syrup": retIV.setImage(gradualSyrupImage); return retIV;
-            case "Point Swap": retIV.setImage(pointSwapImage); return retIV;
-            case "Fright Mask": retIV.setImage(frightMaskImage); return retIV;
-            case "Mystery": retIV.setImage(mysteryImage); return retIV;
-            case "Spite Pouch": retIV.setImage(spitePouchImage); return retIV;
-            case "Koopa Curse": retIV.setImage(koopaCurseImage); return retIV;
-            case "Space Food": retIV.setImage(spaceFoodImage); return retIV;
-            case "Icicle Pop": retIV.setImage(iciclePopImage); return retIV;
-            case "Zess Frappe": retIV.setImage(zessFrappeImage); return retIV;
-            case "Snow Bunny": retIV.setImage(snowBunnyImage); return retIV;
-            case "Shroom Broth": retIV.setImage(shroomBrothImage); return retIV;
-            case "Meteor Meal": retIV.setImage(meteorMealImage); return retIV;
-            case "Spicy Pasta": retIV.setImage(spicyPastaImage); return retIV;
-            case "Heartful Cake": retIV.setImage(heartfulCakeImage); return retIV;
-            case "Electro Pop": retIV.setImage(electroPopImage); return retIV;
-            case "Healthy Salad": retIV.setImage(healthySaladImage); return retIV;
-            case "Fresh Juice": retIV.setImage(freshJuiceImage); return retIV;
-            case "Hot Sauce": retIV.setImage(hotSauceImage); return retIV;
-            case "Couple's Cake": retIV.setImage(couplesCakeImage); return retIV;
-            case "Zess Dynamite": retIV.setImage(zessDynamiteImage); return retIV;
-            case "Coconut Bomb": retIV.setImage(coconutBombImage); return retIV;
-            case "Courage Meal": retIV.setImage(courageMealImage); return retIV;
-            case "Egg Bomb": retIV.setImage(eggBombImage); return retIV;
-            case "Poison Shroom": retIV.setImage(poisonShroomImage); return retIV;
-            case "Trial Stew": retIV.setImage(trialStewImage); return retIV;
+            case "Rally Wink": retIV.setImage(images.get("lvl4Move")); return retIV;
+            case "Mushroom": retIV.setImage(images.get("mushroom")); return retIV;
+            case "Life Shroom": retIV.setImage(images.get("lifeShroom")); return retIV;
+            case "Super Shroom": retIV.setImage(images.get("superShroom")); return retIV;
+            case "Ultra Shroom": retIV.setImage(images.get("ultraShroom")); return retIV;
+            case "Dried Shroom": retIV.setImage(images.get("driedShroom")); return retIV;
+            case "Honey Syrup": retIV.setImage(images.get("honeySyrup")); return retIV;
+            case "Maple Syrup": retIV.setImage(images.get("mapleSyrup")); return retIV;
+            case "Jammin' Jelly": retIV.setImage(images.get("jamminJelly")); return retIV;
+            case "Whacka Bump": retIV.setImage(images.get("whackaBump")); return retIV;
+            case "Pow Block": retIV.setImage(images.get("powBlock")); return retIV;
+            case "Fire Flower": retIV.setImage(images.get("fireFlower")); return retIV;
+            case "Thunder Bolt": retIV.setImage(images.get("thunderBolt")); return retIV;
+            case "Shooting Star": retIV.setImage(images.get("shootingStar")); return retIV;
+            case "Ice Storm": retIV.setImage(images.get("iceStorm")); return retIV;
+            case "Earth Quake": retIV.setImage(images.get("earthQuake")); return retIV;
+            case "Boo's Sheet": retIV.setImage(images.get("boosSheet")); return retIV;
+            case "Volt Shroom": retIV.setImage(images.get("voltShroom")); return retIV;
+            case "Repel Cape": retIV.setImage(images.get("repelCape")); return retIV;
+            case "Ruin Powder": retIV.setImage(images.get("ruinPowder")); return retIV;
+            case "Sleepy Sheep": retIV.setImage(images.get("sleepySheep")); return retIV;
+            case "Dizzy Dial": retIV.setImage(images.get("dizzyDial")); return retIV;
+            case "Power Punch": retIV.setImage(images.get("powerPunch")); return retIV;
+            case "Courage Shell": retIV.setImage(images.get("courageShell")); return retIV;
+            case "HP Drain": retIV.setImage(images.get("HPDrain1")); return retIV;
+            case "Trade Off": retIV.setImage(images.get("tradeOff")); return retIV;
+            case "Mini Mr. Mini": retIV.setImage(images.get("miniMrMini")); return retIV;
+            case "Mr. Softener": retIV.setImage(images.get("mrsoftener")); return retIV;
+            case "Tasty Tonic": retIV.setImage(images.get("tastyTonic")); return retIV;
+            case "Slow Shroom": retIV.setImage(images.get("slowShroom")); return retIV;
+            case "Gradual Syrup": retIV.setImage(images.get("gradualSyrup")); return retIV;
+            case "Point Swap": retIV.setImage(images.get("pointSwap")); return retIV;
+            case "Fright Mask": retIV.setImage(images.get("frightMask")); return retIV;
+            case "Mystery": retIV.setImage(images.get("mystery")); return retIV;
+            case "Spite Pouch": retIV.setImage(images.get("spitePouch")); return retIV;
+            case "Koopa Curse": retIV.setImage(images.get("koopaCurse")); return retIV;
+            case "Space Food": retIV.setImage(images.get("spaceFood")); return retIV;
+            case "Icicle Pop": retIV.setImage(images.get("iciclePop")); return retIV;
+            case "Zess Frappe": retIV.setImage(images.get("zessFrappe")); return retIV;
+            case "Snow Bunny": retIV.setImage(images.get("snowBunny")); return retIV;
+            case "Shroom Broth": retIV.setImage(images.get("shroomBroth")); return retIV;
+            case "Meteor Meal": retIV.setImage(images.get("meteorMeal")); return retIV;
+            case "Spicy Pasta": retIV.setImage(images.get("spicyPasta")); return retIV;
+            case "Heartful Cake": retIV.setImage(images.get("heartfulCake")); return retIV;
+            case "Electro Pop": retIV.setImage(images.get("electroPop")); return retIV;
+            case "Healthy Salad": retIV.setImage(images.get("healthySalad")); return retIV;
+            case "Fresh Juice": retIV.setImage(images.get("freshJuice")); return retIV;
+            case "Hot Sauce": retIV.setImage(images.get("hotSauce")); return retIV;
+            case "Couple's Cake": retIV.setImage(images.get("couplesCake")); return retIV;
+            case "Zess Dynamite": retIV.setImage(images.get("zessDynamite")); return retIV;
+            case "Coconut Bomb": retIV.setImage(images.get("coconutBomb")); return retIV;
+            case "Courage Meal": retIV.setImage(images.get("courageMeal")); return retIV;
+            case "Egg Bomb": retIV.setImage(images.get("eggBomb")); return retIV;
+            case "Poison Shroom": retIV.setImage(images.get("poisonShroom")); return retIV;
+            case "Trial Stew": retIV.setImage(images.get("trialStew")); return retIV;
             case "Love Pudding 1":
             case "Love Pudding 2":
-            case "Love Pudding 3": retIV.setImage(lovePuddingImage); return retIV;
+            case "Love Pudding 3": retIV.setImage(images.get("lovePudding")); return retIV;
             case "Peach Tart 1":
             case "Peach Tart 2":
-            case "Peach Tart 3": retIV.setImage(peachTartImage); return retIV;
+            case "Peach Tart 3": retIV.setImage(images.get("peachTart")); return retIV;
             case "Potion Drink":
-            case "Dodgy Potion": retIV.setImage(greenPotionImage); return retIV;
-            case "Burn Potion": retIV.setImage(orangePotionImage); return retIV;
+            case "Dodgy Potion": retIV.setImage(images.get("greenPotion")); return retIV;
+            case "Burn Potion": retIV.setImage(images.get("orangePotion")); return retIV;
             case "Defense Down Potion":
-            case "Tiny Potion": retIV.setImage(bluePotionImage); return retIV;
+            case "Tiny Potion": retIV.setImage(images.get("bluePotion")); return retIV;
             case "Single Heal Potion":
             case "Multi Heal Potion":
-            case "HP Regen Potion": retIV.setImage(redPotionImage); return retIV;
-            case "Multibounce": retIV.setImage(multibounceImage); return retIV;
-            case "Power Jump": retIV.setImage(powerJumpImage); return retIV;
-            case "Mega Jump": retIV.setImage(megaJumpImage); return retIV;
-            case "Power Bounce": retIV.setImage(powerBounceImage); return retIV;
-            case "Shrink Stomp": retIV.setImage(shrinkStompImage); return retIV;
-            case "Sleepy Stomp": retIV.setImage(sleepyStompImage); return retIV;
-            case "Soft Stomp": retIV.setImage(softStompImage); return retIV;
-            case "Power Smash": retIV.setImage(powerSmashImage); return retIV;
-            case "Mega Smash": retIV.setImage(megaSmashImage); return retIV;
-            case "Quake Hammer": retIV.setImage(quakeHammerImage); return retIV;
-            case "Mega Quake": retIV.setImage(megaQuakeImage); return retIV;
-            case "Hammer Throw": retIV.setImage(hammerThrowImage); return retIV;
-            case "Piercing Blow": retIV.setImage(piercingBlowImage); return retIV;
-            case "Head Rattle": retIV.setImage(headRattleImage); return retIV;
-            case "Ice Smash": retIV.setImage(iceSmashImage); return retIV;
-            case "Lucky Start": retIV.setImage(luckyStartImage); return retIV;
-            case "Double Dip": retIV.setImage(doubleDipImage); return retIV;
-            case "Triple Dip": retIV.setImage(tripleDipImage); return retIV;
+            case "HP Regen Potion": retIV.setImage(images.get("redPotion")); return retIV;
+            case "Multibounce": retIV.setImage(images.get("multibounce")); return retIV;
+            case "Power Jump": retIV.setImage(images.get("powerJump")); return retIV;
+            case "Mega Jump": retIV.setImage(images.get("megaJump")); return retIV;
+            case "Power Bounce": retIV.setImage(images.get("powerBounce")); return retIV;
+            case "Shrink Stomp": retIV.setImage(images.get("shrinkStomp")); return retIV;
+            case "Sleepy Stomp": retIV.setImage(images.get("sleepyStomp")); return retIV;
+            case "Soft Stomp": retIV.setImage(images.get("softStomp")); return retIV;
+            case "Power Smash": retIV.setImage(images.get("powerSmash")); return retIV;
+            case "Mega Smash": retIV.setImage(images.get("megaSmash")); return retIV;
+            case "Quake Hammer": retIV.setImage(images.get("quakeHammer")); return retIV;
+            case "Mega Quake": retIV.setImage(images.get("megaQuake")); return retIV;
+            case "Hammer Throw": retIV.setImage(images.get("hammerThrow")); return retIV;
+            case "Piercing Blow": retIV.setImage(images.get("piercingBlow")); return retIV;
+            case "Head Rattle": retIV.setImage(images.get("headRattle")); return retIV;
+            case "Ice Smash": retIV.setImage(images.get("iceSmash")); return retIV;
+            case "Lucky Start": retIV.setImage(images.get("luckyStart")); return retIV;
+            case "Double Dip": retIV.setImage(images.get("doubleDip")); return retIV;
+            case "Triple Dip": retIV.setImage(images.get("tripleDip")); return retIV;
             case "Tornado Jump 1":
-            case "Tornado Jump 2": retIV.setImage(tornadoJumpImage); return retIV;
+            case "Tornado Jump 2": retIV.setImage(images.get("tornadoJump")); return retIV;
             case "Fire Drive 1":
-            case "Fire Drive 2": retIV.setImage(fireDriveImage); return retIV;
-            case "Charge": retIV.setImage(chargeBadgeImage); return retIV;
-            case "Charge P": retIV.setImage(chargePImage); return retIV;
-            case "Super Charge": retIV.setImage(superChargeBadgeImage); return retIV;
-            case "Super Charge P": retIV.setImage(superChargePImage); return retIV;
+            case "Fire Drive 2": retIV.setImage(images.get("fireDrive")); return retIV;
+            case "Charge": retIV.setImage(images.get("chargeBadge")); return retIV;
+            case "Charge P": retIV.setImage(images.get("chargeP")); return retIV;
+            case "Super Charge": retIV.setImage(images.get("superChargeBadge")); return retIV;
+            case "Super Charge P": retIV.setImage(images.get("superChargeP")); return retIV;
             case "Mario Defend":
-            case "Partner Defend": retIV.setImage(defendImage); return retIV;
+            case "Partner Defend": retIV.setImage(images.get("defend")); return retIV;
             case "Drill Attack":
             case "Boomerang Attack":
             case "Audience Attack":
@@ -4059,11 +4061,11 @@ public class GUI extends Application
             case "Flying Punch Attack":
             case "Ceiling Shake 1":
             case "Ceiling Shake 2":
-            case "Multi Boomerang Attack": retIV.setImage(chargeImage); return retIV;
+            case "Multi Boomerang Attack": retIV.setImage(images.get("charge")); return retIV;
             case "Frost Breath Attack":
             case "Ice Breath":
             case "Ice Attack":
-            case "Blizzard Attack": retIV.setImage(iceCustomImage); return retIV;
+            case "Blizzard Attack": retIV.setImage(images.get("iceCustom")); return retIV;
             case "Burn Attack":
             case "Flame Launch Attack":
             case "Flamethrower Attack":
@@ -4072,66 +4074,837 @@ public class GUI extends Application
             case "Mega Breath":
             case "Fire Spit Attack":
             case "Multi Fire Spit Attack 1":
-            case "Multi Fire Spit Attack 2": retIV.setImage(burnCustomImage); return retIV;
+            case "Multi Fire Spit Attack 2": retIV.setImage(images.get("burnCustom")); return retIV;
             case "Thunder Rage":
             case "Thunder Attack":
-            case "Lightning Attack": retIV.setImage(thunderRageImage); return retIV;
+            case "Lightning Attack": retIV.setImage(images.get("thunderRage")); return retIV;
             case "Charge 1":
             case "Charge 2":
             case "Charge 3":
-            case "Charge ": retIV.setImage(superChargeImage); return retIV;
+            case "Charge ": retIV.setImage(images.get("superCharge")); return retIV;
             case "Leech Attack 1":
             case "Leech Attack 2":
             case "Heal":
             case "Heal Magic":
             case "Drain Attack":
             case "Heal All":
-            case "Ceiling Heal": retIV.setImage(heartImage); return retIV;
+            case "Ceiling Heal": retIV.setImage(images.get("heart")); return retIV;
             case "Stop Scare Attack":
             case "Stop Attack":
-            case "Stopwatch": retIV.setImage(stopStatusImage); return retIV;
+            case "Stopwatch": retIV.setImage(images.get("stopStatus")); return retIV;
             case "Confuse Scare Attack":
             case "Confuse Breath":
-            case "Confuse Magic": retIV.setImage(confuseStatusImage); return retIV;
+            case "Confuse Magic": retIV.setImage(images.get("confuseStatus")); return retIV;
             case "Turn Invisible":
             case "Turn Other Invisible":
-            case "Invisible Magic": retIV.setImage(invisibleStatusImage); return retIV;
-            case "Sleep Breath": retIV.setImage(sleepStatusImage); return retIV;
+            case "Invisible Magic": retIV.setImage(images.get("invisibleStatus")); return retIV;
+            case "Sleep Breath": retIV.setImage(images.get("sleepStatus")); return retIV;
             case "Tiny Breath":
-            case "Tiny Magic": retIV.setImage(tinyStatusImage); return retIV;
+            case "Tiny Magic": retIV.setImage(images.get("tinyStatus")); return retIV;
             case "Dodgy Magic":
-            case "Dodgy Power": retIV.setImage(dodgyStatusImage); return retIV;
-            case "Huge Magic": retIV.setImage(hugeStatusImage); return retIV;
+            case "Dodgy Power": retIV.setImage(images.get("dodgyStatus")); return retIV;
+            case "Huge Magic": retIV.setImage(images.get("hugeStatus")); return retIV;
             case "Defense Up Magic":
-            case "Defense Up Power": retIV.setImage(defenseUpStatusImage); return retIV;
+            case "Defense Up Power": retIV.setImage(images.get("defenseUpStatus")); return retIV;
             case "Attack and Defense Up Magic":
-            case "Attack Up Power": retIV.setImage(attackUpStatusImage); return retIV;
+            case "Attack Up Power": retIV.setImage(images.get("attackUpStatus")); return retIV;
             case "Poison Gas Attack":
             case "Poison Breath":
-            case "Poison Spray Attack": retIV.setImage(poisonCustomImage); return retIV;
-            case "Poison Magic": retIV.setImage(poisonStatusImage); return retIV;
-            case "Electric Magic": retIV.setImage(electricStatusImage); return retIV;
-            case "Allergic Breath": retIV.setImage(allergicStatusImage); return retIV;
-            case "Slow Magic": retIV.setImage(slowStatusImage); return retIV;
+            case "Poison Spray Attack": retIV.setImage(images.get("poisonCustom")); return retIV;
+            case "Poison Magic": retIV.setImage(images.get("poisonStatus")); return retIV;
+            case "Electric Magic": retIV.setImage(images.get("electricStatus")); return retIV;
+            case "Allergic Breath": retIV.setImage(images.get("allergicStatus")); return retIV;
+            case "Slow Magic": retIV.setImage(images.get("slowStatus")); return retIV;
             case "Fast Magic":
-            case "Fast Power": retIV.setImage(fastStatusImage); return retIV;
-            case "Payback Magic": retIV.setImage(paybackStatusImage); return retIV;
-            case "Bomb Squad Explosion": retIV.setImage(unitBombSquadBombImage); return retIV;
-            case "Change Height": retIV.setImage(unitBooImage); return retIV;
-            case "Spiny Throw Attack": retIV.setImage(unitSpinyImage); return retIV;
-            case "Sing Attack": retIV.setImage(musicNoteCustomImage); return retIV;
-            case "FP Leech Attack": retIV.setImage(flowerImage); return retIV;
-            case "Audience Can": retIV.setImage(audienceCanImage); return retIV;
-            case "Audience Rock": retIV.setImage(audienceRockImage); return retIV;
-            case "Audience Bone": retIV.setImage(audienceBoneImage); return retIV;
-            case "Audience Hammer": retIV.setImage(audienceHammerImage); return retIV;
+            case "Fast Power": retIV.setImage(images.get("fastStatus")); return retIV;
+            case "Payback Magic": retIV.setImage(images.get("paybackStatus")); return retIV;
+            case "Bomb Squad Explosion": retIV.setImage(images.get("unitBombSquadBomb")); return retIV;
+            case "Change Height": retIV.setImage(images.get("unitBoo")); return retIV;
+            case "Spiny Throw Attack": retIV.setImage(images.get("unitSpiny")); return retIV;
+            case "Sing Attack": retIV.setImage(images.get("musicNoteCustom")); return retIV;
+            case "FP Leech Attack": retIV.setImage(images.get("flower")); return retIV;
+            case "Audience Can": retIV.setImage(images.get("audienceCan")); return retIV;
+            case "Audience Rock": retIV.setImage(images.get("audienceRock")); return retIV;
+            case "Audience Bone": retIV.setImage(images.get("audienceBone")); return retIV;
+            case "Audience Hammer": retIV.setImage(images.get("audienceHammer")); return retIV;
             case "lec_weapon_zutsuki_1":
             case "lec_weapon_zutsuki_2":
             case "_lec_weapon_jump":
-            case "_lec_weapon_hammer": retIV.setImage(unusedPaperImage); return retIV;
+            case "_lec_weapon_hammer": retIV.setImage(images.get("unusedPaper")); return retIV;
 
             default: return retIV;
         }
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Creates a label with it's corresponding tooltip
+     */
+    public Label labelANDTooltipMaker(String text, int structIndex, int fieldIndex) 
+    {
+        Label temp = new Label(text);
+        File jsonFile = new File("src\\Tooltips.json");
+
+        try 
+        {
+            JSONParser parser = new JSONParser();
+            JSONObject root = (JSONObject) parser.parse(new FileReader(jsonFile));
+
+            String tooltipText = null;
+
+            switch (structIndex) 
+            {
+                case 1: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("BattleUnitKind");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("HP"); break;
+                        case 2:  tooltipText = (String) obj.get("dangerHP"); break;
+                        case 3:  tooltipText = (String) obj.get("perilHP"); break;
+                        case 4:  tooltipText = (String) obj.get("level"); break;
+                        case 5:  tooltipText = (String) obj.get("bonusXP"); break;
+                        case 6:  tooltipText = (String) obj.get("bonusCoin"); break;
+                        case 7:  tooltipText = (String) obj.get("bonusCoinRate"); break;
+                        case 8:  tooltipText = (String) obj.get("baseCoin"); break;
+                        case 9:  tooltipText = (String) obj.get("runRate"); break;
+                        case 10: tooltipText = (String) obj.get("pbCap"); break;
+                        case 11: tooltipText = (String) obj.get("swallowChance"); break;
+                        case 12: tooltipText = (String) obj.get("swallowAttribute"); break;
+                        case 13: tooltipText = (String) obj.get("ultraHammerKnockChance"); break;
+                        case 14: tooltipText = (String) obj.get("itemStealParameter"); break;
+                        case 15: tooltipText = (String) obj.get("MapObj"); break;
+                        case 16: tooltipText = (String) obj.get("OutOfReach"); break;
+                        case 17: tooltipText = (String) obj.get("Unquakeable"); break;
+                        case 18: tooltipText = (String) obj.get("IsInvisible"); break;
+                        case 19: tooltipText = (String) obj.get("IsVeiled"); break;
+                        case 20: tooltipText = (String) obj.get("ShellShielded"); break;
+                        case 21: tooltipText = (String) obj.get("NeverTargetable"); break;
+                        case 22: tooltipText = (String) obj.get("LimitSwitch"); break;
+                        case 23: tooltipText = (String) obj.get("DisableZeroGravityFloat"); break;
+                        case 24: tooltipText = (String) obj.get("DisableZeroGravityImmobility"); break;
+                        case 25: tooltipText = (String) obj.get("immuneToUltraHammerKnock"); break;
+                        case 26: tooltipText = (String) obj.get("IsUndead"); break;
+                        case 27: tooltipText = (String) obj.get("IsCorpse"); break;
+                        case 28: tooltipText = (String) obj.get("IsLeader"); break;
+                        case 29: tooltipText = (String) obj.get("CannotTakeActions"); break;
+                        case 30: tooltipText = (String) obj.get("NotSpunByLoveSlap"); break;
+                        case 31: tooltipText = (String) obj.get("DisableDamageStars"); break;
+                        case 32: tooltipText = (String) obj.get("DisableAllPartVisibility"); break;
+                        case 33: tooltipText = (String) obj.get("DisableHPGauge"); break;
+                        case 34: tooltipText = (String) obj.get("LookCamera"); break;
+                        case 35: tooltipText = (String) obj.get("NonCombatant"); break;
+                        case 36: tooltipText = (String) obj.get("NoShadow"); break;
+                        case 37: tooltipText = (String) obj.get("DisableDamage"); break;
+                    }
+                    break;
+                }
+
+                case 2: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("BattleUnitKindPart");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("MainBodyPart"); break;
+                        case 2:  tooltipText = (String) obj.get("SecondaryBodyPart"); break;
+                        case 3:  tooltipText = (String) obj.get("BombableBodyPart"); break;
+                        case 4:  tooltipText = (String) obj.get("GuardBodyPart"); break;
+                        case 5:  tooltipText = (String) obj.get("NotBombableBodyPart"); break;
+                        case 6:  tooltipText = (String) obj.get("InHole"); break;
+                        case 7:  tooltipText = (String) obj.get("WeakToAttackFxR"); break;
+                        case 8:  tooltipText = (String) obj.get("WeakToIcePower"); break;
+                        case 9:  tooltipText = (String) obj.get("IsWinged"); break;
+                        case 10: tooltipText = (String) obj.get("IsShelled"); break;
+                        case 11: tooltipText = (String) obj.get("IsBombFlippable"); break;
+                        case 12: tooltipText = (String) obj.get("IsClonelike"); break;
+                        case 13: tooltipText = (String) obj.get("DisableFlatPaperLayering"); break;
+                        case 14: tooltipText = (String) obj.get("NeverTargetable"); break;
+                        case 15:  tooltipText = (String) obj.get("IgnoreMapObjectOffset"); break;
+                        case 16:  tooltipText = (String) obj.get("IgnoreOnlyTargetSelectAndPreferredParts"); break;
+                        case 17:  tooltipText = (String) obj.get("Untattleable"); break;
+                        case 18:  tooltipText = (String) obj.get("JumplikeCannotTarget"); break;
+                        case 19:  tooltipText = (String) obj.get("HammerlikeCannotTarget"); break;
+                        case 20:  tooltipText = (String) obj.get("ShellTosslikeCannotTarget"); break;
+                        case 21:  tooltipText = (String) obj.get("PreventHealthDecrease"); break;
+                        case 22:  tooltipText = (String) obj.get("DisablePartVisibility"); break;
+                        case 23:  tooltipText = (String) obj.get("ImmuneToCustom"); break;
+                        case 24: tooltipText = (String) obj.get("BlurOn"); break;
+                        case 25: tooltipText = (String) obj.get("ScaleIndependence"); break;
+                        case 26: tooltipText = (String) obj.get("Independence"); break;
+                        case 27: tooltipText = (String) obj.get("IsImmuneToDamageOrStatus"); break;
+                        case 28: tooltipText = (String) obj.get("IsImmuneToOHKO"); break;
+                        case 29:  tooltipText = (String) obj.get("IsImmuneToStatus"); break;
+                        case 30:  tooltipText = (String) obj.get("TopSpiky"); break;
+                        case 31:  tooltipText = (String) obj.get("PreemptiveFrontSpiky"); break;
+                        case 32:  tooltipText = (String) obj.get("FrontSpiky"); break;
+                        case 33:  tooltipText = (String) obj.get("Fiery"); break;
+                        case 34:  tooltipText = (String) obj.get("FieryStatus"); break;
+                        case 35:  tooltipText = (String) obj.get("Icy"); break;
+                        case 36:  tooltipText = (String) obj.get("IcyStatus"); break;
+                        case 37:  tooltipText = (String) obj.get("Poison"); break;
+                        case 38: tooltipText = (String) obj.get("PoisonStatus"); break;
+                        case 39: tooltipText = (String) obj.get("Electric"); break;
+                        case 40: tooltipText = (String) obj.get("ElectricStatus"); break;
+                        case 41: tooltipText = (String) obj.get("Explosive"); break;
+                        case 42: tooltipText = (String) obj.get("VolatileExplosive"); break;
+                    }
+                    break;
+                }
+
+                case 3: 
+                { 
+                    JSONArray structArray = (JSONArray) root.get("HealthUpgrades");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("startHP"); break;
+                        case 2:  tooltipText = (String) obj.get("startFP"); break;
+                        case 3:  tooltipText = (String) obj.get("startBP"); break;
+                        case 4:  tooltipText = (String) obj.get("upgradeHP"); break;
+                        case 5:  tooltipText = (String) obj.get("upgradeFP"); break;
+                        case 6:  tooltipText = (String) obj.get("upgradeBP"); break;
+                        case 7:  tooltipText = (String) obj.get("PARTNER1"); break;
+                        case 8:  tooltipText = (String) obj.get("PARTNER2"); break;
+                        case 9:  tooltipText = (String) obj.get("PARTNER3"); break;
+                    }
+                    break; 
+                }
+
+                case 4: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("BattleUnitDefense");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("normal"); break;
+                        case 2:  tooltipText = (String) obj.get("fire"); break;
+                        case 3:  tooltipText = (String) obj.get("ice"); break;
+                        case 4:  tooltipText = (String) obj.get("explosion"); break;
+                        case 5:  tooltipText = (String) obj.get("electric"); break;
+                    }
+                    break; 
+                }
+
+                case 5: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("BattleUnitDefenseAttr");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("normal"); break;
+                        case 2:  tooltipText = (String) obj.get("fire"); break;
+                        case 3:  tooltipText = (String) obj.get("ice"); break;
+                        case 4:  tooltipText = (String) obj.get("explosion"); break;
+                        case 5:  tooltipText = (String) obj.get("electric"); break;
+                    }
+                    break; 
+                }
+
+                case 6: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("StatusVulnerability");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1:  tooltipText = (String) obj.get("sleep"); break;
+                        case 2:  tooltipText = (String) obj.get("stop"); break;
+                        case 3:  tooltipText = (String) obj.get("dizzy"); break;
+                        case 4:  tooltipText = (String) obj.get("poison"); break;
+                        case 5:  tooltipText = (String) obj.get("confuse"); break;
+                        case 6:  tooltipText = (String) obj.get("electric"); break;
+                        case 7:  tooltipText = (String) obj.get("burn"); break;
+                        case 8:  tooltipText = (String) obj.get("freeze"); break;
+                        case 9:  tooltipText = (String) obj.get("huge"); break;
+                        case 10: tooltipText = (String) obj.get("tiny"); break;
+                        case 11: tooltipText = (String) obj.get("attack_up"); break;
+                        case 12: tooltipText = (String) obj.get("attack_down"); break;
+                        case 13: tooltipText = (String) obj.get("defense_up"); break;
+                        case 14: tooltipText = (String) obj.get("defense_down"); break;
+                        case 15:  tooltipText = (String) obj.get("allergic"); break;
+                        case 16:  tooltipText = (String) obj.get("fright"); break;
+                        case 17:  tooltipText = (String) obj.get("gale_force"); break;
+                        case 18:  tooltipText = (String) obj.get("fast"); break;
+                        case 19:  tooltipText = (String) obj.get("slow"); break;
+                        case 20:  tooltipText = (String) obj.get("dodgy"); break;
+                        case 21:  tooltipText = (String) obj.get("invisible"); break;
+                        case 22:  tooltipText = (String) obj.get("ohko"); break;
+                    }
+                    break;
+                }
+
+                case 7: 
+                {
+                    JSONArray structArray = (JSONArray) root.get("BattleWeapon");
+                    JSONObject obj = (JSONObject) structArray.get(0);
+
+                    switch (fieldIndex) 
+                    {
+                        case 1: tooltipText = (String) obj.get("accuracy"); break;
+                        case 2: tooltipText = (String) obj.get("fp_cost"); break;
+                        case 3: tooltipText = (String) obj.get("sp_cost"); break;
+                        case 4: tooltipText = (String) obj.get("superguard_state"); break;
+                        case 5: tooltipText = (String) obj.get("sylish_multiplier"); break;
+                        case 6: tooltipText = (String) obj.get("bingo_slot_inc_chance"); break;
+                        case 7: tooltipText = (String) obj.get("base_damage_fn"); break;
+                        case 8: tooltipText = (String) obj.get("base_damage1"); break;
+                        case 9: tooltipText = (String) obj.get("base_damage2"); break;
+                        case 10: tooltipText = (String) obj.get("base_damage3"); break;
+                        case 11: tooltipText = (String) obj.get("base_damage4"); break;
+                        case 12: tooltipText = (String) obj.get("base_damage5"); break;
+                        case 13: tooltipText = (String) obj.get("base_damage6"); break;
+                        case 14: tooltipText = (String) obj.get("base_damage7"); break;
+                        case 15: tooltipText = (String) obj.get("base_damage8"); break;
+                        case 16: tooltipText = (String) obj.get("base_fpdamage1"); break;
+                        case 17: tooltipText = (String) obj.get("base_fpdamage2"); break;
+                        case 18: tooltipText = (String) obj.get("base_fpdamage3"); break;
+                        case 19: tooltipText = (String) obj.get("base_fpdamage4"); break;
+                        case 20: tooltipText = (String) obj.get("base_fpdamage5"); break;
+                        case 21: tooltipText = (String) obj.get("base_fpdamage6"); break;
+                        case 22: tooltipText = (String) obj.get("base_fpdamage7"); break;
+                        case 23: tooltipText = (String) obj.get("base_fpdamage8"); break;
+                        case 24: tooltipText = (String) obj.get("element"); break;
+                        case 25: tooltipText = (String) obj.get("damage_pattern"); break;
+                        case 26: tooltipText = (String) obj.get("ac_level"); break;
+                        case 27: tooltipText = (String) obj.get("sleep_chance"); break;
+                        case 28: tooltipText = (String) obj.get("sleep_time"); break;
+                        case 29: tooltipText = (String) obj.get("stop_chance"); break;
+                        case 30: tooltipText = (String) obj.get("stop_time"); break;
+                        case 31: tooltipText = (String) obj.get("dizzy_chance"); break;
+                        case 32: tooltipText = (String) obj.get("dizzy_time"); break;
+                        case 33: tooltipText = (String) obj.get("poison_chance"); break;
+                        case 34: tooltipText = (String) obj.get("poison_time"); break;
+                        case 35: tooltipText = (String) obj.get("poison_strength"); break;
+                        case 36: tooltipText = (String) obj.get("confuse_chance"); break;
+                        case 37: tooltipText = (String) obj.get("confuse_time"); break;
+                        case 38: tooltipText = (String) obj.get("electric_chance"); break;
+                        case 39: tooltipText = (String) obj.get("electric_time"); break;
+                        case 40: tooltipText = (String) obj.get("dodgy_chance"); break;
+                        case 41: tooltipText = (String) obj.get("dodgy_time"); break;
+                        case 42: tooltipText = (String) obj.get("burn_chance"); break;
+                        case 43: tooltipText = (String) obj.get("burn_time"); break;
+                        case 44: tooltipText = (String) obj.get("freeze_chance"); break;
+                        case 45: tooltipText = (String) obj.get("freeze_time"); break;
+                        case 46: tooltipText = (String) obj.get("size_change_chance"); break;
+                        case 47: tooltipText = (String) obj.get("size_change_time"); break;
+                        case 48: tooltipText = (String) obj.get("size_change_strength"); break;
+                        case 49: tooltipText = (String) obj.get("atk_change_chance"); break;
+                        case 50: tooltipText = (String) obj.get("atk_change_time"); break;
+                        case 51: tooltipText = (String) obj.get("atk_change_strength"); break;
+                        case 52: tooltipText = (String) obj.get("def_change_chance"); break;
+                        case 53: tooltipText = (String) obj.get("def_change_time"); break;
+                        case 54: tooltipText = (String) obj.get("def_change_strength"); break;
+                        case 55: tooltipText = (String) obj.get("allergic_chance"); break;
+                        case 56: tooltipText = (String) obj.get("allergic_time"); break;
+                        case 57: tooltipText = (String) obj.get("ohko_chance"); break;
+                        case 58: tooltipText = (String) obj.get("charge_strength"); break;
+                        case 59: tooltipText = (String) obj.get("fast_chance"); break;
+                        case 60: tooltipText = (String) obj.get("fast_time"); break;
+                        case 61: tooltipText = (String) obj.get("slow_chance"); break;
+                        case 62: tooltipText = (String) obj.get("slow_time"); break;
+                        case 63: tooltipText = (String) obj.get("fright_chance"); break;
+                        case 64: tooltipText = (String) obj.get("gale_force_chance"); break;
+                        case 65: tooltipText = (String) obj.get("payback_time"); break;
+                        case 66: tooltipText = (String) obj.get("hold_fast_time"); break;
+                        case 67: tooltipText = (String) obj.get("invisible_chance"); break;
+                        case 68: tooltipText = (String) obj.get("invisible_time"); break;
+                        case 69: tooltipText = (String) obj.get("hp_regen_time"); break;
+                        case 70: tooltipText = (String) obj.get("hp_regen_strength"); break;
+                        case 71: tooltipText = (String) obj.get("fp_regen_time"); break;
+                        case 72: tooltipText = (String) obj.get("fp_regen_strength"); break;
+                        case 73: tooltipText = (String) obj.get("attack_evt"); break;
+                        case 74: tooltipText = (String) obj.get("stage_background_fallweight1"); break;
+                        case 75: tooltipText = (String) obj.get("stage_background_fallweight2"); break;
+                        case 76: tooltipText = (String) obj.get("stage_background_fallweight3"); break;
+                        case 77: tooltipText = (String) obj.get("stage_background_fallweight4"); break;
+                        case 78: tooltipText = (String) obj.get("stage_nozzle_turn_chance"); break;
+                        case 79: tooltipText = (String) obj.get("stage_nozzle_fire_chance"); break;
+                        case 80: tooltipText = (String) obj.get("stage_ceiling_fall_chance"); break;
+                        case 81: tooltipText = (String) obj.get("stage_object_fall_chance"); break;
+                        case 82: tooltipText = (String) obj.get("CannotTargetMarioOrShellShield"); break;
+                        case 83: tooltipText = (String) obj.get("CannotTargetPartner"); break;
+                        case 84: tooltipText = (String) obj.get("CannotTargetEnemy"); break;
+                        case 85: tooltipText = (String) obj.get("CannotTargetTreeOrSwitch"); break;
+                        case 86: tooltipText = (String) obj.get("CannotTargetSystem"); break;
+                        case 87: tooltipText = (String) obj.get("CannotTargetOppositeAlliance"); break;
+                        case 88: tooltipText = (String) obj.get("CannotTargetOwnAlliance"); break;
+                        case 89: tooltipText = (String) obj.get("CannotTargetSelf"); break;
+                        case 90: tooltipText = (String) obj.get("CannotTargetSameSpecies"); break;
+                        case 91: tooltipText = (String) obj.get("OnlyTargetSelf"); break;
+                        case 92: tooltipText = (String) obj.get("OnlyTargetMario"); break;
+                        case 93: tooltipText = (String) obj.get("OnlyTargetTreeOrSwitch"); break;
+                        case 94: tooltipText = (String) obj.get("OnlyTargetPreferredParts"); break;
+                        case 95: tooltipText = (String) obj.get("OnlyTargetSelectParts"); break;
+                        case 96: tooltipText = (String) obj.get("SingleTarget"); break;
+                        case 97: tooltipText = (String) obj.get("MultipleTarget"); break;
+                        case 98: tooltipText = (String) obj.get("CannotTargetAnything"); break;
+                        case 99: tooltipText = (String) obj.get("Tattlelike"); break;
+                        case 100: tooltipText = (String) obj.get("CannotTargetFloating2"); break;
+                        case 101: tooltipText = (String) obj.get("CannotTargetCeiling"); break;
+                        case 102: tooltipText = (String) obj.get("CannotTargetFloating"); break;
+                        case 103: tooltipText = (String) obj.get("CannotTargetGrounded"); break;
+                        case 104: tooltipText = (String) obj.get("Jumplike"); break;
+                        case 105: tooltipText = (String) obj.get("Hammerlike"); break;
+                        case 106: tooltipText = (String) obj.get("ShellTosslike"); break;
+                        case 107: tooltipText = (String) obj.get("CannotTargetGroundedVariant"); break;
+                        case 108: tooltipText = (String) obj.get("RecoilDamage"); break;
+                        case 109: tooltipText = (String) obj.get("CanOnlyTargetFrontmost"); break;
+                        case 110: tooltipText = (String) obj.get("CannotTargetShellShield"); break;
+                        case 111: tooltipText = (String) obj.get("CannotTargetCustom"); break;
+                        case 112: tooltipText = (String) obj.get("TargetSameAllianceDirection"); break;
+                        case 113: tooltipText = (String) obj.get("TargetOppositeAllianceDirection"); break;
+                        case 114: tooltipText = (String) obj.get("BadgeCanAffectPower"); break;
+                        case 115: tooltipText = (String) obj.get("StatusCanAffectPower"); break;
+                        case 116: tooltipText = (String) obj.get("IsChargeable"); break;
+                        case 117: tooltipText = (String) obj.get("CannotMiss"); break;
+                        case 118: tooltipText = (String) obj.get("DiminishingReturnsByHit"); break;
+                        case 119: tooltipText = (String) obj.get("DiminishingReturnsByTarget"); break;
+                        case 120: tooltipText = (String) obj.get("PiercesDefense"); break;
+                        case 121: tooltipText = (String) obj.get("CanBreakIce"); break;
+                        case 122: tooltipText = (String) obj.get("IgnoreTargetStatusVulnerability"); break;
+                        case 123: tooltipText = (String) obj.get("SPFx200"); break;
+                        case 124: tooltipText = (String) obj.get("IgnitesIfBurned"); break;
+                        case 125: tooltipText = (String) obj.get("PlayActiveFXSound"); break;
+                        case 126: tooltipText = (String) obj.get("FlipsShellEnemies"); break;
+                        case 127: tooltipText = (String) obj.get("FlipsBombFlippableEnemies"); break;
+                        case 128: tooltipText = (String) obj.get("GroundsWingedEnemies"); break;
+                        case 129: tooltipText = (String) obj.get("SPFx8000"); break;
+                        case 130: tooltipText = (String) obj.get("CanBeUsedAsConfusedAction"); break;
+                        case 131: tooltipText = (String) obj.get("Unguardable"); break;
+                        case 132: tooltipText = (String) obj.get("CanHitClonelike"); break;
+                        case 133: tooltipText = (String) obj.get("Electric"); break;
+                        case 134: tooltipText = (String) obj.get("TopSpiky"); break;
+                        case 135: tooltipText = (String) obj.get("PreemptiveFrontSpiky"); break;
+                        case 136: tooltipText = (String) obj.get("FrontSpiky"); break;
+                        case 137: tooltipText = (String) obj.get("Fiery"); break;
+                        case 138: tooltipText = (String) obj.get("Icy"); break;
+                        case 139: tooltipText = (String) obj.get("Poison"); break;
+                        case 140: tooltipText = (String) obj.get("Explosive"); break;
+                        case 141: tooltipText = (String) obj.get("VolatileExplosive"); break;
+                        case 142: tooltipText = (String) obj.get("Payback"); break;
+                        case 143: tooltipText = (String) obj.get("HoldFast"); break;
+                        case 144: tooltipText = (String) obj.get("PreferMario"); break;
+                        case 145: tooltipText = (String) obj.get("PreferPartner"); break;
+                        case 146: tooltipText = (String) obj.get("PreferFront"); break;
+                        case 147: tooltipText = (String) obj.get("PreferBack"); break;
+                        case 148: tooltipText = (String) obj.get("PreferSameAlliance"); break;
+                        case 149: tooltipText = (String) obj.get("PreferOppositeAlliance"); break;
+                        case 150: tooltipText = (String) obj.get("PreferLessHealthy"); break;
+                        case 151: tooltipText = (String) obj.get("GreatlyPreferLessHealthy"); break;
+                        case 152: tooltipText = (String) obj.get("PreferLowerHP"); break;
+                        case 153: tooltipText = (String) obj.get("PreferHigherHP"); break;
+                        case 154: tooltipText = (String) obj.get("PreferInPeril"); break;
+                        case 155: tooltipText = (String) obj.get("TWFx2000"); break;
+                        case 156: tooltipText = (String) obj.get("ChooseWeightedRandomly"); break;
+                    }
+                    break;
+                }
+            }
+
+            if (tooltipText != null && !tooltipText.isBlank()) 
+            {
+                Tooltip tooltip = new Tooltip(tooltipText);
+
+                tooltip.setShowDelay(Duration.millis(150));
+                tooltip.setHideDelay(Duration.ZERO);
+
+                temp.setOnMouseEntered(e -> 
+                {
+                    if (temp.getScene() == null || temp.getScene().getWindow() == null)
+                    {
+                        return;
+                    }
+                    tooltip.show(temp, e.getScreenX() + 10, e.getScreenY() + 10);
+                });
+
+                temp.setOnMouseMoved(e -> 
+                {
+                    if (tooltip.isShowing()) 
+                    {
+                        tooltip.setX(e.getScreenX() + 10);
+                        tooltip.setY(e.getScreenY() + 10);
+                    }
+                });
+
+                temp.setOnMouseExited(e -> tooltip.hide());
+                temp.sceneProperty().addListener((obs, oldScene, newScene) -> tooltip.hide());
+            }
+
+        } 
+        catch (FileNotFoundException e) 
+        {
+            System.out.println("There was an Error Finding the JSON File");
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("There was an Error Reading the JSON File");
+        } 
+        catch (ParseException e) 
+        {
+            System.out.println("There was an Error Parsing the JSON File");
+        }
+
+        return temp;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Initializes the data field arrays to their max sizes
+     */
+    public void initializeFields()
+    {
+        textFields = new TextField[75];
+        for(int i = 0; i < textFields.length; i++)
+        {
+            textFields[i] = new TextField();
+        }
+
+        comboBoxFields = new ComboBox[6];
+        for(int i = 0; i < comboBoxFields.length; i++)
+        {
+            comboBoxFields[i] = new ComboBox<String>();
+        }
+
+        checkBoxFields = new CheckBox[75];
+        for(int i = 0; i < checkBoxFields.length; i++)
+        {
+            checkBoxFields[i] = new CheckBox();
+        }
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Adds every image to the hashmap
+     */
+    public void setImages()
+    {
+        images.put("unit", new Image(getClass().getResource("/icons/unit.png").toExternalForm()));
+        images.put("defendPlus", new Image(getClass().getResource("/icons/defendPlus.png").toExternalForm()));
+        images.put("feelingFine", new Image(getClass().getResource("/icons/feelingFine.png").toExternalForm()));
+        images.put("hammer", new Image(getClass().getResource("/icons/hammer.png").toExternalForm()));
+        images.put("heart", new Image(getClass().getResource("/icons/heart.png").toExternalForm()));
+        images.put("dangerHeartCustom", new Image(getClass().getResource("/icons/dangerHeartCustom.png").toExternalForm()));
+        images.put("audienceStar", new Image(getClass().getResource("/icons/audienceStar.png").toExternalForm()));
+        images.put("XP", new Image(getClass().getResource("/icons/XP.png").toExternalForm()));
+        images.put("coin", new Image(getClass().getResource("/icons/coin.png").toExternalForm()));
+        images.put("runArrow", new Image(getClass().getResource("/icons/runArrow.png").toExternalForm()));
+        images.put("powerBounce", new Image(getClass().getResource("/icons/powerBounce.png").toExternalForm()));
+        images.put("ultraHammer", new Image(getClass().getResource("/icons/ultraHammer.png").toExternalForm()));
+        images.put("defenseUpStatus", new Image(getClass().getResource("/icons/defenseUpStatus.png").toExternalForm()));
+        images.put("spikeShieldCustom", new Image(getClass().getResource("/icons/spikeShieldCustom.png").toExternalForm()));
+        images.put("fireShieldCustom", new Image(getClass().getResource("/icons/fireShieldCustom.png").toExternalForm()));
+        images.put("iceShieldCustom", new Image(getClass().getResource("/icons/iceShieldCustom.png").toExternalForm()));
+        images.put("burstShieldCustom", new Image(getClass().getResource("/icons/burstShieldCustom.png").toExternalForm()));
+        images.put("zapShieldCustom", new Image(getClass().getResource("/icons/zapShieldCustom.png").toExternalForm()));
+        images.put("sleepStatus", new Image(getClass().getResource("/icons/sleepStatus.png").toExternalForm()));
+        images.put("stopStatus", new Image(getClass().getResource("/icons/stopStatus.png").toExternalForm()));
+        images.put("dizzyStatus", new Image(getClass().getResource("/icons/dizzyStatus.png").toExternalForm()));
+        images.put("poisonStatus", new Image(getClass().getResource("/icons/poisonStatus.png").toExternalForm()));
+        images.put("confuseStatus", new Image(getClass().getResource("/icons/confuseStatus.png").toExternalForm()));
+        images.put("electricStatus", new Image(getClass().getResource("/icons/electricStatus.png").toExternalForm()));
+        images.put("burnStatus", new Image(getClass().getResource("/icons/burnStatus.png").toExternalForm()));
+        images.put("freezeStatus", new Image(getClass().getResource("/icons/freezeStatus.png").toExternalForm()));
+        images.put("hugeStatus", new Image(getClass().getResource("/icons/hugeStatus.png").toExternalForm()));
+        images.put("tinyStatus", new Image(getClass().getResource("/icons/tinyStatus.png").toExternalForm()));
+        images.put("attackUpStatus", new Image(getClass().getResource("/icons/attackUpStatus.png").toExternalForm()));
+        images.put("attackDownStatus", new Image(getClass().getResource("/icons/attackDownStatus.png").toExternalForm()));
+        images.put("defenseDownStatus", new Image(getClass().getResource("/icons/defenseDownStatus.png").toExternalForm()));
+        images.put("allergicStatus", new Image(getClass().getResource("/icons/allergicStatus.png").toExternalForm()));
+        images.put("frightMask", new Image(getClass().getResource("/icons/frightMask.png").toExternalForm()));
+        images.put("flurriePartnerSwitch", new Image(getClass().getResource("/icons/flurriePartnerSwitch.png").toExternalForm()));
+        images.put("fastStatus", new Image(getClass().getResource("/icons/fastStatus.png").toExternalForm()));
+        images.put("slowStatus", new Image(getClass().getResource("/icons/slowStatus.png").toExternalForm()));
+        images.put("dodgyStatus", new Image(getClass().getResource("/icons/dodgyStatus.png").toExternalForm()));
+        images.put("invisibleStatus", new Image(getClass().getResource("/icons/invisibleStatus.png").toExternalForm()));
+        images.put("garnetStar", new Image(getClass().getResource("/icons/garnetStar.png").toExternalForm()));
+        images.put("appealAction", new Image(getClass().getResource("/icons/appealAction.png").toExternalForm()));
+        images.put("flower", new Image(getClass().getResource("/icons/flower.png").toExternalForm()));
+        images.put("SPOrb1", new Image(getClass().getResource("/icons/SPOrb1.png").toExternalForm()));
+        images.put("superCharge", new Image(getClass().getResource("/icons/superCharge.png").toExternalForm()));
+        images.put("shineSprite", new Image(getClass().getResource("/icons/shineSprite.png").toExternalForm()));
+        images.put("zapTap", new Image(getClass().getResource("/icons/zapTap.png").toExternalForm()));
+        images.put("tacticsFlag", new Image(getClass().getResource("/icons/tacticsFlag.png").toExternalForm()));
+        images.put("charge", new Image(getClass().getResource("/icons/charge.png").toExternalForm()));
+        images.put("paybackStatus", new Image(getClass().getResource("/icons/paybackStatus.png").toExternalForm()));
+        images.put("bobberyPartnerSwitch", new Image(getClass().getResource("/icons/bobberyPartnerSwitch.png").toExternalForm()));
+        images.put("HPRegenStatus", new Image(getClass().getResource("/icons/HPRegenStatus.png").toExternalForm()));
+        images.put("FPRegenStatus", new Image(getClass().getResource("/icons/FPRegenStatus.png").toExternalForm()));
+        images.put("gateHandle", new Image(getClass().getResource("/icons/gateHandle.png").toExternalForm()));
+        images.put("actionCommandStar", new Image(getClass().getResource("/icons/actionCommandStar.png").toExternalForm()));
+        images.put("unknown", new Image(getClass().getResource("/icons/unknown.png").toExternalForm()));
+        images.put("unusedPaper", new Image(getClass().getResource("/icons/unusedPaper.png").toExternalForm()));
+        images.put("magicalMap2", new Image(getClass().getResource("/icons/magicalMap2.png").toExternalForm()));
+        images.put("fahrOutpostBombCustom", new Image(getClass().getResource("/icons/fahrOutpostBombCustom.png").toExternalForm()));
+        images.put("puniCustom", new Image(getClass().getResource("/icons/puniCustom.png").toExternalForm()));
+        images.put("koopaCustom", new Image(getClass().getResource("/icons/koopaCustom.png").toExternalForm()));
+        images.put("BPEmblemCustom", new Image(getClass().getResource("/icons/BPEmblemCustom.png").toExternalForm()));
+        images.put("HPUpgrade", new Image(getClass().getResource("/icons/HPUpgrade.png").toExternalForm()));
+        images.put("FPUpgrade", new Image(getClass().getResource("/icons/FPUpgrade.png").toExternalForm()));
+        images.put("BPUpgrade", new Image(getClass().getResource("/icons/BPUpgrade.png").toExternalForm()));
+        images.put("partnerlvl1Custom", new Image(getClass().getResource("/icons/partnerlvl1Custom.png").toExternalForm()));
+        images.put("unitAmazyDayzee", new Image(getClass().getResource("/icons/unitAmazyDayzee.png").toExternalForm()));
+        images.put("unitArantula", new Image(getClass().getResource("/icons/unitArantula.png").toExternalForm()));
+        images.put("unitAtomicBoo", new Image(getClass().getResource("/icons/unitAtomicBoo.png").toExternalForm()));
+        images.put("unitBadgeBandit", new Image(getClass().getResource("/icons/unitBadgeBandit.png").toExternalForm()));
+        images.put("unitBaldCleft", new Image(getClass().getResource("/icons/unitBaldCleft.png").toExternalForm()));
+        images.put("unitBandit", new Image(getClass().getResource("/icons/unitBandit.png").toExternalForm()));
+        images.put("unitBeldam", new Image(getClass().getResource("/icons/unitBeldam.png").toExternalForm()));
+        images.put("unitBigBandit", new Image(getClass().getResource("/icons/unitBigBandit.png").toExternalForm()));
+        images.put("unitBillBlaster", new Image(getClass().getResource("/icons/unitBillBlaster.png").toExternalForm()));
+        images.put("unitBlooper", new Image(getClass().getResource("/icons/unitBlooper.png").toExternalForm()));
+        images.put("unitBobomb", new Image(getClass().getResource("/icons/unitBob-omb.png").toExternalForm()));
+        images.put("unitBobulk", new Image(getClass().getResource("/icons/unitBob-ulk.png").toExternalForm()));
+        images.put("unitBombshellBill", new Image(getClass().getResource("/icons/unitBombshellBill.png").toExternalForm()));
+        images.put("unitBombshellBillBlaster", new Image(getClass().getResource("/icons/unitBombshellBillBlaster.png").toExternalForm()));
+        images.put("unitBombSquadBomb", new Image(getClass().getResource("/icons/unitBombSquadBomb.png").toExternalForm()));
+        images.put("unitBonetail", new Image(getClass().getResource("/icons/unitBonetail.png").toExternalForm()));
+        images.put("unitBoo", new Image(getClass().getResource("/icons/unitBoo.png").toExternalForm()));
+        images.put("unitBoomerangBro", new Image(getClass().getResource("/icons/unitBoomerangBro.png").toExternalForm()));
+        images.put("unitBowser", new Image(getClass().getResource("/icons/unitBowser.png").toExternalForm()));
+        images.put("unitBristle", new Image(getClass().getResource("/icons/unitBristle.png").toExternalForm()));
+        images.put("unitBulkyBobomb", new Image(getClass().getResource("/icons/unitBulkyBob-omb.png").toExternalForm()));
+        images.put("unitBulletBill", new Image(getClass().getResource("/icons/unitBulletBill.png").toExternalForm()));
+        images.put("unitBuzzyBeetle", new Image(getClass().getResource("/icons/unitBuzzyBeetle.png").toExternalForm()));
+        images.put("unitChainChomp", new Image(getClass().getResource("/icons/unitChainChomp.png").toExternalForm()));
+        images.put("unitCleft", new Image(getClass().getResource("/icons/unitCleft.png").toExternalForm()));
+        images.put("unitCortez", new Image(getClass().getResource("/icons/unitCortez.png").toExternalForm()));
+        images.put("unitCortezBonePile", new Image(getClass().getResource("/icons/unitCortezBonePile.png").toExternalForm()));
+        images.put("unitCortezHook", new Image(getClass().getResource("/icons/unitCortezHook.png").toExternalForm()));
+        images.put("unitCortezRapier", new Image(getClass().getResource("/icons/unitCortezRapier.png").toExternalForm()));
+        images.put("unitCortezSaber", new Image(getClass().getResource("/icons/unitCortezSaber.png").toExternalForm()));
+        images.put("unitCortezSword", new Image(getClass().getResource("/icons/unitCortezSword.png").toExternalForm()));
+        images.put("unitCrazeeDayzee", new Image(getClass().getResource("/icons/unitCrazeeDayzee.png").toExternalForm()));
+        images.put("unitDarkBones", new Image(getClass().getResource("/icons/unitDarkBones.png").toExternalForm()));
+        images.put("unitDarkBoo", new Image(getClass().getResource("/icons/unitDarkBoo.png").toExternalForm()));
+        images.put("unitDarkBristle", new Image(getClass().getResource("/icons/unitDarkBristle.png").toExternalForm()));
+        images.put("unitDarkCraw", new Image(getClass().getResource("/icons/unitDarkCraw.png").toExternalForm()));
+        images.put("unitDarkKoopa", new Image(getClass().getResource("/icons/unitDarkKoopa.png").toExternalForm()));
+        images.put("unitDarkKoopatrol", new Image(getClass().getResource("/icons/unitDarkKoopatrol.png").toExternalForm()));
+        images.put("unitDarkLakitu", new Image(getClass().getResource("/icons/unitDarkLakitu.png").toExternalForm()));
+        images.put("unitDarkParatroopa", new Image(getClass().getResource("/icons/unitDarkParatroopa.png").toExternalForm()));
+        images.put("unitDarkPuff", new Image(getClass().getResource("/icons/unitDarkPuff.png").toExternalForm()));
+        images.put("unitDarkWizzerd", new Image(getClass().getResource("/icons/unitDarkWizzerd.png").toExternalForm()));
+        images.put("unitDoopliss", new Image(getClass().getResource("/icons/unitDoopliss.png").toExternalForm()));
+        images.put("unitDooplissMario", new Image(getClass().getResource("/icons/unitDooplissMario.png").toExternalForm()));
+        images.put("unitDryBones", new Image(getClass().getResource("/icons/unitDryBones.png").toExternalForm()));
+        images.put("unitDullBones", new Image(getClass().getResource("/icons/unitDullBones.png").toExternalForm()));
+        images.put("unitEliteWizzerd", new Image(getClass().getResource("/icons/unitEliteWizzerd.png").toExternalForm()));
+        images.put("unitEliteXNaut", new Image(getClass().getResource("/icons/unitEliteX-Naut.png").toExternalForm()));
+        images.put("unitEmber", new Image(getClass().getResource("/icons/unitEmber.png").toExternalForm()));
+        images.put("unitFireBro", new Image(getClass().getResource("/icons/unitFireBro.png").toExternalForm()));
+        images.put("unitFlowerFuzzy", new Image(getClass().getResource("/icons/unitFlowerFuzzy.png").toExternalForm()));
+        images.put("unitFrostPiranha", new Image(getClass().getResource("/icons/unitFrostPiranha.png").toExternalForm()));
+        images.put("unitFuzzy", new Image(getClass().getResource("/icons/unitFuzzy.png").toExternalForm()));
+        images.put("unitGloomba", new Image(getClass().getResource("/icons/unitGloomba.png").toExternalForm()));
+        images.put("unitGloomtail", new Image(getClass().getResource("/icons/unitGloomtail.png").toExternalForm()));
+        images.put("unitGoldFuzzy", new Image(getClass().getResource("/icons/unitGoldFuzzy.png").toExternalForm()));
+        images.put("unitGoomba", new Image(getClass().getResource("/icons/unitGoomba.png").toExternalForm()));
+        images.put("unitGreenFuzzy", new Image(getClass().getResource("/icons/unitGreenFuzzy.png").toExternalForm()));
+        images.put("unitGreenMagikoopa", new Image(getClass().getResource("/icons/unitGreenMagikoopa.png").toExternalForm()));
+        images.put("unitGrodus", new Image(getClass().getResource("/icons/unitGrodus.png").toExternalForm()));
+        images.put("unitGrodusX", new Image(getClass().getResource("/icons/unitGrodusX.png").toExternalForm()));
+        images.put("unitGus", new Image(getClass().getResource("/icons/unitGus.png").toExternalForm()));
+        images.put("unitHammerBro", new Image(getClass().getResource("/icons/unitHammerBro.png").toExternalForm()));
+        images.put("unitHooktail", new Image(getClass().getResource("/icons/unitHooktail.png").toExternalForm()));
+        images.put("unitHyperBaldCleft", new Image(getClass().getResource("/icons/unitHyperBaldCleft.png").toExternalForm()));
+        images.put("unitHyperCleft", new Image(getClass().getResource("/icons/unitHyperCleft.png").toExternalForm()));
+        images.put("unitHyperGoomba", new Image(getClass().getResource("/icons/unitHyperGoomba.png").toExternalForm()));
+        images.put("unitHyperParagoomba", new Image(getClass().getResource("/icons/unitHyperParagoomba.png").toExternalForm()));
+        images.put("unitHyperSpikyGoomba", new Image(getClass().getResource("/icons/unitHyperSpikyGoomba.png").toExternalForm()));
+        images.put("unitIcePuff", new Image(getClass().getResource("/icons/unitIcePuff.png").toExternalForm()));
+        images.put("unitIronCleft1", new Image(getClass().getResource("/icons/unitIronCleft1.png").toExternalForm()));
+        images.put("unitIronCleft2", new Image(getClass().getResource("/icons/unitIronCleft2.png").toExternalForm()));
+        images.put("unitKammyKoopa", new Image(getClass().getResource("/icons/unitKammyKoopa.png").toExternalForm()));
+        images.put("unitKoopatrol", new Image(getClass().getResource("/icons/unitKoopatrol.png").toExternalForm()));
+        images.put("unitKoopaTroopa", new Image(getClass().getResource("/icons/unitKoopaTroopa.png").toExternalForm()));
+        images.put("unitKPKoopa", new Image(getClass().getResource("/icons/unitKPKoopa.png").toExternalForm()));
+        images.put("unitKPParatroopa", new Image(getClass().getResource("/icons/unitKPParatroopa.png").toExternalForm()));
+        images.put("unitLakitu", new Image(getClass().getResource("/icons/unitLakitu.png").toExternalForm()));
+        images.put("unitLavaBubble", new Image(getClass().getResource("/icons/unitLavaBubble.png").toExternalForm()));
+        images.put("unitLordCrump", new Image(getClass().getResource("/icons/unitLordCrump.png").toExternalForm()));
+        images.put("unitMachoGrubba", new Image(getClass().getResource("/icons/unitMachoGrubba.png").toExternalForm()));
+        images.put("unitMagikoopa", new Image(getClass().getResource("/icons/unitMagikoopa.png").toExternalForm()));
+        images.put("unitMagnusVonGrapple", new Image(getClass().getResource("/icons/unitMagnusVonGrapple.png").toExternalForm()));
+        images.put("unitMagnusVonGrapple2", new Image(getClass().getResource("/icons/unitMagnusVonGrapple2.png").toExternalForm()));
+        images.put("unitMarilyn", new Image(getClass().getResource("/icons/unitMarilyn.png").toExternalForm()));
+        images.put("unitMiniXYux", new Image(getClass().getResource("/icons/unitMini-X-Yux.png").toExternalForm()));
+        images.put("unitMiniYux", new Image(getClass().getResource("/icons/unitMini-Yux.png").toExternalForm()));
+        images.put("unitMiniZYux", new Image(getClass().getResource("/icons/unitMini-Z-Yux.png").toExternalForm()));
+        images.put("unitMoonCleft", new Image(getClass().getResource("/icons/unitMoonCleft.png").toExternalForm()));
+        images.put("unitPalePiranha", new Image(getClass().getResource("/icons/unitPalePiranha.png").toExternalForm()));
+        images.put("unitParabuzzy", new Image(getClass().getResource("/icons/unitParabuzzy.png").toExternalForm()));
+        images.put("unitParagloomba", new Image(getClass().getResource("/icons/unitParagloomba.png").toExternalForm()));
+        images.put("unitParagoomba", new Image(getClass().getResource("/icons/unitParagoomba.png").toExternalForm()));
+        images.put("unitParatroopa", new Image(getClass().getResource("/icons/unitParakoopa.png").toExternalForm()));
+        images.put("unitPhantomEmber", new Image(getClass().getResource("/icons/unitPhantomEmber.png").toExternalForm()));
+        images.put("unitPider", new Image(getClass().getResource("/icons/unitPider.png").toExternalForm()));
+        images.put("unitPiranhaPlant", new Image(getClass().getResource("/icons/unitPiranhaPlant.png").toExternalForm()));
+        images.put("unitPoisonPokey", new Image(getClass().getResource("/icons/unitPoisonPokey.png").toExternalForm()));
+        images.put("unitPoisonPuff", new Image(getClass().getResource("/icons/unitPoisonPuff.png").toExternalForm()));
+        images.put("unitPokey", new Image(getClass().getResource("/icons/unitPokey.png").toExternalForm()));
+        images.put("unitProfessorFrankly", new Image(getClass().getResource("/icons/unitProfessorFrankly.png").toExternalForm()));
+        images.put("unitPutridPiranha", new Image(getClass().getResource("/icons/unitPutridPiranha.png").toExternalForm()));
+        images.put("unitRawkHawk", new Image(getClass().getResource("/icons/unitRawkHawk.png").toExternalForm()));
+        images.put("unitRedBones", new Image(getClass().getResource("/icons/unitRedBones.png").toExternalForm()));
+        images.put("unitRedChomp", new Image(getClass().getResource("/icons/unitRedChomp.png").toExternalForm()));
+        images.put("unitRedMagikoopa", new Image(getClass().getResource("/icons/unitRedMagikoopa.png").toExternalForm()));
+        images.put("unitRedSpikyBuzzy", new Image(getClass().getResource("/icons/unitRedSpikyBuzzy.png").toExternalForm()));
+        images.put("unitRuffPuff", new Image(getClass().getResource("/icons/unitRuffPuff.png").toExternalForm()));
+        images.put("unitShadowHand1", new Image(getClass().getResource("/icons/unitShadowHand1.png").toExternalForm()));
+        images.put("unitShadowHand2", new Image(getClass().getResource("/icons/unitShadowHand2.png").toExternalForm()));
+        images.put("unitShadowPeach", new Image(getClass().getResource("/icons/unitShadowPeach.png").toExternalForm()));
+        images.put("unitShadowQueen", new Image(getClass().getResource("/icons/unitShadowQueen.png").toExternalForm()));
+        images.put("unitShadyKoopa", new Image(getClass().getResource("/icons/unitShadyKoopa.png").toExternalForm()));
+        images.put("unitShadyParatroopa", new Image(getClass().getResource("/icons/unitShadyParatroopa.png").toExternalForm()));
+        images.put("unitShellShield", new Image(getClass().getResource("/icons/unitShellShield.png").toExternalForm()));
+        images.put("unitSkyBlueSpiny", new Image(getClass().getResource("/icons/unitSkyBlueSpiny.png").toExternalForm()));
+        images.put("unitSmallShadowHands", new Image(getClass().getResource("/icons/unitSmallShadowHands.png").toExternalForm()));
+        images.put("unitSmorg", new Image(getClass().getResource("/icons/unitSmorg.png").toExternalForm()));
+        images.put("unitSpania", new Image(getClass().getResource("/icons/unitSpania.png").toExternalForm()));
+        images.put("unitSpikyBuzzy", new Image(getClass().getResource("/icons/unitSpikyBuzzy.png").toExternalForm()));
+        images.put("unitSpikyGloomba", new Image(getClass().getResource("/icons/unitSpikyGloomba.png").toExternalForm()));
+        images.put("unitSpikyGoomba", new Image(getClass().getResource("/icons/unitSpikyGoomba.png").toExternalForm()));
+        images.put("unitSpikyParabuzzy", new Image(getClass().getResource("/icons/unitSpikyParabuzzy.png").toExternalForm()));
+        images.put("unitSpinia", new Image(getClass().getResource("/icons/unitSpinia.png").toExternalForm()));
+        images.put("unitSpiny", new Image(getClass().getResource("/icons/unitSpiny.png").toExternalForm()));
+        images.put("unitSpunia", new Image(getClass().getResource("/icons/unitSpunia.png").toExternalForm()));
+        images.put("unitSwampire", new Image(getClass().getResource("/icons/unitSwampire.png").toExternalForm()));
+        images.put("unitSwooper", new Image(getClass().getResource("/icons/unitSwooper.png").toExternalForm()));
+        images.put("unitSwoopula", new Image(getClass().getResource("/icons/unitSwoopula.png").toExternalForm()));
+        images.put("unitWhiteMagikoopa", new Image(getClass().getResource("/icons/unitWhiteMagikoopa.png").toExternalForm()));
+        images.put("unitWizzerd", new Image(getClass().getResource("/icons/unitWizzerd.png").toExternalForm()));
+        images.put("unitXNaut", new Image(getClass().getResource("/icons/unitX-Naut.png").toExternalForm()));
+        images.put("unitXNautPHD", new Image(getClass().getResource("/icons/unitX-NautPHD.png").toExternalForm()));
+        images.put("unitXYux", new Image(getClass().getResource("/icons/unitX-Yux.png").toExternalForm()));
+        images.put("unitYux", new Image(getClass().getResource("/icons/unitYux.png").toExternalForm()));
+        images.put("unitZYux", new Image(getClass().getResource("/icons/unitZ-Yux.png").toExternalForm()));
+        images.put("femaleToadCustom", new Image(getClass().getResource("/icons/femaleToadCustom.png").toExternalForm()));
+        images.put("goombellaPartnerSwitch", new Image(getClass().getResource("/icons/goombellaPartnerSwitch.png").toExternalForm()));
+        images.put("itemsIcon", new Image(getClass().getResource("/icons/itemsIcon.png").toExternalForm()));
+        images.put("koopsPartnerSwitch", new Image(getClass().getResource("/icons/koopsPartnerSwitch.png").toExternalForm()));
+        images.put("marioHeadCustom", new Image(getClass().getResource("/icons/marioHeadCustom.png").toExternalForm()));
+        images.put("mowzPartnerSwitch", new Image(getClass().getResource("/icons/mowzPartnerSwitch.png").toExternalForm()));
+        images.put("toadCustom", new Image(getClass().getResource("/icons/toadCustom.png").toExternalForm()));
+        images.put("vivianPartnerSwitch", new Image(getClass().getResource("/icons/vivianPartnerSwitch.png").toExternalForm()));
+        images.put("yoshiPartnerSwitch", new Image(getClass().getResource("/icons/yoshiPartnerSwitch.png").toExternalForm()));
+        images.put("audienceBone", new Image(getClass().getResource("/icons/audienceBone.png").toExternalForm()));
+        images.put("audienceCan", new Image(getClass().getResource("/icons/audienceCan.png").toExternalForm()));
+        images.put("audienceHammer", new Image(getClass().getResource("/icons/audienceHammer.png").toExternalForm()));
+        images.put("audienceRock", new Image(getClass().getResource("/icons/audienceRock.png").toExternalForm()));
+        images.put("boosSheet", new Image(getClass().getResource("/icons/boosSheet.png").toExternalForm()));
+        images.put("boots", new Image(getClass().getResource("/icons/boots.png").toExternalForm()));
+        images.put("chargeBadge", new Image(getClass().getResource("/icons/chargeBadge.png").toExternalForm()));
+        images.put("chargeP", new Image(getClass().getResource("/icons/chargeP.png").toExternalForm()));
+        images.put("coconutBomb", new Image(getClass().getResource("/icons/coconutBomb.png").toExternalForm()));
+        images.put("couplesCake", new Image(getClass().getResource("/icons/couplesCake.png").toExternalForm()));
+        images.put("courageMeal", new Image(getClass().getResource("/icons/courageMeal.png").toExternalForm()));
+        images.put("courageShell", new Image(getClass().getResource("/icons/courageShell.png").toExternalForm()));
+        images.put("crystalStar", new Image(getClass().getResource("/icons/crystalStar.png").toExternalForm()));
+        images.put("defend", new Image(getClass().getResource("/icons/defend.png").toExternalForm()));
+        images.put("diamondStar", new Image(getClass().getResource("/icons/diamondStar.png").toExternalForm()));
+        images.put("dizzyDial", new Image(getClass().getResource("/icons/dizzyDial.png").toExternalForm()));
+        images.put("doubleDip", new Image(getClass().getResource("/icons/doubleDip.png").toExternalForm()));
+        images.put("driedShroom", new Image(getClass().getResource("/icons/driedShroom.png").toExternalForm()));
+        images.put("earthQuake", new Image(getClass().getResource("/icons/earthQuake.png").toExternalForm()));
+        images.put("eggBomb", new Image(getClass().getResource("/icons/eggBomb.png").toExternalForm()));
+        images.put("electroPop", new Image(getClass().getResource("/icons/electroPop.png").toExternalForm()));
+        images.put("emeraldStar", new Image(getClass().getResource("/icons/emeraldStar.png").toExternalForm()));
+        images.put("fireDrive", new Image(getClass().getResource("/icons/fireDrive.png").toExternalForm()));
+        images.put("fireFlower", new Image(getClass().getResource("/icons/fireFlower.png").toExternalForm()));
+        images.put("freshJuice", new Image(getClass().getResource("/icons/freshJuice.png").toExternalForm()));
+        images.put("goldStar", new Image(getClass().getResource("/icons/goldStar.png").toExternalForm()));
+        images.put("gradualSyrup", new Image(getClass().getResource("/icons/gradualSyrup.png").toExternalForm()));
+        images.put("hammerThrow", new Image(getClass().getResource("/icons/hammerThrow.png").toExternalForm()));
+        images.put("headRattle", new Image(getClass().getResource("/icons/headRattle.png").toExternalForm()));
+        images.put("healthySalad", new Image(getClass().getResource("/icons/healthySalad.png").toExternalForm()));
+        images.put("heartfulCake", new Image(getClass().getResource("/icons/heartfulCake.png").toExternalForm()));
+        images.put("honeySyrup", new Image(getClass().getResource("/icons/honeySyrup.png").toExternalForm()));
+        images.put("hotSauce", new Image(getClass().getResource("/icons/hotSauce.png").toExternalForm()));
+        images.put("HPDrain1", new Image(getClass().getResource("/icons/HPDrain1.png").toExternalForm()));
+        images.put("iceSmash", new Image(getClass().getResource("/icons/iceSmash.png").toExternalForm()));
+        images.put("iceStorm", new Image(getClass().getResource("/icons/iceStorm.png").toExternalForm()));
+        images.put("iciclePop", new Image(getClass().getResource("/icons/iciclePop.png").toExternalForm()));
+        images.put("jamminJelly", new Image(getClass().getResource("/icons/jamminJelly.png").toExternalForm()));
+        images.put("koopaCurse", new Image(getClass().getResource("/icons/koopaCurse.png").toExternalForm()));
+        images.put("lifeShroom", new Image(getClass().getResource("/icons/lifeShroom.png").toExternalForm()));
+        images.put("lovePudding", new Image(getClass().getResource("/icons/lovePudding.png").toExternalForm()));
+        images.put("luckyStart", new Image(getClass().getResource("/icons/luckyStart.png").toExternalForm()));
+        images.put("lvl1Move", new Image(getClass().getResource("/icons/lvl1Move.png").toExternalForm()));
+        images.put("lvl2Move", new Image(getClass().getResource("/icons/lvl2Move.png").toExternalForm()));
+        images.put("lvl3Move", new Image(getClass().getResource("/icons/lvl3Move.png").toExternalForm()));
+        images.put("lvl4Move", new Image(getClass().getResource("/icons/lvl4Move.png").toExternalForm()));
+        images.put("mapleSyrup", new Image(getClass().getResource("/icons/mapleSyrup.png").toExternalForm()));
+        images.put("megaJump", new Image(getClass().getResource("/icons/megaJump.png").toExternalForm()));
+        images.put("megaQuake", new Image(getClass().getResource("/icons/megaQuake.png").toExternalForm()));
+        images.put("megaSmash", new Image(getClass().getResource("/icons/megaSmash.png").toExternalForm()));
+        images.put("meteorMeal", new Image(getClass().getResource("/icons/meteorMeal.png").toExternalForm()));
+        images.put("miniMrMini", new Image(getClass().getResource("/icons/miniMrMini.png").toExternalForm()));
+        images.put("mrsoftener", new Image(getClass().getResource("/icons/mrsoftener.png").toExternalForm()));
+        images.put("multibounce", new Image(getClass().getResource("/icons/multibounce.png").toExternalForm()));
+        images.put("mushroom", new Image(getClass().getResource("/icons/mushroom.png").toExternalForm()));
+        images.put("mystery", new Image(getClass().getResource("/icons/mystery.png").toExternalForm()));
+        images.put("peachTart", new Image(getClass().getResource("/icons/peachTart.png").toExternalForm()));
+        images.put("piercingBlow", new Image(getClass().getResource("/icons/piercingBlow.png").toExternalForm()));
+        images.put("pointSwap", new Image(getClass().getResource("/icons/pointSwap.png").toExternalForm()));
+        images.put("poisonShroom", new Image(getClass().getResource("/icons/poisonShroom.png").toExternalForm()));
+        images.put("powBlock", new Image(getClass().getResource("/icons/powBlock.png").toExternalForm()));
+        images.put("powerJump", new Image(getClass().getResource("/icons/powerJump.png").toExternalForm()));
+        images.put("powerPunch", new Image(getClass().getResource("/icons/powerPunch.png").toExternalForm()));
+        images.put("powerSmash", new Image(getClass().getResource("/icons/powerSmash.png").toExternalForm()));
+        images.put("quakeHammer", new Image(getClass().getResource("/icons/quakeHammer.png").toExternalForm()));
+        images.put("repelCape", new Image(getClass().getResource("/icons/repelCape.png").toExternalForm()));
+        images.put("rubyStar", new Image(getClass().getResource("/icons/rubyStar.png").toExternalForm()));
+        images.put("ruinPowder", new Image(getClass().getResource("/icons/ruinPowder.png").toExternalForm()));
+        images.put("sapphireStar", new Image(getClass().getResource("/icons/sapphireStar.png").toExternalForm()));
+        images.put("shootingStar", new Image(getClass().getResource("/icons/shootingStar.png").toExternalForm()));
+        images.put("shrinkStomp", new Image(getClass().getResource("/icons/shrinkStomp.png").toExternalForm()));
+        images.put("shroomBroth", new Image(getClass().getResource("/icons/shroomBroth.png").toExternalForm()));
+        images.put("sleepySheep", new Image(getClass().getResource("/icons/sleepySheep.png").toExternalForm()));
+        images.put("sleepyStomp", new Image(getClass().getResource("/icons/sleepyStomp.png").toExternalForm()));
+        images.put("slowShroom", new Image(getClass().getResource("/icons/slowShroom.png").toExternalForm()));
+        images.put("snowBunny", new Image(getClass().getResource("/icons/snowBunny.png").toExternalForm()));
+        images.put("softStomp", new Image(getClass().getResource("/icons/softStomp.png").toExternalForm()));
+        images.put("spaceFood", new Image(getClass().getResource("/icons/spaceFood.png").toExternalForm()));
+        images.put("spicyPasta", new Image(getClass().getResource("/icons/spicyPasta.png").toExternalForm()));
+        images.put("spitePouch", new Image(getClass().getResource("/icons/spitePouch.png").toExternalForm()));
+        images.put("stopwatch", new Image(getClass().getResource("/icons/stopwatch.png").toExternalForm()));
+        images.put("superBoots", new Image(getClass().getResource("/icons/superBoots.png").toExternalForm()));
+        images.put("superChargeBadge", new Image(getClass().getResource("/icons/superChargeBadge.png").toExternalForm()));
+        images.put("superChargeP", new Image(getClass().getResource("/icons/superChargeP.png").toExternalForm()));
+        images.put("superHammer", new Image(getClass().getResource("/icons/superHammer.png").toExternalForm()));
+        images.put("superShroom", new Image(getClass().getResource("/icons/superShroom.png").toExternalForm()));
+        images.put("tastyTonic", new Image(getClass().getResource("/icons/tastyTonic.png").toExternalForm()));
+        images.put("thunderBolt", new Image(getClass().getResource("/icons/thunderBolt.png").toExternalForm()));
+        images.put("thunderRage", new Image(getClass().getResource("/icons/thunderRage.png").toExternalForm()));
+        images.put("tornadoJump", new Image(getClass().getResource("/icons/tornadoJump.png").toExternalForm()));
+        images.put("tradeOff", new Image(getClass().getResource("/icons/tradeOff.png").toExternalForm()));
+        images.put("trialStew", new Image(getClass().getResource("/icons/trialStew.png").toExternalForm()));
+        images.put("tripleDip", new Image(getClass().getResource("/icons/tripleDip.png").toExternalForm()));
+        images.put("ultraBoots", new Image(getClass().getResource("/icons/ultraBoots.png").toExternalForm()));
+        images.put("ultraShroom", new Image(getClass().getResource("/icons/ultraShroom.png").toExternalForm()));
+        images.put("voltShroom", new Image(getClass().getResource("/icons/voltShroom.png").toExternalForm()));
+        images.put("whackaBump", new Image(getClass().getResource("/icons/whackaBump.png").toExternalForm()));
+        images.put("zessDynamite", new Image(getClass().getResource("/icons/zessDynamite.png").toExternalForm()));
+        images.put("zessFrappe", new Image(getClass().getResource("/icons/zessFrappe.png").toExternalForm()));
+        images.put("redPotion", new Image(getClass().getResource("/icons/redPotion.png").toExternalForm()));
+        images.put("bluePotion", new Image(getClass().getResource("/icons/bluePotion.png").toExternalForm()));
+        images.put("orangePotion", new Image(getClass().getResource("/icons/orangePotion.png").toExternalForm()));
+        images.put("greenPotion", new Image(getClass().getResource("/icons/greenPotion.png").toExternalForm()));
+        images.put("iceCustom", new Image(getClass().getResource("/icons/iceCustom.png").toExternalForm()));
+        images.put("burnCustom", new Image(getClass().getResource("/icons/burnCustom.png").toExternalForm()));
+        images.put("musicNoteCustom", new Image(getClass().getResource("/icons/musicNoteCustom.png").toExternalForm()));
+        images.put("poisonCustom", new Image(getClass().getResource("/icons/poisonCustom.png").toExternalForm()));
+        images.put("routingSlip", new Image(getClass().getResource("/icons/routingSlip.png").toExternalForm()));
+        images.put("diminishingStarsCustom", new Image(getClass().getResource("/icons/diminishingStarsCustom.png").toExternalForm()));
+        images.put("selectCursor", new Image(getClass().getResource("/icons/selectCursor.png").toExternalForm()));
+        images.put("ignoreStatus", new Image(getClass().getResource("/icons/ignoreStatus.png").toExternalForm()));
     }
 
     public static void main(String[] args) 
