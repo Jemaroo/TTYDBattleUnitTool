@@ -6,32 +6,32 @@
 public class BattleUnitKindPart
 {
     //PartsAttributeFlags
-    public boolean MostPreferredSelectTarget = false;
-    public boolean PreferredSelectTarget = false;
-    public boolean SelectTarget = false;
-    public boolean Unknown1 = false;
-    public boolean Unknown2 = false;
-    public boolean Unknown3 = false;
+    public boolean MainBodyPart = false;
+    public boolean SecondaryBodyPart = false;
+    public boolean BombableBodyPart = false;
+    public boolean GuardBodyPart = false;
+    public boolean NotBombableBodyPart = false;
+    public boolean InHole = false;
     public boolean WeakToAttackFxR = false;
     public boolean WeakToIcePower = false;
     public boolean IsWinged = false;
     public boolean IsShelled = false;
     public boolean IsBombFlippable = false;
-    public boolean Unknown4 = false;
-    public boolean Unknown5 = false;
+    public boolean IsClonelike = false;
+    public boolean DisableFlatPaperLayering = false;
     public boolean NeverTargetable = false;
-    public boolean Unknown6 = false;
-    public boolean Unknown7 = false;
+    public boolean IgnoreMapObjectOffset = false;
+    public boolean IgnoreOnlyTargetSelectAndPreferredParts = false;
     public boolean Untattleable = false;
     public boolean JumplikeCannotTarget = false;
     public boolean HammerlikeCannotTarget = false;
     public boolean ShellTosslikeCannotTarget = false;
-    public boolean Unknown8 = false;
-    public boolean Unknown9 = false;
-    public boolean Unknown10 = false;
-    public boolean Unknown11 = false;
-    public boolean Unknown12 = false;
-    public boolean Unknown13 = false;
+    public boolean PreventHealthDecrease = false;
+    public boolean DisablePartVisibility = false;
+    public boolean ImmuneToCustom = false;
+    public boolean BlurOn = false;
+    public boolean ScaleIndependence = false;
+    public boolean Independence = false;
     public boolean IsImmuneToDamageOrStatus = false;
     public boolean IsImmuneToOHKO = false;
     public boolean IsImmuneToStatus = false;
@@ -56,32 +56,32 @@ public class BattleUnitKindPart
 
     public enum PartsAttributeFlags 
     {
-        MostPreferredSelectTarget(0x1),
-        PreferredSelectTarget(0x2),
-        SelectTarget(0x4),
-        Unknown1(0x8),
-        Unknown2(0x10),
-        Unknown3(0x40),
+        MainBodyPart(0x1),
+        SecondaryBodyPart(0x2),
+        BombableBodyPart(0x4),
+        GuardBodyPart(0x8),
+        NotBombableBodyPart(0x10),
+        InHole(0x40),
         WeakToAttackFxR(0x80),
         WeakToIcePower(0x100),
         IsWinged(0x800),
         IsShelled(0x1000),
         IsBombFlippable(0x2000),
-        Unknown4(0x4000),
-        Unknown5(0x8000),
+        IsClonelike(0x4000),
+        DisableFlatPaperLayering(0x8000),
         NeverTargetable(0x10000),
-        Unknown6(0x20000),
-        Unknown7(0x40000),
+        IgnoreMapObjectOffset(0x20000),
+        IgnoreOnlyTargetSelectAndPreferredParts(0x40000),
         Untattleable(0x80000),
         JumplikeCannotTarget(0x100000),
         HammerlikeCannotTarget(0x200000),
         ShellTosslikeCannotTarget(0x400000),
-        Unknown8(0x800000),
-        Unknown9(0x1000000),
-        Unknown10(0x2000000),
-        Unknown11(0x4000000),
-        Unknown12(0x8000000),
-        Unknown13(0x10000000),
+        PreventHealthDecrease(0x800000),
+        DisablePartVisibility(0x1000000),
+        ImmuneToCustom(0x2000000),
+        BlurOn(0x4000000),
+        ScaleIndependence(0x8000000),
+        Independence(0x10000000),
         IsImmuneToDamageOrStatus(0x20000000),
         IsImmuneToOHKO(0x40000000),
         IsImmuneToStatus(0x80000000);
