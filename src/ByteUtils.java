@@ -64,6 +64,15 @@ public class ByteUtils
 
     /**
      * @Author ChatGPT
+     * @Function Will convert 4 bytes to a single long (unsigned 32-bit value, big-endian)
+     */
+    public static long bytesToLong(byte b1, byte b2, byte b3, byte b4) 
+    {
+        return ((long)(b1 & 0xFF) << 24) | ((long)(b2 & 0xFF) << 16) | ((long)(b3 & 0xFF) << 8)  | ((long)(b4 & 0xFF));
+    }
+
+    /**
+     * @Author ChatGPT
      * @Function Will convert a single int into 1 byte
      */
     public static byte intTo1Byte(int value) 
@@ -100,6 +109,20 @@ public class ByteUtils
 
     /**
      * @Author ChatGPT
+     * @Function Will convert the lower 32 bits of a long into 4 bytes (big-endian)
+     */
+    public static byte[] longTo4Bytes(long value)
+    {
+        byte[] result = new byte[4];
+        result[0] = (byte) ((value >> 24) & 0xFF);
+        result[1] = (byte) ((value >> 16) & 0xFF);
+        result[2] = (byte) ((value >> 8) & 0xFF);
+        result[3] = (byte) (value & 0xFF);
+        return result;
+    }
+
+    /**
+     * @Author ChatGPT
      * @Function Will check if a flag is enabled in TargetClassFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleWeapon.TargetClassFlags flag) 
@@ -108,7 +131,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in TargetPropertyFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleWeapon.TargetPropertyFlags flag) 
@@ -117,7 +140,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in SpecialPropertyFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleWeapon.SpecialPropertyFlags flag) 
@@ -126,7 +149,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in CounterResistanceFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleWeapon.CounterResistanceFlags flag) 
@@ -135,7 +158,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in TargetWeightingFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleWeapon.TargetWeightingFlags flag) 
@@ -144,7 +167,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in PartsAttributeFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleUnitKindPart.PartsAttributeFlags flag) 
@@ -153,10 +176,19 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will check if a flag is enabled in PartsCounterAttributeFlags
      */
     public static boolean bitFieldFlagCheck(int bitfield, BattleUnitKindPart.PartsCounterAttributeFlags flag) 
+    {
+        return (bitfield & flag.mask) != 0;
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Will check if a flag is enabled in UnitAttributeFlags
+     */
+    public static boolean bitFieldFlagCheck(int bitfield, BattleUnitKind.UnitAttributeFlags flag) 
     {
         return (bitfield & flag.mask) != 0;
     }
@@ -172,20 +204,20 @@ public class ByteUtils
         if(unitWeapon.CannotTargetMarioOrShellShield) bitfield |= 0x1;
         if(unitWeapon.CannotTargetPartner) bitfield |= 0x2;
         if(unitWeapon.CannotTargetEnemy) bitfield |= 0x10;
-        if(unitWeapon.Unused1) bitfield |= 0x20;
-        if(unitWeapon.Unused2) bitfield |= 0x40;
+        if(unitWeapon.CannotTargetTreeOrSwitch) bitfield |= 0x20;
+        if(unitWeapon.CannotTargetSystem) bitfield |= 0x40;
         if(unitWeapon.CannotTargetOppositeAlliance) bitfield |= 0x100;
         if(unitWeapon.CannotTargetOwnAlliance) bitfield |= 0x200;
         if(unitWeapon.CannotTargetSelf) bitfield |= 0x1000;
         if(unitWeapon.CannotTargetSameSpecies) bitfield |= 0x2000;
         if(unitWeapon.OnlyTargetSelf) bitfield |= 0x4000;
         if(unitWeapon.OnlyTargetMario) bitfield |= 0x10000;
-        if(unitWeapon.Unused3) bitfield |= 0x20000;
-        if(unitWeapon.Unused4) bitfield |= 0x100000;
-        if(unitWeapon.Unused5) bitfield |= 0x200000;
+        if(unitWeapon.OnlyTargetTreeOrSwitch) bitfield |= 0x20000;
+        if(unitWeapon.OnlyTargetPreferredParts) bitfield |= 0x100000;
+        if(unitWeapon.OnlyTargetSelectParts) bitfield |= 0x200000;
         if(unitWeapon.SingleTarget) bitfield |= 0x1000000;
         if(unitWeapon.MultipleTarget) bitfield |= 0x2000000;
-        if(unitWeapon.Unused6) bitfield |= 0x80000000;
+        if(unitWeapon.CannotTargetAnything) bitfield |= 0x80000000;
 
         return new byte[] 
         {
@@ -197,7 +229,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current TargetPropertyFlags and convert them into a bitfield
      */
     public static byte[] buildTPFBitfield(BattleWeapon unitWeapon) 
@@ -205,18 +237,18 @@ public class ByteUtils
         int bitfield = 0;
 
         if(unitWeapon.Tattlelike) bitfield |= 0x1;
-        if(unitWeapon.Unused7) bitfield |= 0x2;
+        if(unitWeapon.CannotTargetFloating2) bitfield |= 0x2;
         if(unitWeapon.CannotTargetCeiling) bitfield |= 0x4;
         if(unitWeapon.CannotTargetFloating) bitfield |= 0x8;
         if(unitWeapon.CannotTargetGrounded) bitfield |= 0x10;
         if(unitWeapon.Jumplike) bitfield |= 0x1000;
         if(unitWeapon.Hammerlike) bitfield |= 0x2000;
         if(unitWeapon.ShellTosslike) bitfield |= 0x4000;
-        if(unitWeapon.Unused8) bitfield |= 0x8000;
+        if(unitWeapon.CannotTargetGroundedVariant) bitfield |= 0x8000;
         if(unitWeapon.RecoilDamage) bitfield |= 0x100000;
         if(unitWeapon.CanOnlyTargetFrontmost) bitfield |= 0x1000000;
-        if(unitWeapon.Unused9) bitfield |= 0x2000000;
-        if(unitWeapon.Unused10) bitfield |= 0x4000000;
+        if(unitWeapon.CannotTargetShellShield) bitfield |= 0x2000000;
+        if(unitWeapon.CannotTargetCustom) bitfield |= 0x4000000;
         if(unitWeapon.TargetSameAllianceDirection) bitfield |= 0x10000000;
         if(unitWeapon.TargetOppositeAllianceDirection) bitfield |= 0x20000000;
 
@@ -230,7 +262,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current SpecialPropertyFlags and convert them into a bitfield
      */
     public static byte[] buildSPFBitfield(BattleWeapon unitWeapon) 
@@ -244,18 +276,18 @@ public class ByteUtils
         if(unitWeapon.DiminishingReturnsByHit) bitfield |= 0x10;
         if(unitWeapon.DiminishingReturnsByTarget) bitfield |= 0x20;
         if(unitWeapon.PiercesDefense) bitfield |= 0x40;
-        if(unitWeapon.Unused11) bitfield |= 0x80;
+        if(unitWeapon.CanBreakIce) bitfield |= 0x80;
         if(unitWeapon.IgnoreTargetStatusVulnerability) bitfield |= 0x100;
-        if(unitWeapon.Unused12) bitfield |= 0x200;
+        if(unitWeapon.SPFx200) bitfield |= 0x200;
         if(unitWeapon.IgnitesIfBurned) bitfield |= 0x400;
-        if(unitWeapon.Unused13) bitfield |= 0x800;
+        if(unitWeapon.PlayActiveFXSound) bitfield |= 0x800;
         if(unitWeapon.FlipsShellEnemies) bitfield |= 0x1000;
         if(unitWeapon.FlipsBombFlippableEnemies) bitfield |= 0x2000;
         if(unitWeapon.GroundsWingedEnemies) bitfield |= 0x4000;
-        if(unitWeapon.Unused14) bitfield |= 0x8000;
+        if(unitWeapon.SPFx8000) bitfield |= 0x8000;
         if(unitWeapon.CanBeUsedAsConfusedAction) bitfield |= 0x10000;
         if(unitWeapon.Unguardable) bitfield |= 0x20000;
-        if(unitWeapon.Unused15) bitfield |= 0x40000;
+        if(unitWeapon.CanHitClonelike) bitfield |= 0x40000;
 
         return new byte[] 
         {
@@ -267,7 +299,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current CounterResistanceFlags and convert them into a bitfield
      */
     public static byte[] buildCRFBitfield(BattleWeapon unitWeapon) 
@@ -296,7 +328,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current TargetWeightingFlags and convert them into a bitfield
      */
     public static byte[] buildTWFBitfield(BattleWeapon unitWeapon) 
@@ -314,7 +346,7 @@ public class ByteUtils
         if(unitWeapon.PreferLowerHP) bitfield |= 0x400;
         if(unitWeapon.PreferHigherHP) bitfield |= 0x800;
         if(unitWeapon.PreferInPeril) bitfield |= 0x1000;
-        if(unitWeapon.Unused16) bitfield |= 0x2000;
+        if(unitWeapon.TWFx2000) bitfield |= 0x2000;
         if(unitWeapon.ChooseWeightedRandomly) bitfield |= 0x80000000;
 
         return new byte[] 
@@ -327,39 +359,39 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current PartsAttributeFlags and convert them into a bitfield
      */
     public static byte[] buildPAFBitfield(BattleUnitKindPart unitKindPart) 
     {
         int bitfield = 0;
 
-        if(unitKindPart.MostPreferredSelectTarget) bitfield |= 0x1;
-        if(unitKindPart.PreferredSelectTarget) bitfield |= 0x2;
-        if(unitKindPart.SelectTarget) bitfield |= 0x4;
-        if(unitKindPart.Unknown1) bitfield |= 0x8;
-        if(unitKindPart.Unknown2) bitfield |= 0x10;
-        if(unitKindPart.Unknown3) bitfield |= 0x40;
+        if(unitKindPart.MainBodyPart) bitfield |= 0x1;
+        if(unitKindPart.SecondaryBodyPart) bitfield |= 0x2;
+        if(unitKindPart.BombableBodyPart) bitfield |= 0x4;
+        if(unitKindPart.GuardBodyPart) bitfield |= 0x8;
+        if(unitKindPart.NotBombableBodyPart) bitfield |= 0x10;
+        if(unitKindPart.InHole) bitfield |= 0x40;
         if(unitKindPart.WeakToAttackFxR) bitfield |= 0x80;
         if(unitKindPart.WeakToIcePower) bitfield |= 0x100;
         if(unitKindPart.IsWinged) bitfield |= 0x800;
         if(unitKindPart.IsShelled) bitfield |= 0x1000;
         if(unitKindPart.IsBombFlippable) bitfield |= 0x2000;
-        if(unitKindPart.Unknown4) bitfield |= 0x4000;
-        if(unitKindPart.Unknown5) bitfield |= 0x8000;
+        if(unitKindPart.IsClonelike) bitfield |= 0x4000;
+        if(unitKindPart.DisableFlatPaperLayering) bitfield |= 0x8000;
         if(unitKindPart.NeverTargetable) bitfield |= 0x10000;
-        if(unitKindPart.Unknown6) bitfield |= 0x20000;
-        if(unitKindPart.Unknown7) bitfield |= 0x40000;
+        if(unitKindPart.IgnoreMapObjectOffset) bitfield |= 0x20000;
+        if(unitKindPart.IgnoreOnlyTargetSelectAndPreferredParts) bitfield |= 0x40000;
         if(unitKindPart.Untattleable) bitfield |= 0x80000;
         if(unitKindPart.JumplikeCannotTarget) bitfield |= 0x100000;
         if(unitKindPart.HammerlikeCannotTarget) bitfield |= 0x200000;
         if(unitKindPart.ShellTosslikeCannotTarget) bitfield |= 0x400000;
-        if(unitKindPart.Unknown8) bitfield |= 0x800000;
-        if(unitKindPart.Unknown9) bitfield |= 0x1000000;
-        if(unitKindPart.Unknown10) bitfield |= 0x2000000;
-        if(unitKindPart.Unknown11) bitfield |= 0x4000000;
-        if(unitKindPart.Unknown12) bitfield |= 0x8000000;
-        if(unitKindPart.Unknown13) bitfield |= 0x10000000;
+        if(unitKindPart.PreventHealthDecrease) bitfield |= 0x800000;
+        if(unitKindPart.DisablePartVisibility) bitfield |= 0x1000000;
+        if(unitKindPart.ImmuneToCustom) bitfield |= 0x2000000;
+        if(unitKindPart.BlurOn) bitfield |= 0x4000000;
+        if(unitKindPart.ScaleIndependence) bitfield |= 0x8000000;
+        if(unitKindPart.Independence) bitfield |= 0x10000000;
         if(unitKindPart.IsImmuneToDamageOrStatus) bitfield |= 0x20000000;
         if(unitKindPart.IsImmuneToOHKO) bitfield |= 0x40000000;
         if(unitKindPart.IsImmuneToStatus) bitfield |= 0x80000000;
@@ -374,7 +406,7 @@ public class ByteUtils
     }
 
     /**
-     * @Author ChatGPT
+     * @Author Jemaroo
      * @Function Will take the current PartsCounterAttributeFlags and convert them into a bitfield
      */
     public static byte[] buildPCAFBitfield(BattleUnitKindPart unitKindPart) 
@@ -394,6 +426,47 @@ public class ByteUtils
         if(unitKindPart.ElectricStatus) bitfield |= 0x800;
         if(unitKindPart.Explosive) bitfield |= 0x1000;
         if(unitKindPart.VolatileExplosive) bitfield |= 0x2000;
+
+        return new byte[] 
+        {
+            (byte) ((bitfield >> 24) & 0xFF),
+            (byte) ((bitfield >> 16) & 0xFF),
+            (byte) ((bitfield >> 8) & 0xFF),
+            (byte) (bitfield & 0xFF)
+        };
+    }
+
+    /**
+     * @Author Jemaroo
+     * @Function Will take the current UnitAttributeFlags and convert them into a bitfield
+     */
+    public static byte[] buildUAFBitfield(BattleUnitKind unitKind) 
+    {
+        int bitfield = 0;
+
+        if(unitKind.MapObj) bitfield |= 0x1;
+        if(unitKind.OutOfReach) bitfield |= 0x2;
+        if(unitKind.Unquakeable) bitfield |= 0x4;
+        if(unitKind.IsInvisible) bitfield |= 0x8;
+        if(unitKind.IsVeiled) bitfield |= 0x10;
+        if(unitKind.ShellShielded) bitfield |= 0x20;
+        if(unitKind.NeverTargetable) bitfield |= 0x40;
+        if(unitKind.LimitSwitch) bitfield |= 0x100;
+        if(unitKind.DisableZeroGravityFloat) bitfield |= 0x1000;
+        if(unitKind.DisableZeroGravityImmobility) bitfield |= 0x2000;
+        if(unitKind.immuneToUltraHammerKnock) bitfield |= 0x4000;
+        if(unitKind.IsUndead) bitfield |= 0x10000;
+        if(unitKind.IsCorpse) bitfield |= 0x20000;
+        if(unitKind.IsLeader) bitfield |= 0x40000;
+        if(unitKind.CannotTakeActions) bitfield |= 0x80000;
+        if(unitKind.NotSpunByLoveSlap) bitfield |= 0x200000;
+        if(unitKind.DisableDamageStars) bitfield |= 0x400000;
+        if(unitKind.DisableAllPartVisibility) bitfield |= 0x1000000;
+        if(unitKind.DisableHPGauge) bitfield |= 0x2000000;
+        if(unitKind.LookCamera) bitfield |= 0x4000000;
+        if(unitKind.NonCombatant) bitfield |= 0x10000000;
+        if(unitKind.NoShadow) bitfield |= 0x20000000;
+        if(unitKind.DisableDamage) bitfield |= 0x40000000;
 
         return new byte[] 
         {
