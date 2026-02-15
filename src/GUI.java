@@ -500,7 +500,7 @@ public class GUI extends Application
 
                 VBox alertMenu = new VBox();
                 alertMenu.setAlignment(Pos.CENTER);
-                Text version = new Text("Written by Jemaroo     Version: 2.4.0");
+                Text version = new Text("Written by Jemaroo     Version: 2.4.1");
                 version.setWrappingWidth(290);
                 version.setTextAlignment(TextAlignment.CENTER);
                 Text description = new Text("TTYD BattleUnitTool allows you to open up the game's main dol or any rel file containing battle data and edit enemy unit fields.");
@@ -524,7 +524,7 @@ public class GUI extends Application
         window.show();
 
         //TODO Change update version
-        UpdateChecker updateChecker = new UpdateChecker("Jemaroo", "TTYDBattleUnitTool", "2.4.0");
+        UpdateChecker updateChecker = new UpdateChecker("Jemaroo", "TTYDBattleUnitTool", "2.4.1");
         updateChecker.check();
         if(updateChecker.isUpdateAvailable())
         {
@@ -1513,6 +1513,9 @@ public class GUI extends Application
                     comboBoxFields[2].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
                     comboBoxFields[3].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
                     comboBoxFields[4].getItems().addAll("No Effect", "Weak To", "Immune To", "Absorbs", "Immune To (Except Gulp)");
+
+                    comboBoxFields[1].setDisable(false);
+                    comboBoxFields[5].setDisable(false);
 
                     BattleUnitDefenseAttr selected = (BattleUnitDefenseAttr) defenseList.getSelectionModel().getSelectedItem();
 
@@ -4570,6 +4573,7 @@ public class GUI extends Application
         for(int i = 0; i < comboBoxFields.length; i++)
         {
             comboBoxFields[i] = new ComboBox<String>();
+            comboBoxFields[i].setMaxWidth(255);
         }
 
         checkBoxFields = new CheckBox[75];
